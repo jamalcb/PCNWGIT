@@ -1,0 +1,132 @@
+﻿@model IEnumerable<tblDeliveryMaster>
+@{
+    ViewData["Title"] = "Delivery Type";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts
+{
+    <script src="~/js/delivery-type.js"></script>
+}
+@section jQueryUICss{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https:/resources/demos/style.css">
+}
+@section CustomCSS
+{
+   <style>
+.text-right .cus-pro-type .fa-plus{
+            font-size:14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+        .cus-edit-icon{
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+   </style>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Delivery Type</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Other</li>
+                        <li class="breadcrumb-item active">DeliveryType</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header text-right ">
+                        <a href="#" class="btn cus-pro-type" onclick="OpenPrintModel()">
+                            <i class=" fa fa-plus mx-1"></i>
+                            Add Delivery Type
+                        </a>
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Save / Update Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                               
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Delivery Type<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input type="hidden" id="DelivId" />
+                                                        <input class="form-control form-control-solid " type="text" value="" placeholder="Enter Delivery Type" id="DeliveryType" name="DeliveryType" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActive" name="IsActive" /><label for="IsActive">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group my-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return SaveDeliveryType()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="w-10">Delivery Type</th>
+                                         <th class="w-10">Status</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblDeliveryType" class="active-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,58 @@
+﻿@model UserClaimsViewModel
+@{
+    ViewData["Title"] = "Edit User in Claims";
+    Layout = "~/Views/Shared/Layout-Admin-Master.cshtml";
+}
+@{
+    var userId = ViewBag.userId;
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Manage User Claims</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="#" onclick="return false;">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Manage User Claims</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <form method="post" action="ManageUserClaims">
+            <div class="card">
+                <div class="card-header">
+                    <h2>
+                        <strong>Manage User Claims</strong>
+                    </h2>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" asp-for="@userId" />
+                    @for (var i = 0; i < Model.Claims.Count; i++)
+                    {
+                        <div class="form-check m-1" name="model">
+                            <input type="hidden" asp-for="@Model.Claims[i].ClaimType" />
+                            <input type="hidden" asp-for="@Model.Claims[i].ClaimType" />
+                            <label class="form-check-label" asp-for="@Model.Claims[i].IsSelected">
+                                <input asp-for="@Model.Claims[i].IsSelected" class="form-check-input" type="checkbox" />@Model.Claims[i].ClaimType
+                                <span class="form-check-sign">
+                                    <span class="check"></span>
+                                </span>
+                            </label>
+                        </div>
+                    }
+                    <div asp-validation-summary="All" class="text-danger"></div>
+                </div>
+                <div class="card-footer">
+                    <input type="submit" value="Update" class="btn btn-primary" style="width:auto;" />
+                    <a asp-action="EditUser" asp-route-id="@userId" class="btn btn-primary" style="width:auto;">Cancel</a>
+                </div>
+            </div>
+        </form>
+    </div>
+</section>

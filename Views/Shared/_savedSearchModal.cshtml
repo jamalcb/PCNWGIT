@@ -1,0 +1,102 @@
+﻿
+
+<div class="modal-content">
+    <div class="modal-header cusModal-Header">
+        <h4 class="modal-title card-label font-weight-bold">Edit Save Search</h4>
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+
+    <div class="modal-body">
+        <div class="" id="Addendapdf">
+            <form id="frmEditSaveSearch" asp-action="FindProjectHereSearch" asp-controller="Member">
+                <input type="hidden" id="hiddenSearchId" />
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <div class="formInput-inner">
+                            <label class="fw-6" for="">Search Name</label>
+                            <input type="text" class="form-control" id="EditNameSearch" placeholder="Search Name">
+                        </div>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <label class="fw-6" for="">Search Project</label>
+                        <input type="text" id="EdittxtSearchProj" class="search-bar" name="EditSearchText" placeholder="Search Project Name">
+                    </div>
+                </div>
+                <div class="row formInput-inner">
+                    <div class="col-lg-4 form-group">
+                        <label class="fw-6" for="">Project Type</label>
+                        <select class="form-control" id="EditProjectTypeIds" multiple name="EditProjectTypeIds" onchange="EditProjSubType(-1)">
+                           </select>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label class="fw-6" for="">Project Sub Type</label>
+                        <select class="form-control" multiple id="EditProjectSubTypeId" name="EditProjectSubTypeIds">
+                            </select>
+                    </div>
+                    <div class="col-md-4 form-group">
+                        <div class="formInput-inner">
+                            <label class="fw-6" for="">Select State</label>
+                            <select class="form-control form-control-solid mb-2" multiple id="EditSearchState" name="State" @*asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"*@>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-4 form-group">
+                        <div class="formInput-inner">
+                            <label class="fw-6" for="">Estimated Cost</label>
+                            <select class="form-control" id="EditProjectestCosts" multiple name="EditProjectestCosts">
+                                </select>
+                        </div>
+                    </div>
+                    <div class="col-lg-4 form-group">
+                        <label class="fw-6" for="">Project Scope</label>
+                        <select class="form-control" multiple id="EditProjectScopes" name="EditProjectScopes">
+                        </select>
+                    </div>
+                        <div class="col-md-4 formInput-inner m-auto form-group">
+                            <input type="hidden" id="EditPrevailingcheckhidden" name="EditPrevailingWageFlag">
+                            <input type="checkbox" class="form-check-input" id="EditPrevailingCheck" name="EditPrevailingWageFlag">
+                        <label class="radio-label" for="EditPrevailingCheck">Prevailing Wages</label>
+                        </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 form-group">
+                        <div class="formInput-inner">
+                            <h5>Geographical Search</h5>
+                            <select class="form-control"  id="EditProjectState" name="EditProjectState">
+                                <option value="0">Project State</option>
+                            </select>
+                            <label class="fw-6">Distance (in mile)</label>
+                            <select class="form-control form-control-solid mb-2" id="EditinpDistance" name="Distance">
+                                <option value="0">Search Projects under Miles</option>
+                                <option value="25">&lt; 25 Miles</option>
+                                <option value="50">&lt; 50 Miles</option>
+                                <option value="100">&lt; 100 Miles</option>
+                                <option value="200">&lt; 200 Miles</option>
+                            </select>
+                            <label class="fw-6">City Name</label>
+                            <input class="form-control form-control-solid mb-2" type="text" id="EditinpCity" name="EditCity" placeholder="Enter City">
+
+                        </div>
+                    </div>
+                    <div class="col-md-6 form-group">
+                        <div class="formInput-inner">
+                            <div class="drpsec">
+                                <h4>Bid Date From</h4>
+                                <input type="date" class="form-control" placeholder="select date" id="EditstrBidDateFrom" name="EditstrBidDateFrom" tabindex="170" />
+                                <h4>Bid Date To</h4>
+                                <input type="date" class="form-control" placeholder="select date" id="EditstrBidDateTo" name="EditstrBidDateTo" tabindex="170" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+
+        <div class="modal-footer newPro-btn p-0">
+            <button type="button" onclick="UpdateSaveSearches()" class="modl-btn newProbtn">Save</button>
+        </div>
+    </div>
+
+</div>

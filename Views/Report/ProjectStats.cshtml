@@ -1,0 +1,348 @@
+﻿@model ProjectStatsViewModel;
+@{
+    ViewData["Title"] = "Project Statistics";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+@section Scripts{
+    <script src="~/js/ProjectStats.js"></script>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title"> Project Statistics</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Project Reports</li>
+                        <li class="breadcrumb-item active">Project Statistics</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Exportable Table -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>
+                                @Model.ActiveCount <span class="text-success">Active</span> Projects out for bid.
+                                We currently have <span class="text-info">@Model.ArchiveCount</span> archived projects.
+                            </strong>
+                        </h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Example Tab -->
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Sort By Range</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs tab-nav-right cus-date-tabs" role="tablist">
+                            <li role="presentation" class="width">
+                                <a href="#home" data-toggle="tab" class="active show">Search By Range</a>
+                            </li>
+                            <li role="presentation">
+                                <a href="#profile" >OR</a>
+                            </li>
+                            <li role="presentation" class="width">
+                                <a href="#messages" data-toggle="tab">Search By Date</a>
+                            </li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade in active show" id="home">
+                                <div class="row cus-date-to">
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdDaily" value="Daily">
+                                                <span>Daily</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdWeek" value="Week">
+                                                <span>Weekly</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdMonth" value="Month">
+                                                <span>Monthly</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdYear" value="Year">
+                                                <span>Yearly</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane fade" id="profile">
+
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="messages">
+                                <form method="post">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="row cus-select-date">
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <div class="form-line">
+                                                        <label for="email_address">Select Date From</label>
+                                                        <input id="startPicker" class="flatPicker flatpickr-input" name="startDate" placeholder="Please choose a date..." type="date">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 date-to">TO</div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <div class="form-line">
+                                                        <label for="email_address">Select Date</label>
+                                                        <input id="endPicker" class="flatPicker flatpickr-input" name="endDate" placeholder="Please choose a date..." type="date">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 d-flex align-items-center">
+                                                <div class="form-group mb-0">
+                                                    <div class="form-line">
+                                                        <input class="cus-input-btn" type="button" value="Submit" onclick="return checkDate()">
+                                                        <span id="dateError"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- date range two in one  -->
+
+                                        </div>
+                                    </div>
+                                </form>
+                                
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- #END# Example Tab -->
+
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Project Type</strong>
+                        </h2>
+                    </div>
+                    <div class="row state-overview mx-2">
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box5 animate-bar bg-b-purple active-project-card">
+                                <div class="info-box-content ml-0">
+                                    <div class="header text-center p-0">
+                                        <h2 class="my-3">
+                                            <strong class="info-box-text"><i class="far fa-building"></i> Buldings</strong>
+                                        </h2>
+                                    </div>
+                                    <table class="table table-borderless my-3">
+                                        <thead>
+                                            <tr>
+                                                <td class="table-success">Active <i class="ml-3 fas fa-arrow-right"></i></td>
+                                                <td class="table-success" id="BActiveCount">@Model.BActiveCount</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="table-warning">Archive <i class="ml-2 fas fa-arrow-right"></i></td>
+                                                <td class="table-warning" id="BArchiveCount">@Model.BArchiveCount</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box5 animate-bar bg-b-purple active-project-card">
+                                <div class="info-box-content ml-0">
+                                    <div class="header text-center p-0">
+                                        <h2 class="my-3">
+                                            <strong class="info-box-text"><i class="fas fa-toolbox"></i> Utilities</strong>
+                                        </h2>
+                                    </div>
+                                    <table class="table table-borderless my-3">
+                                        <thead>
+                                            <tr>
+                                                <td class="table-success">Active <i class="fas fa-arrow-right ml-3"></i></td>
+                                                <td class="table-success" id="UActiveCount">@Model.UActiveCount</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="table-warning">Archive <i class="fas fa-arrow-right ml-2"></i></td>
+                                                <td class="table-warning" id="UArchiveCount">@Model.UArchiveCount</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box5 animate-bar bg-b-purple active-project-card">
+                                <div class="info-box-content ml-0">
+                                    <div class="header text-center p-0">
+                                        <h2 class="my-3">
+                                            <strong class="info-box-text"><i class="fas fa-road mr-1"></i>Roads</strong>
+                                        </h2>
+                                    </div>
+                                    <table class="table table-borderless my-3">
+                                        <thead>
+                                            <tr>
+                                                <td class="table-success">Active <i class="fas fa-arrow-right ml-3"></i></td>
+                                                <td class="table-success" id="RActiveCount">@Model.RActiveCount</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="table-warning">Archive <i class="fas fa-arrow-right ml-2"></i></td>
+                                                <td class="table-warning" id="RArchiveCount">@Model.RArchiveCount</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                        </div>
+                        <div class="col-lg-3 col-md-3 col-sm-6 col-xs-12">
+                            <div class="info-box5 animate-bar bg-b-purple active-project-card">
+                                <div class="info-box-content ml-0">
+                                    <div class="header text-center p-0">
+                                        <h2 class="my-3">
+                                            <strong class="info-box-text"><i class="far fa-map"></i> Various</strong>
+                                        </h2>
+                                    </div>
+                                    <table class="table table-borderless my-3">
+                                        <thead>
+                                            <tr>
+                                                <td class="table-success">Active <i class="fas fa-arrow-right ml-3"></i></td>
+                                                <td class="table-success" id="VActiveCount">@Model.VActiveCount</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td class="table-warning">Archive <i class="fas fa-arrow-right ml-2"></i></td>
+                                                <td class="table-warning" id="VArchiveCount">@Model.VArchiveCount</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                                <!-- /.info-box-content -->
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- #END# Exportable Table -->
+        <div class="card">
+            <div class="header">
+                <h2><strong>Regional</strong></h2>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="box-part text-center pt-4">
+                    <img alt="Washington" src="~/AdminAssets/images/washington.jpg" width="114" height="79">
+                    <div class="title p-t-15">
+                        <h3>Washington</h3>
+                    </div>
+                    <div class="text p-b-10">
+                        <span id="WACount">@Model.WACount</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="box-part text-center pt-4">
+                    <img alt="Washington" src="~/AdminAssets/images/oregon.jpg" width="114" height="79">
+                    <div class="title p-t-15">
+                        <h3>Oregon</h3>
+                    </div>
+                    <div class="text p-b-10">
+                        <span id="ORCount">@Model.ORCount</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="box-part text-center pt-4">
+                    <img alt="Washington" src="~/AdminAssets/images/alaska.jpg" width="114" height="79">
+                    <div class="title p-t-15">
+                        <h3>Alaska</h3>
+                    </div>
+                    <div class="text p-b-10">
+                        <span id="AKCount">@Model.AKCount</span>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="box-part text-center pt-4">
+                    <img alt="Washington" src="~/AdminAssets/images/idaho.jpg" width="114" height="79">
+                    <div class="title p-t-15">
+                        <h3>Idaho</h3>
+                    </div>
+                    <div class="text p-b-10">
+                        <span id="IDCount">@Model.IDCount</span>
+                    </div>
+                    <!-- <a href="#">Learn More</a> -->
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="box-part text-center pt-4">
+                    <img alt="Washington" src="~/AdminAssets/images/california.jpg" width="114" height="79">
+                    <div class="title p-t-15">
+                        <h3>California</h3>
+                    </div>
+                    <div class="text p-b-10">
+                        <span id="CACount">@Model.CACount</span>
+                    </div>
+                    <!-- <a href="#">Learn More</a> -->
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-12">
+                <div class="box-part text-center pt-4">
+                    <img alt="Washington" src="~/AdminAssets/images/montana.jpg" width="114" height="79">
+                    <div class="title p-t-15">
+                        <h3>Montana</h3>
+                    </div>
+                    <div class="text p-b-10">
+                        <span id="MTCount">@Model.MTCount</span>
+                    </div>
+                    <!-- <a href="#">Learn More</a> -->
+                </div>
+            </div>
+        </div>
+        <!-- end of regional card  -->
+        
+</section>
+

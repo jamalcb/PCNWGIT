@@ -1,0 +1,22 @@
+﻿@model List<string>;
+@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+
+<html>
+<head>
+    <meta name="viewport" content="width=device-width" />
+    <title>ViewDoc</title>
+</head>
+<body>
+    
+    @foreach (var item in Model)
+    {
+        string href = "https://contractor-aws.s3.amazonaws.com/" + item;
+
+        <iframe src=@href width="100%" height="650px"></iframe>
+    }
+</body>
+</html>

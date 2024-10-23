@@ -1,0 +1,736 @@
+﻿@model MemberShipRegistration;
+@{
+    ViewData["Title"] = "Memebrship Registration Page";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+
+}
+@section MembershipScripts{
+    <script src="~/js/member-register.js" type="text/javascript"></script>
+    @*<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>*@
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+   
+ }
+@section google{
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+}
+
+@section CustomCSS{
+    <link href="~/css/member-register.css" rel="stylesheet" />
+     <style>
+        .lblHidden{
+            display: none;
+        }
+    </style>
+
+}
+@*<div class="top-heading">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>New Member Signup</h3>
+                </div>
+            </div>
+        </div>
+    </div>*@
+<div class="title-section">
+    <h3>New Member Signup</h3>
+</div>
+<div class="mainBox">
+    <div class="container">
+        <ul class="nav nav-tabs cusTab d-flex justify-content-between">
+            <li id="MemDet" class="active"><a id="MemDet" data-toggle="tab" href="#contact" class="active" onclick="chnageStep('MemDet',1)">1. Member Information</a></li>
+            <li id="MemRev"><a id="MemRev" href="#preview" onclick="chnageStep('MemRev',2)">2. Review</a></li>
+            <li id="MemPay"><a id="MemPay" href="#payment" onclick="chnageStep('MemPay', 3)">3. Payment</a></li>
+            <li id="MemFinish"><a id="MemFinish" href="#finish">4. Finish</a></li>
+        </ul>
+        <form class="form" method="POST" id="myForm">
+            <input type="hidden" value="@Model.hdnpreStep" id="hdnpreStep" />
+            <input type="hidden" value="@Model.hdnnextStep" id="hdnnextStep" />
+            <input type="hidden" value="@Model.hdncurrentStep" id="hdncurrentStep" />
+            <input type="hidden" id="hdnTabPer" />
+            <input type="hidden" asp-for="@Model.isFromFree" />
+            <input type="hidden" asp-for="@Model.MemberCost" id="MemberCost" />
+            <input type="hidden" asp-for="Additionalcost" />
+            <input type="hidden" asp-for="@Model.CheckRadio" />
+            <input type="hidden" asp-for="@Model.CheckRadioValue" />
+            <input type="hidden" asp-for="@Model.RadioExValue" />
+            <input type="hidden" asp-for="@Model.CheckRadioEx" />
+            <input type="hidden" asp-for="@Model.CheckRadioExValue" />
+            <input type="hidden" asp-for="@Model.hdnPass" />
+            <input type="hidden" asp-for="@Model.hdnPassConfirm" />
+            <input type="hidden" asp-for="@Model.hdnTerm" />
+            <input type="hidden" asp-for="@Model.MinorityStatus" />
+            <input type="hidden" asp-for="@Model.MemberType" />
+            <input type="hidden" asp-for="@Model.MSPChk" />
+            <input type="hidden" asp-for="@Model.ToDelete" />
+            <input type="hidden" asp-for="PayCardString" />
+            <input type="hidden" asp-for="ColorString" />
+            @*<input type="hidden" asp-for="@Model.BillState" />
+            <input type="hidden" asp-for="@Model.BillCity" />
+            <input type="hidden" asp-for="@Model.BillZip" />
+            <input type="hidden" asp-for="@Model.BillAddress" />*@
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="tab-content">
+                <div id="contact" class="tab-pane fade in active">
+                    <div class="contact-info-box formCls">
+                        <div id="onchangevalue">
+                            <div class="frm-title">
+                                <div class="row">
+                                   <div class="pkg-name">
+                                        <h2 id="pkgMem"></h2>
+                                    </div>
+                                    <div>
+                                        <span class="text-danger"></span> &nbsp;&nbsp;
+                                        <button type="button" id="chgPackage" onclick="UpdatePayment()" class="btn modal-foot-btn">Change Package <i class="fa fa-refresh mx-1" aria-hidden="true"></i></button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-inner-section">
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="Company" class="col-xl-3 col-lg-3 col-form-label">Company<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input type="hidden" id="hdID" name="ID" value="0" />
+                                        <input tabindex="1" type="text" id="Company" asp-for="Company" class="form-control form-control-solid form-control-lg" placeholder="Company" required="" />
+                                         <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="Dba" class="col-xl-3 col-lg-3 col-form-label">DBA</label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="2" type="text" id="Dba" asp-for="Dba" class="form-control form-control-solid form-control-lg" placeholder="DBA" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="MailAddress" class="col-xl-3 col-lg-3 col-form-label">Company Address <span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="3" type="text" id="MailAddress" asp-for="MailAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" required="" />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <input tabindex="5" type="text" id="MailCity" asp-for="MailCity" class="form-control form-control-solid form-control-lg" placeholder="City" required="" />
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <select tabindex="6" class="form-control" id="MailState" asp-for="MailState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" required=""></select>
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="7" type="text" class="form-control form-control-solid form-control-lg" placeholder="USA" required="" value="USA" />
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="4" type="text" asp-for="MailZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" required="" />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Company Phone<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="8" asp-for="CompanyPhone" type="text" class="form-control form-control-solid form-control-lg" placeholder="(555) 555-5555" />
+                                        <span class="loginError"></span>
+
+                                    </div>
+                                </div>
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact<span class="text-danger">*</span></label>
+                                    <div class="col-lg-4 col-xl-4">
+                                        <input tabindex="16" type="text" id="FirstName" asp-for="FirstName" class="form-control form-control-solid form-control-lg" placeholder="FirstName" required />
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-5 col-xl-5">
+                                        <input tabindex="17" type="text" id="LastName" asp-for="LastName" class="form-control form-control-solid form-control-lg" placeholder="LastName" required />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact Phone<br> (If different from above)</label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <div class="input-group input-group-solid input-group-lg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-phone"></i>
+                                                </span>
+                                            </div>
+                                            <input asp-for="ContactPhone" tabindex="18" type="text" class="form-control form-control-solid form-control-lg" placeholder="(555) 555-5555" />
+                                            <span class="loginError"></span>
+                                            @*<input type="hidden" asp-for="ContactPhone">*@
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact Email (Username)<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9 px-0">
+                                    <div style="display:grid;">
+                                    <div class="col-lg-5 col-xl-5">
+                                        <div class="input-group input-group-solid input-group-lg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-at"></i>
+                                                </span>
+                                            </div>
+                                            <input tabindex="19" type="email" id="ContactEmail" class="form-control form-control-solid form-control-lg" asp-for="ContactEmail" placeholder="Email" required="">
+                                            <span id="EmailError" style="color:red;"></span>
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                            <div class="col-lg-5 col-xl-5 my-2">
+                                        <input tabindex="21" id="ContactPassword" class="form-control form-control-solid form-control-lg" asp-for="ContactPassword" type="password" placeholder="Password" autocomplete="off"><span toggle="#ContactPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                    </div>
+                                            <div class="col-lg-5 col-xl-5">
+                                        <div class="input-group input-group-solid input-group-lg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-phone"></i>
+                                                </span>
+                                            </div>
+                                                    <input onkeyup="ValidateConfirmPass()" tabindex="22" type="password" class="form-control form-control-solid form-control-lg" asp-for="ContactPasswordCofirmation" placeholder="Confirm Password">
+                                            <span id="PassError" style="color:red;"></span>
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <ul id="error_message" class="col-xl-3 col-lg-3">
+                                        <li><b>Password must contain the following:</b></li>
+                                        <li id="letter" class="invalid">A <b>lowercase</b> letter</li>
+                                        <li id="capital" class="invalid">A <b>capital (uppercase)</b> letter</li>
+                                        <li id="number" class="invalid">A <b>number</b></li>
+                                        <li id="length" class="invalid">Minimum <b>8 characters</b></li>
+                                    </ul>
+                                </div>
+                                @*==========*@
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <div class="form-check">
+                                            <input tabindex="9" type="checkbox" class="form-check-input" id="chkSame" name="chkSame">
+                                            <label class="form-check-label" for="chkSame">Same As Company Address</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="BillAddress" class="col-xl-3 col-lg-3 col-form-label" disabled="disabled">Billing Address <span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="10" type="text" id="BillAddress" asp-for="BillAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <input tabindex="12" type="text" id="BillCity" asp-for="BillCity" class="form-control form-control-solid form-control-lg" placeholder="City" />
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+
+                                        <select tabindex="13" id="BillState" class="form-control form-control-lg form-control-solid mb-2" asp-for="BillState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="14" type="text" class="form-control " placeholder="USA" value="USA" />
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="11" type="text" id="BillZip" asp-for="BillZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                               <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <div class="form-check">
+                                            <input tabindex="9" type="checkbox" class="form-check-input" id="chkSameEmail" name="chkSameEmail">
+                                            <label class="form-check-label" for="chkSameEmail">Same as above</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Billing Email <span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="15" type="email" id="BillEmail" asp-for="BillEmail" class="form-control form-control-solid form-control-lg" placeholder="Billing Email" />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                
+                                <!--end::Group-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-info-box formCls d-none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2>OTHER INFORMATION</h2>
+                            </div>
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-form-label col-xl-3 col-lg-3">Division</label>
+                                <div class="col-xl-9 col-lg-9">
+                                    <select class="form-control form-control-lg form-control-solid mb-2" asp-for="Div" asp-items="@(new SelectList(ViewBag.Divisions, "Value", "Text", "Selected"))">
+                                    </select>
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Scope of Work</label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input asp-for="Scope" class="form-control form-control-solid form-control-lg mb-2" type="text">
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-form-label col-xl-3 col-lg-3">Minority Status</label>
+                                <div class="col-xl-9 col-lg-9 col-form-label">
+                                    <div style="display: inline">
+                                        @for (int i = 0; i < @Model.MinorityStatusList.Count; i++)
+                                        {
+                                            <label class="minority" style="display: inline">
+                                                <input name="MinorityStatusList" type="checkbox" id="chk_@i" value="@Model.MinorityStatusList[i]" onclick="changeMinority(this.id)">
+                                                <span></span>@Model.MinorityStatusList[i]
+                                            </label>
+                                        }
+                                        <input asp-for="Certification" class="form-control form-control-solid form-control-lg w-auto" type="text" value="" placeholder="Certification #">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                        <div class="col-md-12 text-right">
+                            <button type="submit" asp-action="GoToStep2" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptPay(0)">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 2-->
+                @if (Model == null)
+                {
+                    <div id="preview" class="tab-pane fade">No data preview available Please first fill the details</div>
+                }
+                else
+                {
+                    <div id="preview" class="tab-pane fade">
+                        <div class="contact-info-box formCls">
+                            <div class="frm-title">
+                                <h4 class="review-cost" id="pkgRev" style="color:@Model.ColorString">@Model.PayCardString</h4>
+                                <h3>CONTACT INFORMATION</h3>
+                            </div>
+                            <div class="form-inner-section review-inner-sec">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <input type="hidden" id="hdnPayment" value="@Model.MemberCost" />
+                                                <label>Company</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p>@Model.Company</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>DBA</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                 <p>@Model.Dba</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Address</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p>@Model.MailAddress @Model.MailCity @Model.MailState @Model.MailZip</p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Billing Address</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p>@Model.BillAddress @Model.BillCity @Model.BillState @Model.BillZip</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                        <label>Billing Email</label>
+                                    </div>
+                                    <div class="col-md-10">
+                                        <p>@Model.BillEmail</p>
+                                    </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                             <div class="col-md-2">
+                                                <label>Contact Name</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p>@Model.ContactName</p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                             <div class="col-md-2">
+                                                <label>Contact Information</label>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <p>@Model.ContactPhone</p>
+                                            </div>
+                                            <div class="col-md-5">
+                                                <p>@Model.ContactEmail</p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    
+                                    
+                                   
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-info-box formCls d-none">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>OTHER INFORMATION</h2>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Division</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <p>@Model.Div</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Scope of Work</label>
+                                </div>
+                                <div class="col-md-9">
+                                    @if (string.IsNullOrEmpty(Model.Scope))
+                                    {
+                                        <p>No scope of work mentioned</p>
+                                    }
+                                    else
+
+                                    {
+                                        <p>@Model.Scope</p>
+                                    }
+
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Minority Status</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <ul class="Mstatus">
+                                        @if (@Model.MinorityStatusList.Count == 0)
+                                        {
+                                            <li>Minorty Status is not selected</li>
+                                        }
+                                        else
+                                        {
+                                            @for (int i = 0; i < @Model.MinorityStatusList.Count; i++)
+                                            {
+                                                <li>@Model.MinorityStatusList[i]</li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Certification</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <p>@Model.Certification</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                @if (@Model.CheckRadioValue == "Pacific Northwest Premium")
+                                {
+                                    <h4 class="addSeats">*The Regional Package selected includes 10 users</h4>
+                                }
+                                else
+                                {
+                                    <h4 class="addSeats">*The Regional Package selected includes 3 users</h4>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2">
+                                <label>Additional Users :</label>
+                            </div>
+                            <div class="col-md-2">
+                                <select class="form-control form-control-solid" id="AdditionalCost" onchange="AdditionCost()">
+                                    <option value="0"> -- Select user -- </option>
+                                    <option value="100">1</option>
+                                    <option value="200">2</option>
+                                    <option value="300">3</option>
+                                    <option value="400">4</option>
+                                    <option value="500">5</option>
+                                    <option value="600">6</option>
+                                    <option value="700">7</option>
+                                    <option value="800">8</option>
+                                    <option value="900">9</option>
+                                    <option value="1000">10</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label>Additional Cost/</label><label>@Model.RadioExValue :</label>
+                            </div>
+                            <div class="col-md-4">
+                                <label id="addcost"></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>Access for the users on your account can be configured under your Profile settings after you login.</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-box formCls">
+                            <div class="frm-title">
+                                <h3>TERMS</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-inner-section">
+                                        <p>Membership is non-refundable and non-transferable. Annual membership payment plans will be invoiced 45 days prior to renew or can be set up on AutoPay. Monthly and Quarterly payment options will be required to be setup for AutoPay or subject to suspension or cancellation. Renewal payment not made by the renewal date will be subject to suspension or cancellation. Plan Center Northwest will not issue a notice of suspension or cancellation for memberships that are past due. Membership upgrades will be prorated to next annual renewal date.</p>
+                                        <p class="mb-0">The benefits and use of the Plan Center Northwest website is for the above named business. Members are prohibited from giving out their Login Credentials to anyone other than an employee doing business for the member company. It is the responsibility of the member to contact us if they believe their membership is or could be used by an unauthorized person. Any unauthorized access to Plan Center Northwest’s website by a non-member using a member’s access information could result in the termination of membership. Terminated memberships forfeit all time remaining and will not be eligible for a refund on membership dues.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card-time cus-card-time">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" id="customRadio12" name="secCustom" value="customEx">
+                                        <label class="custom-control-label" for="customRadio12">I agree to the above terms</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                            <div class="mr-2">
+                                <button type="submit" asp-action="GoToStep1" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Previous</button>
+                            </div>
+                            <div>
+                                @if (Model.CheckRadioValue == "Free")
+                                {
+                                    <button id="btnFree" type="submit" asp-action="GoToStep4" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptTnC()">Next</button>
+                                }
+                                else
+                                {
+                                    <button id="btnPay" type="submit" asp-action="GoToStep3" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptTnC()">Next</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!--Step 3-->
+                <div id="payment" class="tab-pane fade">
+                    <div class="contact-info-box formCls">
+                        <div class="frm-title">
+                            <h4 class="review-cost" id="pkgPay" style="color:@Model.ColorString">@Model.PayCardString</h4>
+                            <h3>Choose Payment Method Below</h3>
+                        </div>
+                        <div class="form-inner-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="CPBox isActive">
+                                        <i class="fa fa-credit-card" aria-hidden="true"></i>
+                                        <p>Pay with Credit Card</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="CPBox">
+                                        <i class="fa fa-phone" aria-hidden="true"></i>
+                                        <p>Pay with E-check or ACH</p>
+                                    </div>
+                                </div>
+                                <div class="paymentInfo">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="CardHolderName">CARDHOLDER NAME:</label>
+                                                <input type="text" class="form-control" id="CardHolderName">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="CardNumber">CARD INFORMATION:</label>
+                                                <input type="text" class="form-control" placeholder="Card Number" id="CardNumber">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mt-2">
+                                                <label for="ExpiryDate"></label>
+                                                <input type="text" class="form-control" placeholder="MM / YY" id="ExpiryDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group mt-2">
+                                                <label for="CVC"></label>
+                                                <input type="text" class="form-control" placeholder="CVC" id="CVC">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group mt-2">
+                                                <label> Membership Packages Cost :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group mt-2">
+                                                @{
+                                                    int memberCost = 0; // Default value in case of null
+
+                                                    if (Model.MemberCost != null)
+                                                    {
+                                                        int.TryParse(Model.MemberCost, out memberCost);
+                                                        string coa = @memberCost.ToString("#,##0.00");
+                                                    }
+                                                }
+                                                <label>$@memberCost.ToString("#,##0.00")</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group mt-2">
+                                                <label for="usr"> Additional User Cost :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group mt-2">
+                                                @{
+                                                    int addlCost = 0; // Default value in case of null
+
+                                                    if (Model.Additionalcost != null)
+                                                    {
+                                                        int.TryParse(Model.Additionalcost, out addlCost);
+                                                        string AOA = @addlCost.ToString("#,##0.00");
+                                                    }
+                                                }
+                                                <label id="additionalCost">$@addlCost.ToString("#,##0.00")</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group mt-2">
+                                                <label for="usr"> Total Amount :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group mt-2">
+                                                <label id="TotalAmmount"></label>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="paymentPhone dis-pay">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="BankName">Bank NAME:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="BankName" placeholder="Bank Name">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="CheckNum">Cheque INFORMATION:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="Card Number" id="CheckNum">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-12">
+                                            <h3>You will pay by phone!</h3>
+                                            <p>We will contact by phone number as you entered. Please wait!</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                        <div class="mr-2">
+                            <button type="submit" asp-action="GoToStep2" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Previous</button>
+                        </div>
+                        <div>
+                            <button type="submit" asp-action="GoToStep4" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return GoToStep4()">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 4-->
+                @if (Model.PayStatus == "Y")
+                {
+                    <div id="finish" class="tab-pane fade">
+                        <div class="contact-info-box formCls">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card-body text-center congo-text">
+                                        <h6>Congratulations on becoming the newest member of Plan Center Northwest!</h6>
+                                        <p>Please click here to log in and begin finding your next project, completing your company profile and setting up any additional users for your account</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div id="finish" class="tab-pane fade">
+                        <div class="contact-info-box formCls">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card-body text-center congo-text">
+                                        <h6>Congratulations on becoming the newest member of Plan Center Northwest!</h6>
+                                        <p>Your payment is not completed</p>
+                                        <p>Please click here to log in and begin finding your next project, completing your company profile and setting up any additional users for your account</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </form>
+    </div>
+</div>

@@ -1,0 +1,43 @@
+﻿
+@{
+    ViewData["Title"] = "ManageFreeTrialTab";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts{
+    <script src="~/js/ManageFreeTrialTab.js"></script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Show/Hide Free Trial Tab</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Administration/UtilityDashboard">Admininstrator</a>
+                        </li>
+                        <li class="breadcrumb-item active">Utilities</li>
+                        <li class="breadcrumb-item active">Show/Hide Free Trial Tab</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+
+                    <div class="header">
+                        <div class="mt-2">
+                            <button type="button" class="btn btn-primary create-role-btn" onclick="SetFreeTab(this)" id="btnFree"></button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

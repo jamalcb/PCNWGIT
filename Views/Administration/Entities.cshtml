@@ -1,0 +1,313 @@
+﻿@model MemberManagement
+@{
+    ViewData["Title"] = "ManageStaff";
+    Layout = "~/Views/Shared/_Layout-Administrator.cshtml";
+}
+@section Scripts{
+    <link rel="stylesheet" type="text/css" src="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css" />
+    <link rel="stylesheet" type="text/css" src="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css" />
+    <script>
+        $(document).ready(function () {
+            $('#btnExp').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ]
+            });
+        });
+    </script>
+    <link href="~/assets/css/datatable.css" rel="stylesheet" />
+    <link href="~/css/staff-dashboard.css" rel="stylesheet" />
+    //<script src="~/js/member-management.js"></script>
+    <script>
+        function OpenEntityModel() {
+            $("#EntityForm").trigger('reset');
+            $('#EntityForm').find("input[type=text], textarea").val('');
+            $('span.loginError').html('');
+            $("#Headertext").text('Add New Entity');
+            $(".m-modal").modal('show');
+        }
+        function SaveEntityType() {
+            var Etype = $('#EntityType').val();
+            $('#EntityType').next('span').html('');
+            if (Etype == undefined || Etype == '' || Etype == null) {
+                $('#EntityType').next('span').html('Please enter your entity type.');
+                return false;
+            }
+            var model = {};
+            $('#message').val('');
+            model.EntityID = $('#EntityID').val();
+            model.EntityType = $('#EntityType').val();
+            model.IsActive = $('#IsActive').is(':checked') ? true : false;
+            $.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: '/Administration/SaveEntityType/',
+                data: { 'model': model },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        alert(response.statusMessage);
+                        $(".m-modal").modal('hide');
+                        var pathname = 'Entity';
+                        window.location.reload();
+                    }
+                    else {
+                        $('#EntityType').next('span').html(response.statusMessage);
+                    }
+                },
+                error: function (response) {
+                },
+                failure: function (response) {
+                }
+            });
+        }
+        function EditEntityType(Ctrl, EntityID) {
+            OpenEntityModel();
+            $('#EntityID').val(EntityID);
+            var rows = $(Ctrl).parent('td').parent('tr');
+            $('#EntityType').val(rows.find('td:eq(0)').text());
+            $('#IsActive').prop('checked', true);
+            $("#Headertext").text('Update Entity');
+        }
+
+        function DeleteEntityType(EntityID, ctrl) {
+            if (confirm("Are you sure you want to delete ?")) {
+                $.ajax({
+                    type: "POST",
+                    dataType: 'json',
+                    url: '/Administration/DeleteEntityType/',
+                    data: { 'EntityID': EntityID },
+                    async: false,
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.statusMessage);
+                            $(ctrl).parents("tr").remove();
+                        }
+                    },
+                    error: function (response) {
+                    },
+                    failure: function (response) {
+                    }
+                });
+            }
+            return false;
+        }
+    </script>
+}
+}
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+        .header{
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+
+        .valid {
+            color: green;
+        }
+
+            .valid:before {
+                position: relative;
+                left: -10px;
+                content: "✔";
+            }
+
+        /* Add a red text color and an "x" when the requirements are wrong */
+        .invalid {
+            color: red;
+        }
+
+            .invalid:before {
+                position: relative;
+                left: -10px;
+                content: "✖";
+            }
+
+        .modl-paswrd-msg {
+            background: #f1f1f1;
+            color: #000;
+            height: fit-content;
+            margin-top: 80px;
+            padding: 6px 22px;
+        }
+    </style>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Entities</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Administration/UtilityDashboard">Admininstrator</a>
+                        </li>
+                        <li class="breadcrumb-item active">Utilities</li>
+                        <li class="breadcrumb-item active">Manage Entity Type</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Entities</strong> Management
+                        </h2>
+                        <button class="btn btn-primary" onclick="OpenEntityModel()"><i data-toggle="tooltip" title="Add" class="fa fa-plus" aria-hidden="true"></i>Add New Entity Type</button>
+                    </div>
+                    <div class="tableBody">
+                        <div class="table-responsive cus-">
+                            <table class="table table-bordered table-striped table-hover table-vertical-center cusTable eTables entity" id="table-id-Entity">
+                                <thead class="fix-thead">
+                                    <tr class="table-secondary">
+                                        <th>Entity Type</th>
+                                        <th>Status</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblCompanySearch">
+                                    @if (Model.Entities != null)
+                                    {
+                                        @foreach (var item in Model.Entities)
+                                        {
+                                            <tr>
+                                                <td style="width: 380.371px;"><a style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" onclick="EditEntityType(this,@item.EntityID)"><b>@Html.DisplayFor(modelItem => item.EntityType)</b></a></td>
+                                                <td>@item.IsActive</td>
+                                                <td class="icon-td border-bottom-0">
+                                                    <button class="btn btn-primary icon-edit" onclick="EditEntityType(this,@item.EntityID)"><i data-toggle="tooltip" title="Edit" class="fa fa-pencil-alt" aria-hidden="true"></i></button>
+                                                    @* <button class="btn btn-danger icon-del"><i data-toggle="tooltip" title="Delete" class="fa fa-trash" aria-hidden="true" onclick="DeleteEntityType(@item.EntityID,this)"></i></button> *@
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        @*   <div class="dashboard-box">
+        <div class="main-heading bg-blue">
+        <div class="row m-0">
+        <div class="col-md-12 d-flex justify-content-between">
+        <h2>Entities Managment</h2>
+        </div>
+        </div>
+        </div>
+        </div> *@
+        <div class="dashboard-box">
+            @*------------- new tabs ------------*@
+            <div class="table-responsive cus-scroll-tbl ">
+                @* <table class="table table-bordered table-striped table-vertical-center cusTable eTables" id="table-id-Entity">
+                <thead class="fix-thead">
+                <tr class="table-secondary">
+                <th style="width:90%">Entity Type</th>
+                <th style="width:10%">Action</th>
+                <th>Action</th>
+                </tr>
+                </thead>
+                <tbody id="tblCompanySearch">
+                @if (Model.Entities != null)
+                {
+                @foreach (var item in Model.Entities)
+                {
+                <tr>
+                <td style="width: 380.371px;"><a style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" onclick="EditEntityType(this,@item.EntityID)"><b>@Html.DisplayFor(modelItem => item.EntityType)</b></a></td>
+                <td>@item.IsActive</td>
+                <td class="icon-td border-bottom-0">
+                <button onclick="EditEntityType(this,@item.EntityID)"><i data-toggle="tooltip" title="Edit" class="fa fa-pencil" aria-hidden="true"></i></button>
+                <button><i data-toggle="tooltip" title="Delete" class="fa fa-trash" aria-hidden="true" onclick="DeleteEntityType(@item.EntityID,this)"></i></button>
+                </td>
+                </tr>
+                }
+                }
+                </tbody>
+                </table> *@
+            </div>
+        </div>
+        <div class="modal m-modal fade" role="dialog">
+            <div class="modal-dialog modal-md">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header cusModal-Header">
+                        <h4 id="Headertext" class="modal-title card-label font-weight-bolder">
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Create order Form -->
+                        <form id="EntityForm" method="POST" class="col-md-12 order-form text-left formCls">
+                            <div class="row px-0 mx-0">
+                                <div class="col-lg-12 pl-0">
+                                    <div class="form-group row mb-3">
+                                        <label class="col-xl-3 col-lg-3 col-form-label pl-0">
+                                            Entity Type<span class="text-danger">*</span>
+                                        </label>
+                                        <div class="col-lg-4 col-xl-9">
+                                            <input class="form-control form-control-solid " type="text" placeholder="Entity Type" id="EntityType" />
+                                            <input type="hidden" id="EntityID" />
+                                            <span class="text-danger"></span>
+                                        </div>
+                                        <div class="col-lg-4 col-xl-4 form-check">
+                                            <input class="" type="checkbox" id="IsActive" name="IsActive" style="    opacity: 1;z-index: 0;" />
+                                            <label class="form-check-label" for="IsActive"> &nbsp; IsActive</label>
+                                            <span class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-12 pl-0">
+                                    <div class="form-group row mb-3 justify-content-end">
+                                        <div class="col-lg-4 col-xl-4 newPro-btn">
+                                            <input type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="SaveEntityType()" value="Save Entity" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>

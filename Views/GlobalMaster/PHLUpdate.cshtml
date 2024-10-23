@@ -1,0 +1,100 @@
+﻿@{
+    ViewData["Title"] = "PHL Update";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts{
+    <script src="~/js/phl-update-master.js"></script>
+}
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+    </style>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">PHL Update</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Notification</li>
+                        <li class="breadcrumb-item active">PHL Update</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+
+                    <div class="header">
+                        <form id="NotificationForm" action="">
+                            <div class="col-md-12 row align-items-center">
+                                <div class="col-md-4">
+                                    <span id="message" class="loginError"></span>
+                                    <input type="hidden" id="Id" name="Id" value="0" />
+                                    <input type="email" class="form-control" placeholder=" Enter email" required="" id="Email" name="Email">
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-md-2 text-left">
+                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return SavePHLUpdate()">Save</button>
+                                </div>
+                            </div>
+                            
+                           
+                        </form>
+                    </div>
+
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Email</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblPHLUpdate" class="active-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

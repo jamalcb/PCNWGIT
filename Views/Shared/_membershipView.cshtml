@@ -1,0 +1,202 @@
+﻿<div class="modal-dialog modal-lg cst-price-modal">
+    <!-- Modal content-->
+    <div class="modal-content">
+        <div class="modal-header cusModal-Header">
+            <h4 class="modal-title card-label font-weight-bolder">
+                Annual Membership Packages
+            </h4>
+            <button type="button" class="close" onclick="CloseRenewalModal()">&times;</button>
+        </div>
+        <div class="modal-body">
+        <div id="packageForm">
+            <div class="row membrPlan-upgrade">
+                <div class="col-6">
+                    <div class="row">
+                           @*  <div class="col-lg-6 mb-2">
+                                <label class="form-label mb-1" for="termSelect">Select Term:</label>
+                                <select class="form-select" id="termSelect">
+                                    <option value="">Select Term</option>
+                                    <option value="yearly">Yearly</option>
+                                    <option value="quarterly">Quarterly</option>
+                                    <option value="monthly">Monthly</option>
+                                </select>
+                            </div> *@
+                            <div class="col-lg-12 mb-2">
+                                <label class="form-label mb-1" for="availablePackages"> Available Packages</label>
+                                    <select class="form-select form-control" id="availablePackages" name="availablePackages">
+                                    </select>
+                            </div>
+                            <div class="col-lg-4 mb-2">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="agreecheck">
+                                    <label class="form-check-label fw-5" for="agreecheck">
+                                        I agree
+                                    </label>
+                                </div>
+                                <button id="upgradebtn" class="planBadge yellow mt-3" disabled>Upgrade</button>
+                            </div>
+                    </div>
+                </div>
+                <div class="col-6">
+                    <div class="upgradeMembership">
+                        <div class="card" id="planCard">
+                            <p>Plan Name <br /> <span id="planName"></span><p>
+                            <p>Price <br /> <span id="price"></span></p>
+                            <p>Region <br /> <span id="region"></span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        </div>
+        
+    </div>
+
+</div>
+<script>
+
+    document.addEventListener("DOMContentLoaded", function () {
+        var term = jQuery('#pkgterm').val();
+        const packageName = document.getElementById("packagename").value.replace(/\s+/g, '').toLowerCase();
+        const packageValues = {
+            'pacificnorthwestpremium': 1,
+            'oregononly': 4,
+            'oregonplus': 3,
+            'oregonpremium': 2,
+            'washingtononly': 8,
+            'washingtonplus': 7,
+            'washingtonpremium': 5,
+            'free': 8
+        };
+
+        const higherPackages = {
+            'free': ['Washington Only', 'Washington Plus', 'Washington Premium', 'Oregon Only', 'Oregon Plus', 'Oregon Premium', 'Pacific Northwest Premium'],
+            'washingtononly': ['Washington Plus', 'Washington Premium', 'Pacific Northwest Premium'],
+            'washingtonplus': ['Washington Premium', 'Pacific Northwest Premium'],
+            'washingtonpremium': ['Pacific Northwest Premium'],
+            'oregononly': ['Oregon Plus', 'Oregon Premium', 'Pacific Northwest Premium'],
+            'oregonplus': ['Oregon Premium', 'Pacific Northwest Premium'],
+            'oregonpremium': ['Pacific Northwest Premium'],
+            'pacificnorthwestpremium': []
+        };
+        function formatPackageName(packageKey) {
+            return packageKey.replace(/([a-z])([A-Z])/g, '$1 $2').toUpperCase(); // Add spaces and convert to uppercase
+        }
+        const packagesToShow = higherPackages[packageName] || [];
+
+        const selectElement = document.getElementById("availablePackages");
+        packagesToShow.forEach(pkgName => {
+            const option = document.createElement("option");
+            option.value = packageValues[pkgName.toLowerCase().replace(/\s+/g, '')]; // Adjust value based on packageValues
+            option.textContent = pkgName; // Display package name as per higherPackages
+            selectElement.appendChild(option);
+        });
+        jQuery('#availablePackages').val(1);
+        getpricingdata();
+
+        jQuery('#availablePackages').change(function () {
+            getpricingdata();
+        });        
+        function getpricingdata() {
+            var package = jQuery('#availablePackages option:selected').text().replace(/\s+/g, '').toLowerCase();
+            var packageid = jQuery('#availablePackages').val();            
+            if (package && term && package !== 'selectpackage') {
+                jQuery.ajax({
+                    type: 'GET',
+                    url: "/Member/getpricingdata",
+                    data: { plan: package },
+                    success: function (data) {
+                        if (term.toLowerCase() === 'yearly') {
+                            jQuery('#price').html('$' + data.YearlyPrice + '/Year');
+                        } else if (term.toLowerCase() === 'quarterly') {
+                            jQuery('#price').html('$' + data.QuarterlyPrice + '/Quarter');
+                        } else {
+                            jQuery('#price').html('$' + data.MonthlyPrice + '/Month');
+                        }
+
+                    }
+                });
+                jQuery.ajax({
+                    type: 'GET',
+                    url: "/Member/getMembershipdata",
+                    data: { id: packageid },
+                    success: function (response) {
+                        jQuery('#planName').html(response.PackageName)
+                        jQuery('#region').html(response.RegionText)
+                    }
+                });
+            }
+            else {
+                jQuery('#planName').html('')
+                jQuery('#region').html('')
+                jQuery('#price').html('')
+            }
+        }
+
+
+        jQuery('#agreecheck').change(function () {
+            if (this.checked) {
+                jQuery('#upgradebtn').prop('disabled', false);
+            } else {
+                jQuery('#upgradebtn').prop('disabled', true);
+            }
+        });
+
+        jQuery('#upgradebtn').click(function () {
+            if (jQuery('#agreecheck').is(':checked')) {
+                var package = jQuery('#availablePackages option:selected').text();
+                // var package = 'Oregon Plus';
+                if (package && term && package !== 'Select Package') {
+                    var plan = package + ' ' + term;
+                    plan = plan.replace(/\s+/g, '-')
+                    var id = jQuery("#hdnId").val();
+                    jQuery.ajax({
+                        url: '/ChargeBee/UpdateSubscription',
+                        type: 'post',
+                        data: { userid: id, newplan: plan, pkg: package },
+                        success: function (response) {
+                            if (response.Status = 'success') {
+                                if (response.Data) {
+                                    window.location.href = response.Data;
+                                }
+                                else{
+                                    console.log('Upgrade successful:', response);
+                                    jQuery(".re-modal").modal('hide');
+                                    window.location.reload();
+                                }
+                                
+                             }
+                             else{
+                                window.location.reload;
+                             }
+                            
+                        },
+                        error: function (xhr, status, error) {
+                            // Handle the error here
+                            console.error('Upgrade failed:', error);
+                        }
+                    });
+                    // jQuery.ajax({
+                    //     url: '/App/InitiateAuthRenewal',
+                    //     type: 'get',
+                    //     data: { 'model': model },
+                    //     success: function (response) {
+                    //         if (response.Status = 'success') {
+                    //             window.location.href = response.Data;
+                    //         }
+                    //         else {
+                    //             alert("There's been issue with payment please try again");
+                    //             window.location.href = "/Member/MemberProfile?id=" + id;
+                    //         }
+                    //     },
+                    // });
+                } else {
+                    alert('Please Select Valid Plan.');
+                }
+            } else {
+                alert('Please check the checkbox to proceed.');
+            }
+        });
+    });
+</script>

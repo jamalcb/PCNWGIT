@@ -1,0 +1,216 @@
+﻿@model IEnumerable<ActiveMemberViewModel>
+@{
+    ViewData["Title"] = "ActiveMembers";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+<script type="text/javascript">
+    $(document).ready(function () {
+        $.ajax({
+            type: "GET",
+            url: '/Report/GetMemberSummary',
+            contentType: "application/json; charset=utf-8",
+            dataType: "json",
+            success: function (response) {
+                $('#lblCompanyType').text(response.data.MemberTypeCount);
+                $('#lblRenewal').text(response.data.RenewalCount);
+                $('#lblSubscription').text(response.data.SubscriptionCount);
+                $('#lblCancellation').text(response.data.CancellationCount);
+            },
+            error: function (err) {
+                alert(err);
+            }
+        });
+    });
+</script>
+<script type="text/javascript">
+    var ComTypeHtml = '';
+    var subTypeHtml = '';
+    $(document).ready(function () {
+        $.ajax({
+            url: '/Report/GetCompanyType/',
+            type: "GET",
+            success: function (response) {
+                var model = new Array();
+                model = response.data;
+                $('#CompanyTypeId').html('');
+                $('#SubscriptionId').html('');
+                subTypeHtml += '<option value="0">Company Type</option>';
+                $.each(model, function (index, item) {
+                    ComTypeHtml += '<option value="' + item.MemberType + '">' + item.Package + '</option>';
+                    subTypeHtml += '<option value="' + item.MemberType + '">' + item.Package + '</option>';
+                });
+                $('#CompanyTypeId').html(ComTypeHtml);
+                $('#SubscriptionId').html(subTypeHtml);
+            },
+
+        });
+    });
+</script>
+<script type="text/javascript">
+    function GetCompanyCount() {
+        var MemberType = $('#CompanyTypeId').find(":selected").val();
+        var SubscriptionLevel = $('#SubscriptionLevelId').find(":selected").val();
+        var RenewalType = $('#RenewalId').find(":selected").val();
+        var CancellationType = $('#CancellationId').find(":selected").val();
+
+        $.ajax({
+            url: '/Report/GetCompanyCount/',
+            data: { "MemberType": MemberType, "SubscriptionLevel": SubscriptionLevel, "RenewalType": RenewalType, "CancellationType": CancellationType },
+            type: "GET",
+            success: function (response) {
+                var model = new Array();
+                model = response.data;
+                $('#lblCompanyCount').text(response.data.MemberTypeCount);
+                $('#lblRenewal').text(response.data.RenewalCount);
+                $('#lblSubscription').text(response.data.SubscriptionCount);
+                $('#lblCancellation').text(response.data.CancellationCount);
+            },
+
+        });
+    };
+</script>
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Active Member</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Marketing Reports</li>
+                        <li class="breadcrumb-item active">Active Member</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="row clearfix">
+            <div class="col-lg-8 col-md-8 col-sm-12 col-xs-12">
+               @* <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Summary of Members</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <ul class="list-group dropdown-card">
+                            <li class="list-group-item">
+                                <p>Company Type</p>
+                                <div>
+                                    <select id="SubscriptionLevelId" onchange="GetCompanyCount()" class="form-control" data-role="select-dropdown" data-profile="">
+                                        <option value="" selected="" disabled="">Subscription Level</option>
+                                        <option value="">Yearly</option>
+                                        <option value="">Half Yearly</option>
+                                        <option value="">Quaterly</option>
+                                        <option value="">Monthly</option>
+                                    </select>
+                                </div>
+                                <span class="badge border-0"> <label id="lblCompanyCount"></label></span>
+                            </li>
+                            <li class="list-group-item">
+                                <p>Subscription Level</p>
+                                <div>
+                                    <select id="SubscriptionLevelId" onchange="GetCompanyCount()" class="form-control" data-role="select-dropdown" data-profile="">
+                                        <option value="" selected="" disabled="">Subscription Level</option>
+                                        <option value="">Yearly</option>
+                                        <option value="">Half Yearly</option>
+                                        <option value="">Quaterly</option>
+                                        <option value="">Monthly</option>
+                                    </select>
+                                </div>
+                                <span class="badge border-0"><label id="lblSubscription">Monthly</label></span>
+                            </li>
+                            <li class="list-group-item">
+                                <p>Number Of Renewals</p>
+                                <div>
+                                    <select id="RenewalId" class="form-control" data-role="select-dropdown" data-profile="">
+                                        <option value="" selected="" disabled="">Renewal Type</option>
+                                        <option value="">Yearly</option>
+                                        <option value="">Monthly</option>
+                                        <option value="">Today</option>
+                                    </select>
+                                </div>
+                                <span class="badge border-0"><label id="lblRenewal">Yearly</label></span>
+                            </li>
+                            <li class="list-group-item">
+                                <p>Number Of Cancellation</p>
+                                <div>
+                                    <select id="CancellationId" class="form-control" data-role="select-dropdown" data-profile="">
+                                        <option value="" selected="" disabled="">Cancellation Type</option>
+                                        <option value="">Yearly</option>
+                                        <option value="">Monthly</option>
+                                        <option value="">Today</option>
+                                    </select>
+                                </div>
+                                <span class="badge border-0"><label id="lblCancellation">Quaterly</label></span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>*@
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Active Member Report</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Email</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Speciality</th>
+                                        <th>Expiration Date</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        string status = "";
+                                        bool inactive = item.Inactive != null ? (bool)item.Inactive : false;
+                                        if (item.Inactive == true)
+                                        {
+                                            status = "Inactive";
+                                        }
+                                        else
+                                        {
+                                            status = "Active";
+                                        }
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Company)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.MailCity)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.MailState)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Discipline)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.RenewalDate)</td>
+                                            <td class="icon-td border-bottom-0 d-flex">
+                                                <form><button class="btn btn-primary icon-edit mr-1"><i class="fas fa-pencil-alt" aria-hidden="true"></i></button></form>
+                                                <form><button class="btn btn-danger icon-del ml-1"><i class="fa fa-trash" aria-hidden="true" onclick="return confirm('Are you sure you want to delete ?')"></i></button></form>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

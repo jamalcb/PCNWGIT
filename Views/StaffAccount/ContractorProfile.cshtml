@@ -1,0 +1,452 @@
+﻿@model MemberShipRegistration;
+@{
+    ViewData["Title"] = "ContractorProfile";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+
+
+@section CustomCSS{
+    <style>
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .memb-dir-check .row p {
+            word-break: break-all;
+        }
+
+        .d-flex p {
+            word-break: break-all;
+        }
+
+        .bg-blue {
+            background: #5c8097;
+        }
+
+        .fa-pencil-alt {
+            cursor: pointer;
+        }
+
+        .error {
+            border-color: red;
+        }
+
+        .EditAddrClass {
+            display: none;
+        }
+
+        .EditPhoneClass {
+            display: none;
+        }
+
+        .EditEmailClass {
+            display: none;
+        }
+
+        .fw-bold {
+            font-weight: bold;
+        }
+
+        .cst-input .form-control {
+            height: 30px;
+            color: #303132;
+            margin-bottom: 0px;
+            border-radius: 2px;
+            background: #f4f4f4;
+            border: 1px solid #706e6e;
+        }
+
+        .main-content {
+            padding: 15px 0;
+        }
+
+    </style>
+}
+@section Scripts{
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
+    <script src="~/js/contractor-profiles-staff.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+}
+<div class="container-fluid">
+    <div class="dashboard-box">
+        <div class="main-heading bg-blue">
+            <div class="row">
+                <div class="col-md-12 d-flex justify-content-between align-items-center newPro-btn">
+                    <h2>Contractor Profile ( @Model.ContractorName )</h2>
+                   <form method="get" asp-controller="StaffAccount" asp-action="NewRegMember">
+                        <input type="hidden" asp-for="ID" value="@Model.ID" />
+                        <input type="hidden" asp-for="Company" value="@Model.ContractorName" />
+                        <input type="hidden" asp-for="ContractorName" value="@Model.ContractorName" />
+                        <input type="hidden" asp-for="MailAddress" value="@Model.BillAddress" />
+                        <input type="hidden" asp-for="MailCity" value="@Model.BillCity" />
+                        <input type="hidden" asp-for="MailState" value="@Model.BillStateId" />
+                        <input type="hidden" asp-for="MailZip" value="@Model.BillZip" />
+                        <input type="hidden" asp-for="CompanyPhone" value="@Model.ContactPhone" />
+                        <input type="hidden" asp-for="ContactEmail" value="@Model.Email" />
+                        <input type="button" class="newProbtn p-2 px-4 m-1 mx-2" value="Convert To Member" onclick="CheckUniqCompany(this,'@Model.ContractorName','@Model.ID')" />
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-space">
+        </div>
+        <form method="post" enctype="multipart/form-data">
+            <input type="hidden" asp-for="ID" />
+            <input type="hidden" value="@Model.ID" id="hdnId" />
+            <input type="hidden" asp-for="ContractorName" />
+            <div class="row form-group d-inline-grid mb-2 mx-0 ConClass">
+                <label class="col-12 col-md-2 fw-bold">Contractor Name </label>
+                <p class="col-10 col-md-8 m-0 fw-bold">
+                    @Model.ContractorName
+                </p>
+            </div>
+
+            <div class="row form-group d-inline-grid mb-2 mx-0 AddrClass cst-input">
+                <label class="col-2 col-xl-2 col-lg-2 col-form-label fw-bold">Address <span class="text-danger"></span></label>
+
+                <div class="col-10 col-lg-10 col-xl-10 mb-lg-0 mb-2">
+                    <div class="form-group row mb-3">
+
+                        <div class="col-lg-12 col-xl-12 mb-lg-0 mb-2">
+                            <input class="form-control" type="text" placeholder="Address" asp-for="BillAddress" />
+                        </div>
+                    </div>
+                    <div class="form-group row mb-2">
+                        <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                            <input class="form-control form-control-solid" type="text" placeholder="City" asp-for="BillCity" />
+
+                        </div>
+                        <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                            <div class="dropdown px-0">
+                                <select class="form-control form-control-solid mb-2 p-0" asp-for="BillStateId" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                            <input class="address_zipcode form-control form-control-solid number-only" type="text" placeholder="Zip Code" asp-for="BillZip" maxlength="5" />
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="row form-group d-inline-grid mb-0 mx-0 PhoneClass cst-input">
+                <label class="col-xl-2 col-lg-2 col-form-label fw-bold">
+                    Phone Number<span class="text-danger"></span>
+                </label>
+                <div class="col-10 col-lg-10 col-xl-10 mb-lg-0 mb-2">
+                    <div class="form-group row mb-2">
+                        <div class="dropdown col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                            <input class="form-control" type="text" asp-for="ContactPhone" onchange="validateInputLength(this.id)" />
+                            <span class="text-danger"></span>
+                        </div>
+
+                        <label class="col-xl-1 col-lg-1 col-form-label fw-bold">
+                            Email<span class="text-danger">*</span>
+                        </label>
+                        <div class="dropdown col-lg-7 col-xl-7 mb-lg-0 mb-2">
+                            <input class="form-control" type="email" id="Email" asp-for="Email" />
+                            <span id="EmailError" style="color:red;"></span>
+                        </div>
+
+                    </div>
+                    <div class="form-group col-12 px-0 text-right newPro-btn">
+                        <button type="button" class="px-4 add-user-toggle newProbtn" onclick="SaveContractor()">Update Profile</button>
+                        <input type="button" class="newProbtn" value="Cancel" onclick="Cancel()" />
+                    </div>
+                </div>
+            </div>
+
+
+        </form>
+
+        <div class="col-12">
+            <div class="row card-custom gutter-b ">
+                <div class="card-body p-0" style="overflow:scroll;">
+
+                    <div class="main-heading">
+                        <h2 class="">User Management</h2>
+                    </div>
+                    <div class="box-space">
+                        <div class="form-group col-12 px-0 ">
+                            <div class="table-responsive cusTable">
+                                <table class="table table-bordered" id="kt_advance_table_widget_1">
+                                    <thead class="font-weight-bold">
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Phone</th>
+                                            <th>Edit information</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="add-user-tbody newPro-btn text-center">
+                                        @if (Model.ContactList != null)
+                                        {
+                                            @foreach (var contact in Model.ContactList)
+                                            {
+                                                <tr>
+                                                    <td>@contact.Contact</td>
+                                                    <td>@contact.Email</td>
+                                                    <td>@contact.Phone</td>
+                                                    <td class="icon-table">
+                                                        <button type="button" class="btn-sm btn-reset-email table-btn2" onclick="OpenEditPopup(@contact.ConID, '@contact.Contact', '@contact.Email', '@contact.Phone')">
+                                                            <i class="fas fa-pencil-alt"></i>
+                                                        </button>
+                                                    </td>
+                                                </tr>
+
+                                            }
+                                        }
+                                    </tbody>
+
+                                </table>
+                            </div>
+                        </div>
+                        <div class="form-group col-12 px-0 text-right newPro-btn">
+                            <button type="button" class="px-4 add-user-toggle newProbtn" onclick="OpenUserModal()">Add User</button>
+                        </div>
+                    </div>
+
+                    </>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-12">
+            <div class="main-heading">
+                <div class="row">
+                    <div class="col-md-12 p-0">
+                        <h2 class="">Internal Notes</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-12" id="divNotes">
+            <div class="row card-custom gutter-b example example-compact">
+                <div class="card-body">
+                    <div class="col-12 px-0">
+
+
+                        <div class="member_notice_section">
+                            <div class="notice_head d-flex mb-2">
+                                <div class="width-10 font-weight-bold">
+                                    <span>Date</span>
+                                </div>
+                                <div class="width-80 font-weight-bold">
+                                    <span>Notes</span>
+                                </div>
+                            </div>
+                            @if (Model.NoteList != null)
+                            {
+                                for (var i = 0; i < Model.NoteList.Count; i++)
+                                {
+                                    <div class="date-notes-row">
+                                        <div class="width-10">
+                                            <span class="text-date-class">
+                                                @(
+                                                    Model.NoteList[i].LogDate != null ? Model.NoteList[i].LogDate.Value.ToShortDateString() : " "
+                                                    )
+                                            </span>
+                                        </div>
+                                        <div class="width-80">
+                                            <span class="text-note-class">@Model.NoteList[i].Note</span>
+                                        </div>
+                                        <div class="notice_row_actions remove_prebid_row float-right">
+                                            <button id="editNote" onclick="EditNote(this,@Model.NoteList[i].Id,event)"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                            @*<button asp-route-MemId="@Model.ID" asp-route-NoteId="@Model.NoteList[i].Id" asp-action="DeleteNote" asp-controller="StaffAccount" type="submit">*@
+                                            <button id="editNote" onclick="DeleteNote(@Model.ID,@Model.NoteList[i].Id)"><i class="fa fa-trash hover-danger" aria-hidden="true"></i></button>
+                                            <input type="hidden" value="@ViewBag.ErrorMessage" id="tmpHiddenMsg" />
+                                        </div>
+                                    </div>
+                                }
+                            }
+                        </div>
+                        <div class="col-12 newPro-btn">
+                            <button class="add_member_notify_btn newProbtn" style="float: right;" id="formButton">
+                                @*<i class="icon-md fas fa-file-signature"></i>*@ Add Notes
+                            </button>
+                        </div>
+                        <div class="add_member_notice form-group col-12">
+                            <form class="pt-4" id="addnote" style="display:none">
+                                <div class="form-group col-md-6  d-inline-grid">
+                                    <input type="hidden" value="2" id="CompType" />
+                                    <textarea class="form-control" rows="5" autocomplete="off" id="txtAddNote"></textarea>
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="form-group col-md-6 px-0 d-inline-grid mb-2 newPro-btn">
+                                    <input class="btn btn-sm float-righ newProbtn mr-0" type="button"
+                                           name="notify_btn" value="Save Changes" onclick="AddNote()">
+                                </div>
+                            </form>
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <!-- Edit Note Modal-->
+        <div class="modal m-modal fade noteModal" id="noteModal" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header cusModal-Header">
+                        <h4 class="modal-title card-label font-weight-bolder">
+                            Edit Account Info
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row px-0 mx-0">
+                            <div class="col-lg-12 pl-0">
+                                <h6 class="fw-bold">EDIT NOTE</h6>
+                                <div class="form-group row mb-3">
+                                    <label class="col-xl-3 col-lg-3 col-form-label fw-bold">
+                                        Date
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <span id="spanNotedate">10-10-2022</span>
+                                        <input type="hidden" id="hdnNoteId" value="0" />
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-3">
+                                    <label class="col-xl-3 col-lg-3 col-form-label fw-bold">
+                                        Note<span class="text-danger"></span>
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <div class="form-group col-md-12 px-0 d-inline-grid mb-2">
+                                            <textarea class="form-control" rows="5" autocomplete="off" id="edittextNote"></textarea>
+                                            <span class="loginError"></span>
+                                        </div>
+                                        <div class="form-group col-md-12 px-0 d-inline-grid mb-2 newPro-btn">
+                                            <button class="newProbtn" name="notify_btn" onclick="UpdateNote()">Save Changes</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Add User Modal -->
+<div class="modal u-modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder">
+                    Add New User
+                </h4>
+                <button type="button" class="close user-modal" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form method="POST" id="UserForm" class="col-md-12 order-form text-left formCls">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-12 pl-0">
+                            <h6>USER INFORMATION</h6>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Name<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-4 col-xl-4">
+                                    <input class="form-control form-control-solid " type="text" placeholder="First Name" id="Firstname" />
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-lg-5 col-xl-5">
+                                    <input class="form-control form-control-solid " type="text" placeholder="Last Name" id="Lastname" />
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Email<span class="text-danger">*</span>
+                                </label>
+                                <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                    <input class="form-control" type="text" placeholder="Email" id="ConEmail">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Phone<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input class="form-control" type="text" placeholder="Phone" id="Phone" />
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 subm-btn newPro-btn">
+                            <input type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="submitData()" value="Add User" />
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Update User Modal -->
+<div class="modal ue-modal fade" id="tableEdituser" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder">
+                    Edit User
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form method="POST" id="frmEdit" class="col-md-12 order-form text-left formCls">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-12 pl-0">
+                            <h6>Edit User</h6>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Name<span class="text-danger">*</span>
+                                </label>
+                                <input type="hidden" id="EdhdnCid" />
+                                <div class="col-lg-9 col-xl-9">
+                                    <input class="form-control form-control-solid " type="text" placeholder="Name" id="EditName" />
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Email<span class="text-danger">*</span>
+                                </label>
+                                <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                    <input type="hidden" id="hdnEmail">
+                                    <input class="form-control" type="text" placeholder="Email" id="EditConEmail">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Phone<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input class="form-control" type="text" placeholder="Phone" id="EditPhone">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 subm-btn newPro-btn">
+                            <input type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="UpdateData()" value="Update" />
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>

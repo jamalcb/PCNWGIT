@@ -1,0 +1,229 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Super Admin</title>
+    <!-- Favicon-->
+    <link rel="icon" href="~/AdminAssets/images/favicon-plan-center.png" type="image/x-icon">
+    <!-- Plugins Core Css -->
+    <link href="~/AdminAssets/css/app.min.css" rel="stylesheet">
+    <!-- Custom Css -->
+    <link href="~/AdminAssets/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/AdminAssets/css/customStyle.css">
+    <link href="~/css/global-master.css" rel="stylesheet" />
+    <!-- Theme style. You can choose a theme from css/themes instead of get all themes -->
+    <link href="~/AdminAssets/css/styles/all-themes.css" rel="stylesheet" />
+    @await RenderSectionAsync("jQueryUICss", required: false)
+    @await RenderSectionAsync("CustomCSS", required: false)
+    @await RenderSectionAsync("dataTablesCss", required: false)
+    <style>
+        .sidebar-global li a i {
+            font-size: 17px !important;
+        }
+    </style>
+
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y350DCZ35"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-9Y350DCZ35');
+</script>
+<body class="light">
+    <div class="page-loader-wrapper">
+        <div class="loader">
+            <div class="m-t-30">
+                <img class="loading-img-spin" src="~/AdminAssets/images/Logo Master Vert Black.jpg" width="20" height="20" alt="admin">
+            </div>
+            <p>Almost There...</p>
+        </div>>
+    </div>
+    <nav class="navbar cus-navbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="#" onClick="return false;" class="navbar-toggle collapsed" data-toggle="collapse"
+                   data-target="#navbar-collapse" aria-expanded="false"></a>
+                <a href="#" onClick="return false;" class="bars"></a>
+                <a class="navbar-brand" href="/Home/Index">
+                    <img src="assets/images/logo.png" alt="" />
+                    <span class="logo-name">PCNW</span>
+                </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <ul class="pull-left icon-nav">
+                    <li>
+                        <a href="#" onClick="return false;" class="sidemenu-collapse">
+                            <i class="material-icons">reorder</i>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right icon-nav">
+                    <!-- Full Screen Button -->
+                    <li class="fullscreen">
+                        <a href="javascript:;" class="fullscreen-btn">
+                            <i class="fas fa-expand"></i>
+                        </a>
+                    </li>
+                    <!-- #END# Full Screen Button -->
+                    <!-- #START# user-profile-->
+                    <li class="dropdown user_profile">
+                        <a href="#" onClick="return false;" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button">
+                            <i class="material-icons">power_settings_new</i>
+                        </a>
+                        <ul class="dropdown-menu pullDown">
+                            <li class="body">
+                                <ul class="user_dw_menu cus-dropdown">
+                                    @*<li>
+                                        <a href="#" onClick="return false;">
+                                            <i class="material-icons">person</i>Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" onClick="return false;">
+                                            <i class="material-icons">help</i>Help
+                                        </a>
+                                    </li>*@
+                                    <li>
+                                        <a href="/Account/Logout"> 
+                                            <i class="material-icons">power_settings_new</i>Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <aside id="leftsidebar" class="sidebar">
+        <!-- Menu -->
+        <div class="menu">
+            <ul class="list sidebar-global">
+                <li class="sidebar-user-panel active">
+                    <div class="profile-usertitle">
+                        <div class="sidebar-userpic-name"> User Name </div>
+                        <div class="profile-usertitle-job ">Designation </div>
+                    </div>
+                </li>
+                <li class="active">
+                    <a href="/Administration/Dashboard" class="">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="/GlobalMaster/Dashboard" class="">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Admin</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="/Report/Dashboard" class="">
+                        <i class="far fa-file-alt"></i>
+                        <span>Reports</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="/Administration/UtilityDashboard" class="">
+                        <i class="fas fa-cogs"></i>
+                        <span>Utiliteis</span>
+                    </a>
+                </li>
+                
+            </ul>
+        </div>
+        <!-- #Menu -->
+    </aside>
+    @RenderBody()
+    <!-- Plugins Js -->
+    <script src="~/AdminAssets/js/app.min.js"></script>
+    @await RenderSectionAsync("jQueryUI", required: false)
+    <script src="~/AdminAssets/js/table.min.js"></script>
+    <!-- Custom Js -->
+    <script src="~/AdminAssets/js/admin.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/dataTables.buttons.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/buttons.flash.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/jszip.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/pdfmake.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/vfs_fonts.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/buttons.html5.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/buttons.print.min.js"></script>
+    <script src="~/AdminAssets/js/pages/tables/jquery-datatable.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    @await RenderSectionAsync("dataTablesJs", required: false)
+    @RenderSection("DashBoardScripts", required: false)
+    <script type="text/javascript">
+        var idleTime = 0;
+        jQuery(document).ready(function () {
+
+            //Increment the idle time counter every minute.
+            var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+            //Zero the idle timer on mouse movement.
+            jQuery(this).mousemove(function (e) {
+                idleTime = 0;
+            });
+            jQuery(this).keypress(function (e) {
+                idleTime = 0;
+            });
+        });
+
+        function timerIncrement() {
+            var autologtime;
+            jQuery.ajax({
+                type: "GET",
+                dataType: 'json',
+                url: '/GlobalMaster/GetLogOffList',
+                data: {},
+                async: false,
+                success: function (response) {
+                    jQuery('#hdnId').val(response.data[0].Id);
+                    jQuery('#autoLogOff').val(response.data[0].LogOff);
+                    autologtime = response.data[0].LogOff
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+
+            var pathname = window.location.pathname;
+            var controller = pathname.substring(0, pathname.lastIndexOf("/") + 1);
+            cont = controller.replaceAll("/", "");
+            var view = pathname.slice(pathname.lastIndexOf('/') + 1);
+            views = view;
+            idleTime = idleTime + 1;
+            if (idleTime >= autologtime) { // 15 minutes
+                jQuery.ajax({
+                    type: "Get",
+                    dataType: 'json',
+                    url: '/Admin/AutoLogout',
+                    data: { 'IsAutoLogout': true, 'returnUrl': pathname },
+                    async: false,
+                    success: function (response) {
+                        if (respons.Status == 'success')
+                            window.location.href = "/Admin/Login?returnUrl=" + pathname;
+                    },
+                    error: function (response) {
+                        console.log(response.responseText);
+                        window.location.href = "/Admin/Login?returnUrl=" + pathname;
+                    },
+                    failure: function (response) {
+                        console.log(response.responseText);
+                    }
+                });
+                //window.location.href="/Account/Logout";
+            }
+        }
+    </script>
+</body>
+</html>

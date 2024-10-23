@@ -1,0 +1,510 @@
+﻿@model MemberProjectInfo
+@{
+    ViewData["Title"] = "Send Project Files";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+}
+@section PostProjScripts
+    {
+    <script type="text/javascript">
+        var valProjTypeId = 0;
+        function autofill() {
+            var term = jQuery("#inpProjTypeId").val();
+            jQuery.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                url: '/Project/autofill/',
+                data: { 'term': term },
+                async: false,
+                success: function (response) {
+                    console.log(response[0].label);
+                    jQuery("#inpProjTypeId").val(response[0].label);
+                    jQuery("#ProjTypeId").val(response[0].val);
+
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        // script for adding input on server files icon
+        jQuery("#d-input").click(() => {
+            jQuery("#show-input").show() && jQuery("#d-input").hide()
+        })
+        // ======================================================================================================================================
+        // script for adding new row on project team section.
+
+        jQuery("#cost_row_add").click(function () {
+            var i = jQuery('.EntityNameClass').length;
+            newRowAdd =
+                '<div id="new-addedRow" class="row ">' +
+                '<div class="col-md-12 col-lg-12">' +
+                '<input type="text" class="form-control pr-0 EntityNameClass" id="EntityName_' + i + '" name="EIList[' + i + '].EntityName" placeholder="Entity Name" />' +
+                '</div>' +
+                '<div class="col-md-12 col-lg-12 py-2">' +
+                '<input autocomplete="off" class="form-control" id="EntityType_' + i + '" type="text" value="" name="EIList[' + i + '].EntityType" placeholder="Entity Type" />' +
+                '</div>' +
+                '<div class="col-lg-12 col-xl-12 d-flex align-items-center">' +
+                '<input type="checkbox" class="" value="" />' +
+                //'</div>' +
+                //'<div class="col-lg-2 col-xl-1">' +
+                '<div class="remove_prebid_row "><span class="action-del mx-2" id="del-addedRow"><i class="fa fa-trash"></i></span></div>' +
+                '</div>' +
+                '</div>';
+
+            jQuery('#membr-costInput').append(newRowAdd);
+            InitializedAutoComplete();
+        });
+        // deleting the row on del-icon click
+        jQuery("body").on("click", "#membr-del-costRow", function () {
+            jQuery("#remove-cost").remove();
+            //$(this).parents("#project-team-row").remove();
+        })
+
+        jQuery("body").on("click", "#del-addedRow", () => {
+            jQuery("#new-addedRow").remove();
+        })
+        // ==============================================================================================================================
+        // script to add cost 2 cost row
+        //jQuery("#cost_row_add").click(() => {
+        //    membr_newCostRow =
+        //        '<div class="row align-items-center pb-3" id="remove-cost">' +
+        //        '<div class="col-md-4 col-lg-4 text-nowrap ">' +
+        //        '<input type="" class="form-control pr-0" placeholder="Entity Type" />' +
+        //        '</div>' +
+        //        '<div class="col-md-4 col-lg-4 pr-0">' +
+        //        '<input type="" class="form-control" placeholder="Entity Name" />' +
+        //        '</div>' +
+        //        '<div class="col-md-4 col-lg-4 pr-0 remove_prebid_row">' +
+        //        '<input  type="checkbox" value="nc"><button id="membr-del-costRow"><i class="fa fa-trash" aria-hidden="true"></i></button>' +
+        //        '</div>' +
+        //        '</div>';
+        //    jQuery("#membr-costInput").append(membr_newCostRow)
+        //})
+
+        //jQuery("body").on("click", "#membr-del-costRow", function () {
+        //    jQuery("#remove-cost").remove();
+        //})
+        // ==============================================================================================================================
+        // script to add pre-bid info row
+
+        jQuery("#bidInfo-row-add").click(() => {
+            var prebidconveniancecount = jQuery("div[class*='prebidconveniancecount']").length + 2;
+            preBidRow =
+                '<div class="row mt-3 pb-2 border-bottom prebidconveniancecount" id="prebid-info-row">' +
+                '<div class="col-md-4 mb-lg-0 mb-2">' +
+                '<p>Meeting ' + prebidconveniancecount + '</p>' +
+                '</div>' +
+                '<div class="col-md-8 mb-lg-0 mb-2">' +
+                '<input type="checkbox" class="mx-1" value="">Mandatory ' +
+                '</div>' +
+                '<div class="col-lg-6 col-md-6 mb-lg-0 mb-2 pr-0">' +
+                '<input type="date" class="form-control"  id="PreBidDt' + prebidconveniancecount + '" name="PreBidDt' + prebidconveniancecount + '"/>' +
+                '</div>' +
+                '<div class="col-lg-4 col-xl-4 col-md-4">' +
+                '<input tabindex="21" class="form-control" type="text"  id="PreBidLoc' + prebidconveniancecount + '" name="PreBidLoc' + prebidconveniancecount + '">' +
+                '</div>' +
+                '<div class="col-lg-1 col-xl-1">' +
+                '<div class="remove_prebid_row pt-2"><span id="delPrebid-row"><i class="fa fa-trash"></i></span></div>' +
+                '</div>' +
+                '</div>';
+            if (prebidconveniancecount < 6)
+                jQuery("#membr-bidInfo-input").append(preBidRow);
+            else {
+                preBidRow = '<p class="text-danger error-message" id="TempMessage">You can only have upto 5 pre bid date</p>'
+                jQuery("#membr-bidInfo-input").append(preBidRow);
+                jQuery('.error-message').delay(1000).fadeOut();
+            }
+        })
+
+        jQuery("body").on("click", "#delPrebid-row", function () {
+            $(this).parents("#prebid-info-row").remove();
+        })
+        // ==============================================================================================================================
+        // script to add pre-bid info row
+
+        jQuery("#bidDate_add").click(() => {
+            var biddateconveniancecount = jQuery("div[class*='biddateconveniancecount']").length + 2;
+            bidDateRow =
+                '<div class="row pb-3 biddateconveniancecount align-items-center" id="remove-biddate">' +
+                '<div class="col-md-6 col-lg-6 ">' +
+                '<input type="date" id="BidDt' + biddateconveniancecount + '" name="BidDt' + biddateconveniancecount + '" class="form-control" placeholder = "select date" onchange="getDateIndex((this).id,event)"/> ' +
+                '</div>' +
+                '<div class=" col-12 col-4 col-sm-4 col-md-4 col-lg-4 cus-mt">' +
+                '<input type="text" class="form-control" placeholder="PST" id="strBidDt' + biddateconveniancecount + '" name="strBidDt' + biddateconveniancecount + '" />' +
+                '</div>' +
+                '<div class="col-md-2 col-lg-2 col-sm-2 col-12 remove_prebid_row">' +
+                '<span id="del-biddateRow" class="action-del"><i class="fa fa-trash" aria-hidden="true"></i></span>' +
+                '</div>' +
+                '</div>';
+            if (biddateconveniancecount < 6)
+                jQuery("#bidDate_input").append(bidDateRow);
+            else {
+                bidDateRow = '<p class="text-danger err-message" id="TempMessage">You can only have upto 5 bidDate</p>';
+                jQuery("#bidDate_input").append(bidDateRow);
+                jQuery('.err-message').delay(1000).fadeOut();
+            }
+        });
+
+        jQuery("body").on("click", "#del-biddateRow", function () {
+            jQuery("#remove-biddate").remove();
+        })
+        jQuery(document).ready(function () {
+            console.log(jQuery('#ErrMsg').val());
+            if (jQuery('#ErrMsg').val() == 'Y')
+                alert('Something went wrong');
+            if (jQuery('#ErrMsg').val() == 'OK') {
+                alert('Project Submitted Successfully. A member of our staff will be in touch to finalize the details prior to posting.');
+                jQuery('#ErrMsg').val('N');
+            }
+        });
+        // ==============================================================================================================================
+        // script for adding addenda row section
+        jQuery(document).ready(function () {
+            // ------------  File upload BEGIN ------------
+
+            var fileHtml = ''
+            jQuery(".file__input--file").on("change", function (event) {
+                jQuery(".file__value").remove();
+                var files = event.target.files;
+                for (var i = 0; i < files.length; i++) {
+                    var file = files[i];
+                    console.log(file);
+                    var innerhtml = "<div class='file__value'><div class='file__value--text'>" +
+                        file.name +
+                        "</div></div>"
+                    jQuery('#file_input').append(innerhtml)
+                    // jQuery(
+
+                    // ).insertAfter("#file__input");
+                }
+            });
+
+            //Click to remove item
+            jQuery("body").on("click", ".file__value", function () {
+                jQuery(this).remove();
+            });
+            // ------------ File upload END ------------
+        });
+        function InitializedAutoComplete() {
+            $('[id^=EntityName]').autocomplete({
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Project/GetCompanyName/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            response(jQuery.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    //jQuery("#hfProjTypeId").val(i.item.val);
+                    //valProjTypeId = i.item.val;
+                },
+                minLength: 2
+            }).focus(function () {
+                $(this).autocomplete("search");
+            });
+
+            $('[id^=EntityType]').autocomplete({
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Project/GetEntityType/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            response(jQuery.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    //jQuery("#hfProjTypeId").val(i.item.val);
+                    //valProjTypeId = i.item.val;
+                },
+                minLength: 2
+            }).focus(function () {
+                $(this).autocomplete("search");
+            });
+        }
+        jQuery(function () {
+            InitializedAutoComplete()
+        });[]
+        jQuery(function () {
+            $("#inpProjTypeId").autocomplete({
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Project/GetProjectType/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            response(jQuery.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    console.log(i.item.val);
+                    jQuery('input[id = ProjTypeId]').val(i.item.val);
+                    valProjTypeId = i.item.val;
+
+                    //jQuery("#ProjTypeId").val();
+                },
+                minLength: -1
+            }).focus(function () {
+                $(this).autocomplete("search");
+            });
+        });
+        jQuery(function () {
+            var ProjTypeId = jQuery('input[id = ProjTypeId]').val();
+            $("#inpProjSubTypeId").autocomplete({
+                source: function (request, response) {
+                    jQuery.ajax({
+                        url: '/Project/GetProjectSubType/',
+                        data: { "prefix": request.term, "ProjTypeId": valProjTypeId },
+                        type: "POST",
+                        success: function (data) {
+                            response(jQuery.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    jQuery("#ProjSubTypeId").val(i.item.val);
+                },
+                minLength: -1
+            }).focus(function () {
+                $(this).autocomplete("search");
+            });
+        });
+        function GetProjCode() {
+            jQuery.ajax({
+                url: '/Implement/GetProjectCode/',
+                data: {},
+                type: "POST",
+                success: function (response) {
+                    jQuery('#ProjNumber').val(response.data);
+                },
+                error: function (response) {
+                    alert(response.statusMessage);
+                },
+                failure: function (response) {
+                    alert(response.statusMessage);
+                }
+            });
+        }
+        GetProjCode();
+       
+        function fillCityAndStateFields(localities) {
+            var locality = localities[0]; //use the first city/state object
+            jQuery('#LocCity').val(locality.city);
+            jQuery('#LocState').val(locality.state_code);
+            jQuery('#LocAddr2').val(locality.province);
+        }
+        function changeScope(id) {
+            //alert(id);
+            var strManipulated = '';
+            var strProjectScope = jQuery('#ProjScope').val();
+            var chkValue = '';
+            if (jQuery('#' + id).is(':checked')) {
+                chkValue = jQuery('#' + id).val();
+                //console.log(chkValue);
+            }
+            var isExists = 'N';
+            if (strProjectScope != '') {
+                var myArray = strProjectScope.split(",");
+                let strValue = "";
+                for (let x in myArray) {
+                    strValue = myArray[x];
+                    if (strValue != "") {
+                        let result = strValue.substring(0, 3);
+                        if (result != ' # ') {
+                            if (strValue == chkValue)
+                                isExists = 'Y';
+                            else
+                                strManipulated += strValue + ",";
+                        }
+                        else
+                            strManipulated += strValue + ",";
+                    }
+                }
+            }
+            if (isExists == 'N')
+                strManipulated += chkValue + ",";
+            jQuery('#ProjScope').val(strManipulated);
+            console.log(jQuery('#ProjScope').val());
+        }
+        function checkUpload() {
+            var chk = jQuery('#chkUploaded').val();
+            if (chk == 'N') {
+                alert('Please upload document(s)');
+                return false;
+            }
+            else {
+                return true;
+            }
+        }
+        function UploadFile(e) {
+            var projNum = jQuery('#ProjNumber').val();
+            jQuery('#ProjNum').val(projNum);
+            var formData = new FormData();
+            var files = jQuery("#fileUpload1").get(0).files;
+            if (files.length > 0) {
+                for (var i = 0; i < files.length; i++) {
+                    formData.append("pdfFile", files[i]);
+                }
+                formData.append("projNum", projNum)
+                console.log(files);
+                //var files = jQuery('#fileUpload1').prop("files");
+                //  var formData = new FormData();
+                // var a = jQuery("#fileUpload1")[0].files[0];
+                //alert(jQuery("#fileUpload1")[0].files[0])
+                //formData.append("pdfFile", jQuery("#fileUpload1")[0].files[0]);
+                jQuery.ajax({
+                    type: 'POST',
+                    url: '/Member/UploadPdf',
+                    data: formData,
+                    processData: false,
+                    contentType: false
+                }).done(function (response) {
+                    if (response.Status === "success") {
+
+                        jQuery('#chkUploaded').val('Y');
+                        Uploadhtml = '';
+                        jQuery('#ftbody').html('');
+                        for (var i = 0; i < files.length; i++)
+                            Uploadhtml += '<tr class="trUpload"><td>' + (i + 1) + '</td><td class="tdUpoadFile">' + files[i].name + '</td></tr>'
+                        jQuery('#ftbody').html(Uploadhtml);
+                        $('.f-modal').modal('show');
+                    }
+                });
+            }
+            else alert('Please select file(s) to upload');
+            //   e.preventDefault();
+        }
+
+    </script>
+}
+    <div class="container">
+        <div class="drag-box">
+                <div class="drag-wrap">
+                    <form name="form" method="post" enctype="multipart/form-data">
+                        <div class="drag-file">
+                            <div class="file__input" id="file__input" style="height: 100px; border: 3px dotted;">
+                                <input class="file__input--file" id="fileUpload1" type="file" multiple="multiple" name="pdfFile" />
+                                <label class="file__input--label" for="fileUpload1" data-text-btn="Upload">Drag and Drop a file : </label>
+                            </div>
+                        </div>
+                        <div class="d-flex flex-wrap" id="file_input">
+                        </div>
+                        <button type="button" class="drag-upload" onclick="UploadFile(this.event)">Upload</button>
+                    </form>
+                </div>
+           
+        </div>
+  
+    <form method="post" name="myForm">
+        <div class="main-heading">
+            <h2>Contact Information</h2>
+        </div>
+            <div class="dashboard-box">
+                <div class="project-info">
+                <div class="box-space">
+                        
+                        <div class="contact-info-card">
+                            <div><label>Contact Name</label><input asp-for="ContactName" /></div>
+                        <div><label>Company Name</label><input asp-for="ContactMember" /></div>
+                        <div><label>E-mail</label><input asp-for="ContactEmail" /></div>
+                        <div><label>Phone</label><input asp-for="ContactPhone" /></div>
+                            <input type="hidden" asp-for="ProjNumber" />
+                            <input type="hidden" asp-for="ContactEmail" />
+                            <input type="hidden" asp-for="ContactPhone" />
+                            <input type="hidden" asp-for="ContactMember" />
+                            <input type="hidden" asp-for="ContactName" />
+                            <input type="hidden" asp-for="memberId" />
+                            <input type="hidden" asp-for="@Model.ProjScope" />
+                            <input type="hidden" id="ErrMsg" value="@Model.ErrorMsg" />
+                            <input type="hidden" asp-for="@Model.IssuingOffice" />
+                            <input type="hidden" id="chkUploaded" name="chkUploaded" value="N" />
+                        </div>
+
+
+                    </div>
+                   
+                <div class="box-space formCls">
+                    <div class="row">
+                <div class="col-md-12 newPro-btn ">
+                    <button class="newProbtn" asp-action="SaveMemberProject" asp-controller="Member" onclick="return checkUpload()">Submit</button>
+                </div>
+                </div>
+                </div>
+            </div>
+        </div>
+ 
+    <div class="modal f-modal fade" id="thankyou-Modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header p-2">
+                    <h1 class="text-success">Uploaded Doc(s)</h1><button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <table class="table table-bordred select-file-table" id="tblUpload">
+                        <thead>
+                            <tr>
+                                <th>Sr.No</th>
+                                <th>File Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ftbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modl-btn" id="fileClose" data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</form>
+</div>

@@ -1,0 +1,2310 @@
+﻿   
+@model MemberShipRegistration;
+@{
+    ViewData["Title"] = "MemberProfile";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+}
+@if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+{
+    <script>
+        // JavaScript to display a success alert using the message from ViewBag
+        window.onload = function () {
+            var successMessage = "@ViewBag.SuccessMessage";
+            if (successMessage) {
+                alert(successMessage);
+            }
+        };
+    </script>
+}
+
+@section CustomCSS {
+    <style>
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .hidepreview_class {
+            display: none !important;
+        }
+
+        .memb-dir-check .row p {
+            word-break: break-all;
+        }
+
+        .d-flex p {
+            word-break: break-all;
+        }
+
+        .bg-blue {
+            background: #5c8097;
+        }
+
+        .fa-pencil-alt {
+            cursor: pointer;
+        }
+
+        .error {
+            border-color: red;
+        }
+
+        .LocEditClass, .LicEditClass, .EditBillClass, .EditMailClass, .EditDBAClass, .EditDivClass, .EditDiscClass, .companyphone, #fileUpload12, #checkLogo, #cancelLogo, .EditPhoneClass, .EditEmailClass {
+            display: none;
+        }
+
+        .fw-bold {
+            font-weight: bold;
+        }
+
+        .align-c {
+            align-items: center;
+            border: 1px solid #e5e5e5;
+            padding: 2px 0;
+        }
+
+        .memb-dir-table .row .fw-5 {
+            font-size: 14px;
+        }
+
+        .align-c .form-control {
+            height: 30px;
+            color: #303132;
+            margin-bottom: 0px;
+            border-radius: 2px;
+            background: #f4f4f4;
+            border: 1px solid #706e6e;
+        }
+
+        .main-content {
+            padding: 15px 0;
+        }
+
+        .prev-dir {
+            flex: 0 0 18%;
+        }
+
+        .renewdiv span {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .flatpickr-day.flatpickr-disabled {
+            color: darkgrey !important;
+        }
+
+        .flatpickr-day.nextMonthDay {
+            color: black !important;
+        }
+
+        .flatpickr-calendar.animate {
+            background: #dddada;
+            border: 1px solid #ccc;
+        }
+
+        .custom-buttons button {
+            border: none;
+            padding: 4px 8px;
+            margin: 10px 4px;
+            border-radius: 5px;
+        }
+
+        button#saveButton {
+            background: #ff9900;
+            color: #fff;
+        }
+
+        button#cancelButton {
+            border: 1px solid #ccc;
+        }
+
+        #dateButton.active {
+            background-color: #5c7a85 !important;
+        }
+    </style>
+}
+@section Scripts {
+    <link rel="stylesheet" href="~/css/UpdatePackage.css">
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/mdb-ui-kit/6.1.0/mdb.min.js"></script>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+
+    <script src="~/js/member-profile.js"></script>
+    <script src="~/lib/lodash.js/lodash.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        function formatDate(dateStr) {
+            const date = new Date(dateStr);
+            const month = (date.getMonth() + 1).toString().padStart(2, '0');
+            const day = date.getDate().toString().padStart(2, '0');
+            const year = date.getFullYear();
+            return `${month}/${day}/${year}`;
+        }
+        function calculateDateDifference(date1, date2) {
+            const diffTime = Math.abs(date2 - date1);
+            const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+            return diffDays;
+        }
+        // document.addEventListener('DOMContentLoaded', function () {
+        //     const button = document.getElementById('dateButton');
+        //     const renewalDateSpan = document.querySelector('.renewaldate');
+        //     const renewalDateText = renewalDateSpan.textContent.trim();
+        //     const renewalDateFormatted = formatDate(renewalDateText);
+        //     const graceval = document.getElementById('Grace');
+        //     let selectedDate = renewalDateFormatted;
+        //     button.textContent = `grace extension ${renewalDateFormatted}`;
+
+        //     const picker = flatpickr(button, {
+        //         dateFormat: "m/d/Y",
+        //         defaultDate: renewalDateFormatted,
+        //         closeOnSelect: false,
+        //         minDate: renewalDateFormatted,
+        //         onChange: function (selectedDates, dateStr, instance) {
+        //             selectedDate = dateStr;
+        //             const renewalDateObj = new Date(renewalDateText);
+        //             const selectedDateObj = new Date(dateStr);
+        //             const dateDifference = calculateDateDifference(renewalDateObj, selectedDateObj);
+        //             graceval.value = dateDifference;
+        //         },
+        //         clickOpens: false,
+        //         onOpen: function (selectedDates, dateStr, instance) {
+        //             const calendarContainer = instance.calendarContainer;
+        //             if (!calendarContainer.querySelector('.custom-buttons')) {
+        //                 const customButtons = document.createElement('div');
+        //                 customButtons.classList.add('custom-buttons');
+        //                 customButtons.innerHTML = `
+        //                                         <button type="button" id="saveButton">Update</button>
+        //                                         <button type="button" id="cancelButton">Cancel</button>
+        //                                     `;
+        //                 calendarContainer.appendChild(customButtons);
+
+        //                 document.getElementById('saveButton').addEventListener('click', function () {
+        //                     UpdateGracePeriod();
+        //                 });
+
+        //                 document.getElementById('cancelButton').addEventListener('click', function () {
+        //                     picker.close();
+        //                 });
+        //             }
+        //         }
+        //     });
+
+        //     button.addEventListener('click', function () {
+        //         picker.open();
+        //     });
+        // });
+    </script>
+}
+@section MemberProfileScripts
+{
+    <script type="text/javascript">
+        function checkUniqueEmail() {
+            var success = true;
+            var uniqueName = jQuery('#ConEmail').val();
+            var data = { "uniqueName": uniqueName };
+            jQuery.ajax({
+                type: "POST",
+                url: '@Url.Action("UniqueEmail")',
+                data: { "uniqueName": uniqueName },
+                dataType: "json",
+                async: false,
+                //contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.success) {
+                        success = false;
+                        console.log(response.statusMessage);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+            return success;
+        }
+        function AutoRenewOn() {
+            var id = jQuery('#hdnId').val();
+            jQuery.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                url: '/Member/autoRenewOn/',
+                data: { 'Id': id, 'val': true },
+                async: false,
+                success: function (response) {
+                    alert("Auto renew on");
+                    location.reload(response);
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        }
+        function AutoRenewOff() {
+
+            var id = jQuery('#hdnId').val();
+            jQuery.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                url: '/Member/autoRenewOff/',
+                data: { 'Id': id, 'val': false },
+                async: false,
+                success: function (response) {
+                    alert("Auto renew off");
+                    location.reload(response);
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        }
+        function ActiveMember() {
+
+            var id = jQuery('#hdnId').val();
+            jQuery.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                url: '/Member/activemember/',
+                data: { 'Id': id, 'val': true },
+                async: false,
+                success: function (response) {
+                    alert("Inactive member");
+                    location.reload(response);
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        }
+        function InActiveMember(id) {
+            if (confirm("Are you sure you want to Active Member ?")) {
+                var dateStr = jQuery('#renewalDate').val();
+                dateStr = dateStr.split(' ')[0];
+                //var dateStr = document.getElementById(id).value;
+                const currentDate = new Date();
+                currentDate.setHours(0, 0, 0, 0);
+                const [month, day, year] = dateStr.split("/");
+                const dateObject = new Date(year, month - 1, day);
+                if (dateObject > currentDate) {
+                    var id = jQuery('#hdnId').val();
+                    jQuery.ajax({
+                        type: "POST",
+                        dataType: 'json',
+                        //contentType: "application/json; charset=utf-8",
+                        url: '/Member/inactivemember/',
+                        data: { 'Id': id, 'val': false },
+                        async: false,
+                        success: function (response) {
+                            alert("Member active");
+                            location.reload(response);
+                        },
+                        error: function (response) {
+                            console.log(response.responseText);
+                        },
+                        failure: function (response) {
+                            console.log(response.responseText);
+                        }
+                    });
+
+                }
+                else {
+                    OpenRenewalModel();
+                }
+            }
+            jQuery("#InActiveMem").prop("checked", false);
+            return false;
+        }
+        function changeMinority(id) {
+            //alert(id);
+            var strManipulated = '';
+            var strMinorityStatus = jQuery('#MinorityStatus').val();
+            var chkValue = '';
+            if (jQuery('#' + id).is(':checked')) {
+                chkValue = jQuery('#' + id).val();
+                //console.log(chkValue);
+            }
+            var isExists = 'N';
+            if (strMinorityStatus != '') {
+                var myArray = strMinorityStatus.split(",");
+                let strValue = "";
+                for (let x in myArray) {
+                    strValue = myArray[x];
+                    if (strValue != "") {
+                        let result = strValue.substring(0, 3);
+                        if (result != ' # ') {
+                            if (strValue == chkValue)
+                                isExists = 'Y';
+                            else
+                                strManipulated += strValue + ",";
+                        }
+                        else
+                            strManipulated += strValue + ",";
+                    }
+                }
+            }
+            if (isExists == 'N')
+                strManipulated += chkValue + ",";
+            jQuery('#MinorityStatus').val(strManipulated);
+            console.log(jQuery('#MinorityStatus').val());
+        }
+        jQuery(document).ready(function () {
+            //if (msg != null) {
+            //    alert(msg);
+            //}
+            var ScopeVal = jQuery('input[name = MinorityStatus]').val();
+
+            if (ScopeVal.indexOf('WBE') != -1) {
+                jQuery('#chk_0').prop('checked', true);
+            }
+            if (ScopeVal.indexOf('MBE') != -1) {
+                jQuery('#chk_1').prop('checked', true);
+            }
+            if (ScopeVal.indexOf('DBE') != -1) {
+                jQuery('#chk_2').prop('checked', true);
+            }
+            if (ScopeVal.indexOf('ESB') != -1) {
+                jQuery('#chk_3').prop('checked', true);
+            }
+
+        });
+        jQuery(document).ready(function () {
+            jQuery("#formButton").click(function () {
+                jQuery("#addnote").toggle();
+            });
+            jQuery("#editNote").click(function () {
+                jQuery("#editNotes").toggle();
+            });
+        });
+        function submitData(e) {
+            var name = jq('#Firstname').val();
+            jq('#Firstname').next('span').html('');
+            if (name == undefined || name == '' || name == null) {
+                jq('#Firstname').next('span').html('Please enter name.');
+                return false;
+            }
+            var email = jq('#ConEmail').val();
+            jq('#ConEmail').next('span').html('');
+            if (email == undefined || email == '' || email == null) {
+                jq('#ConEmail').next('span').html('Please enter email.');
+                return false;
+            }
+            var phone = jq('#Phone').val();
+            jq('#Phone').next('span').html('');
+            if (phone == undefined || phone == '' || phone == null) {
+                jq('#Phone').next('span').html('Please enter phone number.');
+                return false;
+            }
+            var ConfirmPassword = jQuery('#hdnPassConfirm').val();
+            var Password = jQuery('#hdnPass').val();
+            if (Password && ConfirmPassword) {
+                if (Password.length < 3) {
+                    alert('Password lenghth should be greater than 3');
+                    return false;
+                }
+                else if (Password != ConfirmPassword) {
+                    alert('Password and confirm password should be matching');
+                    return false;
+                }
+            }
+            else {
+
+                if (Password) {
+                    alert('You need to confirm your password');
+                    jQuery("#PasswordCofirmation").focus();
+                    return false;
+                }
+                else if (ConfirmPassword) {
+                    alert('Password value required');
+                    jQuery("#Password").focus();
+                    return false;
+                }
+                else {
+                    alert('Password value required');
+                    jQuery("#Password").focus();
+                    return false;
+                }
+            }
+            var model = {};
+            model.ID = jQuery('#hdnId').val();
+            model.FirstName = jQuery('#Firstname').val();
+            model.LastName = jQuery('#Lastname').val();
+            model.ContactEmail = jQuery('#ConEmail').val();
+            model.ContactPhone = jQuery('#Phone').val();
+            model.BillCity = jQuery('#City').val();
+            model.BillState = jQuery('#state').val();
+            model.BillZip = jQuery('#LocZip').val();
+            model.BillCounty = jQuery('#County').val();
+            model.BillAddress = jQuery('#Address').val();
+            model.ContactPassword = jQuery('#hdnPassConfirm').val();
+            jQuery.ajax({
+                type: "POST",
+                dataType: 'json',
+                // contentType: "application/json; charset=utf-8",
+                url: '/Member/AddUserNew/',
+                data: { 'model': model },
+                async: false,
+                success: function (response) {
+                    location.reload();
+                    if (response.success) {
+                        console.log(response);
+                        alert(response.statusMessage);
+                    }
+                    else {
+                        alert(response.statusMessage);
+                    }
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        }
+        jQuery(document).ready(function () {
+            jQuery('#LocZip').keyup(function () {
+                var zip = jQuery(this).val();
+                var api_key = '610e9c50-5b95-11ed-80d5-311ba8375d84';//'YOUR_API_KEY_HERE';
+                if (zip.length == 5) {
+                    jQuery.get('https://app.zipcodebase.com/api/v1/search?apikey=' + api_key + '&country=US&codes=' + zip).then(function (response) {
+                        //parse the response for a list of matching city/state
+                        if (response.results != null || response.results != undefined) {
+                            if (response.results[zip] != null || response.results[zip] != undefined) {
+                                if (response.results[zip].length > 0) {
+                                    fillCityAndStateFields(response.results[zip]);;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        function fillCityAndStateFields(localities) {
+
+            var locality = localities[0]; //use the first city/state object
+            jQuery('#City').val(locality.city);
+            jQuery('#state').val(locality.state_code);
+            jQuery('#County').val(locality.province);
+            var sta = jQuery('#state').val();
+            jQuery('select[id=State] option').text(sta);
+        }
+        jQuery(document).ready(function () {
+            jQuery('#LocationZip').keyup(function () {
+                var zip = jQuery(this).val();
+                var api_key = '610e9c50-5b95-11ed-80d5-311ba8375d84';//'YOUR_API_KEY_HERE';
+                if (zip.length == 5) {
+                    jQuery.get('https://app.zipcodebase.com/api/v1/search?apikey=' + api_key + '&country=US&codes=' + zip).then(function (response) {
+                        //parse the response for a list of matching city/state
+                        if (response.results != null || response.results != undefined) {
+                            if (response.results[zip] != null || response.results[zip] != undefined) {
+                                if (response.results[zip].length > 0) {
+                                    fillLocation(response.results[zip]);;
+                                }
+                            }
+                        }
+                    });
+                }
+            });
+        });
+        function fillLocation(localities) {
+            var locality = localities[0]; //use the first city/state object
+            jQuery('#LocationCity').val(locality.city);
+            jQuery("#LocationState option:contains("
+                + locality.state_code + ")").attr('selected', 'selected');
+            jQuery('#LocationCounty').val(locality.province);
+        }
+        jQuery('#Password').on('change', function () {
+            jQuery('#hdnPass').val(jQuery('#Password').val());
+        });
+        jQuery('#PasswordCofirmation').on('change', function () {
+            jQuery('#hdnPassConfirm').val(jQuery('#PasswordCofirmation').val());
+        });
+
+
+
+        function validateUser() {
+            var isUniqueEmail = checkUniqueEmail();
+            if (isUniqueEmail == false)
+                return false;
+
+            var isValideUser = true;
+            var FName = jQuery('#Firstname').val();
+            if (FName == undefined || FName == '' || FName == null) {
+                jQuery("#Firstname").addClass('error')
+                isValideUser = false;
+            }
+            var LName = jQuery('#Lastname').val();
+            if (LName == undefined || LName == '' || LName == null) {
+                jQuery("#Lastname").addClass('error')
+                isValideUser = false;
+            }
+            var address = jQuery('#Address').val();
+            if (address == undefined || address == '' || address == null) {
+                jQuery("#Address").addClass('error')
+                isValideUser = false;
+            }
+            var city = jQuery('#City').val();
+            if (city == undefined || city == '' || city == null) {
+                jQuery("#City").addClass('error')
+                isValideUser = false;
+            }
+            var county = jQuery('#County').val();
+            if (county == undefined || county == '' || county == null) {
+                jQuery("#County").addClass('error')
+                isValideUser = false;
+            }
+            var loczip = jQuery('#LocZip').val();
+            if (loczip == undefined || loczip == '' || loczip == null) {
+                jQuery("#LocZip").addClass('error')
+                isValideUser = false;
+            }
+            var phone = jQuery('#Phone').val();
+            if (phone == undefined || phone == '' || phone == null) {
+                jQuery("#Phone").addClass('error')
+                isValideUser = false;
+            }
+
+            var state = jQuery('select[id=State] option').filter(':selected').text();
+            if (state == '--Select State--') {
+                jQuery('#State').addClass('error')
+                isValideUser = false;
+            }
+            ConfirmPassData = jQuery('#hdnPassConfirm').val();
+            passData = jQuery('#hdnPass').val();
+            if (passData && ConfirmPassData) {
+                if (passData.length < 3) {
+                    alert('Password lenghth should be greater than 3');
+                    return false;
+                }
+                else if (passData != ConfirmPassData) {
+                    alert('Password and confirm password should be matching');
+                    return false;
+                }
+
+
+            }
+            else {
+
+                if (passData) {
+                    alert('You need to confirm your password');
+                    return false;
+                }
+                else if (ConfirmPassData) {
+                    alert('Password value required');
+                    jQuery("#Password").addClass('error')
+                    jQuery("#PasswordCofirmation").addClass('error')
+                    return false;
+                }
+                else {
+                    alert('Password value required');
+                    jQuery("#Password").addClass('error')
+                    jQuery("#PasswordCofirmation").addClass('error')
+                    return false;
+                }
+            }
+            return isValideUser;
+        }
+
+    </script>
+}
+
+
+<div class="container-fluid">
+    <div class="dashboard-box">
+        <div class="main-heading bg-blue">
+            @{
+                bool ActiveCheck = Model.Inactive == null ? false : Model.Inactive;
+            }
+            <div class="row">
+                <div class="col-md-12 d-flex justify-content-between">
+                    @{
+                        string InsertDate = Model.InsertDate != null ? Model.InsertDate.Value.ToString("MMM dd yyyy") : "";
+                    }
+                    @if (!string.IsNullOrEmpty(InsertDate))
+                    {
+                        <h2>Member Profile: @Model.Company</h2>
+                    }
+                    else
+                    {
+                        <h2>Member Profile: @Model.Company</h2>
+                    }
+                    @if (!ActiveCheck)
+                    {
+                        <div>
+                            <h2 class="">
+                                @* <span class="mr-3">Member Since: @InsertDate </span> *@<i class="fa fa-circle text-success" style="font-size: 16px;" aria-hidden="true"></i> Active
+                            </h2>
+                        </div>
+                    }
+                    else
+                    {
+                        <div>
+                            <h2 class=""><i class="fa fa-circle text-danger" style="font-size: 16px;" aria-hidden="true"></i> InActive</h2>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="">
+            <input type="hidden" value="@Model.ID" id="hdnId" />
+            <input type="hidden" value="@Model.ConID" id="ConId" />
+            <input type="hidden" asp-for="@Model.ProfileChk" />
+            @{
+                string Term = "";
+                string discount = "";
+                string term = Model.Term;
+                string pack = Model.Package;
+                string formattedRenewalDate = "";
+                bool AutoRenewText = Model.IsAutoRenew != null ? (bool)Model.IsAutoRenew : false;
+            }
+            <input type="hidden" id="packagename" value="@pack" />
+            @{
+                if (pack == "Free")
+                {
+                    Term = pack;
+                }
+                else if (pack == "Free Trial Member")
+                {
+                    Term = pack;
+                }
+                else
+                {
+                    if (term == "12 Months" || term == null || term == "" || term == "Yearly")
+                    {
+                        term = "Yearly";
+                        Term = pack + " (" + term + ")";
+                    }
+                    if (term == "Monthly")
+                    {
+                        term = "Monthly";
+                        Term = pack + " (" + term + ")";
+                    }
+                    if (term == "3 Months" || term == "Quarterly" || term == "6 Months")
+                    {
+                        term = "Quarterly";
+                        Term = pack + " (" + term + ")";
+                    }
+                }
+                if (Model.Discount != null)
+                {
+                    discount = "(" + Model.Discount + ")";
+                }
+                // <b>@Term @discount</b>
+            }
+            <input type="hidden" value="@Term" id="PKGVal" />
+            <input type="hidden" value="@term" id="pkgterm" />
+        </div>
+        <div class="box-space py-2">
+            <div class="row">
+                <div class="col-lg-4 memPlanInfo">
+                    <p>
+                        <span>@pack -</span>
+                        <span>$@Model.MemberCost paid @term</span>
+                    </p>
+                    <div class="renewdiv">
+
+                        <input value="@Model.RenewalDate" id="renewalDate" type="hidden" />
+                        @if (AutoRenewText)
+                        {
+                            DateTime lastPayDate;
+                            if (DateTime.TryParse(Model.LastPayDate, out lastPayDate))
+                            {
+                                string formattedLastPayDate = lastPayDate.ToString("MMM dd yyyy");
+                                <span>Membership Terms Auto-Renew -</span>
+                                <span class="text-danger renewaldate">@formattedLastPayDate</span>
+                            }
+                        }
+                        else
+                        {
+                            formattedRenewalDate = Model.RenewalDate != null ? Model.RenewalDate.Value.ToString("MMM dd yyyy") : "";
+                            @if (!ActiveCheck)
+                            {
+                                @if (pack == "Free Trial Member")
+                                {
+                                    <span>Free Trail Expires -</span>
+                                    <span class="text-danger renewaldate">@formattedRenewalDate</span>
+                                }
+                                else
+                                {
+                                    <span>Membership Terms Expires -</span>
+                                    <span class="text-danger renewaldate">@formattedRenewalDate</span>
+                                }
+                            }
+                            else
+                            {
+                                @if (pack == "Free Trial Member")
+                                {
+                                    <span>Free Trail Expires -</span>
+                                    <span class="text-danger renewaldate">@formattedRenewalDate</span>
+                                }
+                                else
+                                {
+                                    <span>Membership Terms Expires -</span>
+                                    <span class="text-danger renewaldate">@formattedRenewalDate</span>
+                                }
+                            }
+                        }
+                        <input type="hidden" value="@Term" id="PKGVal" />
+                    </div>
+                    <div>
+                        @if(pack!="Pacific Northwest Premium"){
+                        <button class="planBadge yellow mr-2" onclick="showmodal()">upgrade</button>
+                        }
+                        @* @if (!AutoRenewText)
+                        {
+                            <button id="dateButton" class="psave lanBadge blu">grace extension:</button>
+                        }
+                        else
+                        {
+                            <button id="" class="planBadge blu disabled">grace extension:</button>
+                        } *@
+                    </div>
+                </div>
+                <div class="col-lg-4 memPlanPayment">                   
+                    <div>
+                        <button id="updatePaymentMethodButton" class="planBadge yellow mr-2">update payment method</button>
+                           <button id="paymentHistoryButton" class="planBadge yellow">Payment History</button>
+                    </div>
+                </div>
+
+                @*  <div class="col-lg-4 text-right">
+                <div class="row">
+                <div class="col-12">
+                @if (AutoRenewText)
+                {
+                DateTime lastPayDate;
+                if (DateTime.TryParse(Model.LastPayDate, out lastPayDate))
+                {
+                string formattedLastPayDate = lastPayDate.ToString("MMM dd yyyy");
+                <p class="fw-bold">Membership will auto renew on: <span class="text-danger">@formattedLastPayDate</span></p>
+                }
+                }
+                else
+                {
+                <input value="@Model.RenewalDate" id="renewalDate" type="hidden" />
+                formattedRenewalDate = Model.RenewalDate != null ? Model.RenewalDate.Value.ToString("MMM dd yyyy") : "";
+                @if (!ActiveCheck)
+                {
+                @if (pack == "Free Trial Member")
+                {
+                <p class="fw-bold mb-1">Free trial will expires on : <span class="text-danger">@formattedRenewalDate</span></p>
+                }
+                else
+                {
+                <p class="fw-bold mb-1">Membership will expire on : <span class="text-danger">@formattedRenewalDate</span></p>
+                }
+                }
+                else
+                {
+                @if (pack == "Free Trial Member")
+                {
+                <p class="fw-bold">Free trial expires on : <span class="text-danger">@formattedRenewalDate</span></p>
+                }
+                else
+                {
+                <p class="fw-bold">Membership expired on : <span class="text-danger">@formattedRenewalDate</span></p>
+                }
+                }
+                }
+                <input type="hidden" value="@Term" id="PKGVal" />
+                </div>
+                <label for="" class="col-sm-5 col-form-label fw-6 text-right">Grace Period</label>
+                <div class="col-sm-4">
+                <input type="text" class="form-control number-only" id="TxtGrace" onkeyup="CopyGraceValue(event)" placeholder="enter grace period in days" maxlength="3">
+                <span class="loginError"></span>
+                </div>
+                <div class="form-group col-sm-3 newPro-btn mb-0">
+                <button style="width:100%;" class="newProbtn" onclick="UpdateGracePeriod()">Update</button>
+                </div>
+                </div>
+                </div> *@
+
+
+                <div class="col-md-3 newPro-btn text-right">
+
+                    <!-- Modal -->
+                    <div class="modal fade" id="packageModalLong" tabindex="-1" role="dialog" aria-labelledby="exampleModalLongTitle" aria-hidden="true">
+                        <div class="modal-dialog modal-lg" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLongTitle">Modal title</h5>
+                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">&times;</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="package-main">
+                                        <ul>
+                                            <li><label>Package Name  </label></li>
+                                            <li></li>
+                                            <li></li>
+                                            <li></li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12 px-0 pb-6 d-inline-flex justify-content-between mt-2">
+                    <div class="col-12 col-md-9 col-12 flex-wrap d-flex">
+                        <div class="px-0 d-flex contents-middle mr-9 align-items-center flex-wrap">
+                            @{
+                                bool AutoRenew = Model.IsAutoRenew != null ? (bool)Model.IsAutoRenew : false;
+                            }
+                            @if (AutoRenew)
+                            {
+                                <label for="" class="font-weight-bold mb-0 pb-1 mr-4 text-nowrap">Auto Renewal at End of Term On</label>
+                                <div class="small-toggler mr-4">
+                                    <label class="switch">
+                                        <input type="checkbox" name="autorenew" checked onchange="AutoRenewOff()">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            }
+                            else
+                            {
+                                <label for="" class="font-weight-bold mb-0 pb-1 mr-2 text-nowrap">Auto Renewal End of Term Off</label>
+                                <div class="small-toggler mr-4">
+                                    <label class="switch">
+                                        <input type="checkbox" name="autorenew" onchange="AutoRenewOn()">
+                                        <span class="slider round"></span>
+                                    </label>
+                                </div>
+                            }
+                            <label for="" class="font-weight-bold mb-0 pb-1 mr-2 text-nowrap fw-bold">Include in Member Directory</label>
+                            <div class="small-toggler mr-4">
+                                <label class="switch">
+                                    <input type="checkbox" id="CheckDirectory" name="CheckDirectory" onclick="UpdateDirectory()" checked="@Model.CheckDirectory">
+                                    <span class="slider round"></span>
+                                </label>
+                            </div>
+                            @* <label for="" class="font-weight-bold mb-0 pb-1 mr-2 text-nowrap fw-bold">Include in Member Directory</label>
+                            <div class="small-toggler mr-4">
+                            <label class="switch">
+                            <input type="checkbox" id="CheckDirectory" name="CheckDirectory" onclick="UpdateDirectory()" checked="@Model.CheckDirectory">
+                            <span class="slider round"></span>
+                            </label>
+                            </div> *@
+
+                            @*  <label for="" class="font-weight-bold mb-0 pb-1 mr-4 text-nowrap"><span id="renewoff">Auto Renewal Off</span><span id="renewon">Auto Renewal On</span></label>
+                            <div class="small-toggler">
+                            <label class="switch">
+                            <input type="checkbox" name="autorenew" id="autorenew">Member Directory?
+                            <span class="slider round"></span>
+                            </label>
+                            </div>
+                            <span class="switch switch-icon">
+                            <label>
+                            <input type="checkbox"  name="autorenew" id="autorenew">
+                            <span></span>
+                            </label>
+                            </span>*@
+                        </div>
+                        <div class="px-0 d-flex contents-middle ml-9 align-items-center">
+                            @{
+                                bool ActiveInactive = Model.Inactive != null ? (bool)Model.Inactive : false;
+                            }
+                            @if (!ActiveInactive)
+                            {
+                                @* <label class="font-weight-bold text-success pb-1 mb-0 mr-2">Active Member</label>
+                            <div class="small-toggler">
+                            <label class="switch">
+                            <input type="checkbox" name="ActiveMember" checked onchange="ActiveMember()">
+                            <span class="slider round"></span>
+                            </label>
+
+                            </div> *@
+                            }
+                            else
+                            {
+                                <label class="font-weight-bold text-danger pb-1 mb-0 mr-4">Inactive Member</label>
+                                <div class="small-toggler">
+                                    <label class="switch">
+                                        <input type="checkbox" id="InActiveMem" name="ActiveMember" onchange="InActiveMember()">
+                                        <span class="slider round"></span>
+                                    </label>
+
+                                </div>
+                            }
+
+                        </div>
+                    </div>
+
+                    @* <div class="form-group col-3 newPro-btn mb-0">
+                    <button class="newProbtn" onclick="OpenRenewalModel()">Renewal</button>
+                    </div> *@
+                </div>
+
+
+                <div class="col-md-12">
+
+                    <form class="row mx-0" method="POST" enctype="multipart/form-data" id="UserForm" asp-controller="Member" asp-action="EditProfile">
+                        <input type="hidden" asp-for="MinorityStatus" />
+                        @* <input type="hidden" asp-for="Company" /> *@
+                        <input type="hidden" asp-for="ID" />
+                        <input type="hidden" asp-for="Grace" />
+
+                        <div class="col-lg-6 d-inline-flex justify-content-between memb-dir-check">
+
+                            <div class="form-group col-12 px-0 d-inline-grid justify-content-between memb-dir-table mb-0">
+
+                                <div class="row form-group d-inline-grid mb-2 justify-content-between" style="border-bottom:2px solid #ccc">
+                                    <label class="col-6 mb-0"><p class="mb-0 fw-bold"></p></label>
+                                    <div class="col-4 checkbox-inline text-right">
+                                        <label class="mb-0">
+                                            <p class="mb-0 fw-bold">Member Directory?</p>
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row form-group d-inline-grid mb-1 align-c">
+                                    <label class="col-12 col-md-2 fw-5">Company Name </label>
+                                    <div class="col-10 col-md-9 m-0">
+                                        <input class="form-control" asp-for="Company" />
+                                    </div>
+                                    <div class="col-2 col-md-1 checkbox-inline ">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            <input type="hidden" id="chkDirId" value="@Model.DirectoryCheck.DirId" />
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkCompany" name="chkCompany" checked="@Model.DirectoryCheck.Company" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row form-group d-inline-grid mb-1 DBAClass align-c">
+                                    <label class="col-12 col-md-2  col-lg-2 col-form-label fw-5">
+                                        DBA Name<span class="text-danger"></span>
+                                    </label>
+                                    <div class="dropdown col-10 col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        <input class="form-control" type="text" placeholder="DBA" asp-for="Dba">
+                                    </div>
+
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkDBA" name="chkDBA" checked="@Model.DirectoryCheck.DBA" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                                <div class="row form-group d-inline-grid mb-1 MailClass align-c">
+                                    <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5">Company Address<span class="text-danger"></span></label>
+
+                                    <div class="col-10 col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        @*  <div class="form-group row mb-2">
+
+                                        </div> *@
+                                        <div class="form-group row mb-2">
+                                            <div class="col-lg-4 col-12 mb-lg-0 mb-2">
+                                                <input class="form-control" type="text" placeholder="Address" asp-for="MailAddress" />
+                                            </div>
+                                            <div class="col-lg-4 col-12 mb-lg-0 mb-2">
+                                                <input class="form-control form-control-solid" type="text" placeholder="City" asp-for="MailCity" />
+
+                                            </div>
+                                            <div class="col-lg-2 col-12 mb-lg-0 mb-2">
+                                                <div class="dropdown px-0">
+                                                    <select class="form-control form-control-solid mb-1 p-1" asp-for="MailState" placeholder="state" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-lg-2 col-12 mb-lg-0 mb-2">
+                                                <input class="address_zipcode form-control form-control-solid number-only type="text" placeholder="Zip Code" asp-for="MailZip" maxlength="5" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkMailAddress" name="chkMailAddress" checked="@Model.DirectoryCheck.MailAddr" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+
+                                </div>
+
+                                <div class="row form-group d-inline-grid mb-1 BillClass align-c">
+                                    <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5">Billing Address<span class="text-danger"></span></label>
+
+                                    <div class="col-10 col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        @* <div class="form-group row mb-3">
+                                        </div> *@
+                                        <div class="form-group row mb-2">
+                                            <div class="col-lg-4 col-12 mb-lg-0 mb-2">
+                                                <input class="form-control" type="text" placeholder="Address" asp-for="BillAddress" />
+                                            </div>
+                                            <div class="col-lg-4 col-12 mb-lg-0 mb-2">
+                                                <input class="address_zipcode form-control form-control-solid" type="text" placeholder="City" asp-for="BillCity">
+                                            </div>
+                                            <div class="col-lg-2 col-12 mb-lg-0 mb-2">
+                                                <div class="dropdown px-0">
+                                                    <select class="form-control form-control-solid mb-1 p-1" asp-for="BillState" placeholder="state" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-2 col-12mb-lg-0 mb-2">
+                                                <input class="address_zipcode form-control form-control-solid number-only" type="text" placeholder="Bill Zip Code" maxlenghth="5" asp-for="BillZip" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkBillAddress" name="chkBillAddress" checked="@Model.DirectoryCheck.BillAddr" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                                <div class="row form-group d-inline-grid mb-1 PhoneClass align-c">
+                                    <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5">Company Phone<span class="text-danger"></span></label>
+
+                                    <div class="col-10 col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        <div class="form-group row mb-1">
+                                            <div class="dropdown col-lg-12 col-12 mb-lg-0 mb-2">
+                                                <input class="form-control" type="text" id="companyphone" asp-for="CompanyPhone" onchange="validateInputLength(this.id)" />
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkPhone" name="chkPhone" checked="@Model.DirectoryCheck.Phone" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row form-group d-inline-grid mb-1 align-c">
+                                    <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5">Primary Contact</label>
+                                    <p class="col-10 col-md-9 m-0"><span class="fw-5">@Model.ContactName</span></p>
+                                    <input type="hidden" class="form-control" asp-for="ContactName" />
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkPC" name="chkPC" checked="@Model.DirectoryCheck.PrimaryContact" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row form-group d-inline-grid mb-1 EmailClass align-c">
+                                    <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5">
+                                        Email<span class="text-danger"></span>
+                                    </label>
+                                    <div class="col-10 col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        <div class="form-group row mb-0">
+                                            <div class="dropdown col-lg-12 col-12 mb-lg-0 mb-2">
+                                                <input class="form-control" type="email" id="Email" asp-for="Email" />
+                                                <span id="EmailError" style="color:red;"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkEmail" name="chkEmail" checked="@Model.DirectoryCheck.Email" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+
+
+                                <div class="DivClass row form-group d-inline-grid mb-1 align-c">
+                                    <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5">
+                                        Principal Business
+                                        <span class="text-danger"></span>
+                                    </label>
+                                    <div class="col-10 col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        <div class="form-group row mb-0">
+                                            <div class="dropdown col-lg-12 col-12 mb-lg-0 mb-2">
+                                                <select class="form-control form-control-solid mb-1 p-1" id="DivisionList" asp-for="DivisionList" asp-items="@(new SelectList(ViewBag.Divisions, "Value", "Text", "Selected"))" multiple>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkPB" name="chkPB" checked="@Model.DirectoryCheck.Business" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row form-group d-inline-grid mb-1 align-c">
+                                    <label class="col-12 col-md-2 fw-5">Company Logo </label>
+                                    <p class="d-flex align-items-center col-10 col-md-9">
+                                        <img src="@Model.Logo" class="img-fluid" height="100" width="100" id="mailerImage" />
+                                        <input type="file" id="fileUpload1" name="pdfFile" onchange="UploadFile()">
+                                        <input type="hidden" asp-for="Logo" />
+                                        <span class="loginError" id="uploadError"></span>
+                                        @*<i id="btnLogo" class="fas fa-pencil-alt" aria-hidden="true" onclick="Logo()"></i>
+                                        <input id="checkLogo" class="newProbtn" value="Save" asp-controller="StaffAccount" asp-action="EditProfile" onclick="UploadFile(this.event)" type="submit">
+                                        <input type="button" id="cancelLogo" class="newProbtn" value="Cancel" onclick="CancelLogo()" />*@
+                                    </p>
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (Model.Logo != null)
+                                            {
+                                                <input id="chkLogo" name="Logo" checked="@Model.DirectoryCheck.Logo" type="checkbox" />
+                                            }
+                                            <span></span>
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="row form-group d-inline-grid mb-1 LicClass align-c">
+                                    <div class="col-md-11">
+                                        @if (Model.LicenseInfos != null)
+                                        {
+
+                                            @for (int i = 0; i < @Model.LicenseInfos.Count; i++)
+                                            {
+                                                int a = i + 1;
+                                                <div class="form-group row mb-1">
+                                                    <label class="col-xl-2 col-lg-2 col-form-label fw-5 text-nowrap">
+                                                        License @a
+                                                        <span class="text-danger"></span>
+                                                    </label>
+                                                    <div class="col-10 col-lg-10 col-xl-10 mb-lg-0 mb-2">
+                                                        <div class="form-group row mb-0">
+                                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+
+                                                                <input class="address_zipcode form-control form-control-solid"
+                                                                       asp-for="LicenseInfos[i].LicNum" type="text"
+                                                                       placeholder="">
+                                                            </div>
+                                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                <div class="dropdown px-0">
+                                                                    <select class="form-control form-control-solid mb-1 p-1 thiscls" id="LicenseInfos[@i].State" name="LicenseInfos[@i].State" placeholder="state" >
+                                                                        @foreach (var state in ViewBag.States)
+                                                                        {
+                                                                            if (state.Value == Model.LicenseInfos[i].State[0].ToString())
+                                                                            {
+                                                                                <option value="@state.Value" selected>@state.Text</option>
+                                                                            }
+                                                                            else{
+                                                                                <option value="@state.Value">@state.Text</option>
+                                                                            }
+                                                                        }
+                                                                    </select>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                <input class="address_zipcode form-control form-control-solid" asp-for="LicenseInfos[i].LicDesc" type="text" placeholder="">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                            }
+                                        }
+                                    </div>
+
+                                    <div class="col-2 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkLicense" name="chkLicense" checked="@Model.DirectoryCheck.License" type="checkbox" />
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+                                </div>
+
+                                <div class="row form-group d-inline-grid mb-1">
+                                    <label class="col-12 col-md-3">
+                                        <span style="cursor:pointer; color:orange;" class="" onclick="AddLicense()" id="lic-btn"><i class="fa fa-plus" aria-hidden="true"></i><u>Add License</u></span>
+                                    </label>
+                                </div>
+
+                                <div class="row form-group d-inline-grid mb-1 align-c">
+                                    <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5">
+                                        Specialities<span class="text-danger"></span>
+                                    </label>
+                                    <div class="col-10 col-lg-9 col-xl-9">
+                                        <div class="form-group row mb-0">
+                                            <div class="dropdown col-lg-12 col-12 mb-lg-0 mb-2">
+                                                <input class="form-control" type="text" placeholder="Specialities" asp-for="Discipline">
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-1 col-md-1 checkbox-inline">
+                                        <label class="checkbox checkbox-square m-auto">
+                                            @if (!ActiveInactive)
+                                            {
+                                                <input id="chkSpeciality" type="checkbox" checked="@Model.DirectoryCheck.Speciality" name="chkSpeciality">
+                                                <span></span>
+                                            }
+                                        </label>
+                                    </div>
+
+                                </div>
+
+
+                                @if (!ActiveInactive)
+                                {
+                                    <div class="row justify-content-end my-3 newPro-btn">
+                                        @* <input type="submit" class="newProbtn mx-3" value="Update Profile" asp-controller="StaffAccount" asp-action="EditProfile" /> *@
+                                        <input type="button" class="newProbtn" value="Update Profile" onclick="SaveDirectory()" />
+                                    </div>
+                                }
+                                <div class="LocClass">
+                                    @if (Model.Locations.Count > 0)
+                                    {
+                                        int i = 1;
+                                        foreach (var loc in Model.Locations)
+                                        {
+                                            <div class="row form-group d-inline-grid mb-2">
+                                                <label class="col-12 col-md-3 fw-5">Location @i</label>
+                                                <div class="col-9">
+                                                    <div class="small-toggler row">
+                                                        @if (!string.IsNullOrEmpty(loc.Value))
+                                                        {
+                                                            <div class="col-12  col-md-8 col-lg-8 my-767">
+                                                                <span class="" id="location-btn"><i class="fa fa-envelope" aria-hidden="true"></i> @loc.Key</span>
+                                                            </div>
+                                                        }
+                                                        @if (!string.IsNullOrEmpty(loc.Value))
+                                                        {
+                                                            <div class="col-12  col-md-4 col-lg-4">
+                                                                <span class="" id="location-btn"><i class="fa fa-phone" aria-hidden="true"></i> @loc.Value</span>
+                                                            </div>
+                                                        }
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            i++;
+                                        }
+                                    }
+                                </div>
+                                <div class="LocEditClass align-c p-2">
+                                    @if (Model.LocationsList != null && Model.LocationsList.Count > 0)
+                                    {
+                                        for (int z = 0; z < Model.LocationsList.Count; z++)
+                                        {
+                                            int num = z + 1;
+                                            <div class="form-group row mb-1">
+                                                <label class="col-12 col-xl-2 col-lg-2 col-form-label fw-5 text-nowrap">Location @num<span class="text-danger"></span></label>
+                                                <div class="col-10 col-lg-10 col-xl-10 mb-lg-0 mb-2">
+                                                    <div class="form-group row mb-3">
+                                                        <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                            <input type="hidden" asp-for="LocationsList[z].LocId" />
+                                                            <input class="form-control"
+                                                                   type="text"
+                                                                   placeholder="Location Address" asp-for="LocationsList[z].LocAddr" />
+                                                        </div>
+                                                        <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                            <input class="form-control form-control-solid number-only" type="text" placeholder="Zip" asp-for="LocationsList[z].LocZip" maxlength="5" />
+
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-2">
+                                                        <div class="col-lg-4 col-12 mb-lg-0 mb-2">
+                                                            <input class="form-control form-control-solid" type="text"
+                                                                   placeholder="City" asp-for="LocationsList[z].LocCity" />
+
+                                                        </div>
+                                                        <div class="col-lg-4 col-12 mb-lg-0 mb-2">
+                                                            <div class="dropdown px-0">
+                                                                <input type="hidden" asp-for="LocationsList[z].LocState" />
+                                                                <select class="form-control form-control-solid p-0" asp-for="LocationsList[z].LocStateCode" placeholder="state" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="AssignState(this.id)"></select>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class=col-lg-4 col-12 mb-lg-0 mb-2">
+                                                            <input class="address_zipcode form-control form-control-solid"
+                                                                   type="text"
+                                                                   placeholder="County" asp-for="LocationsList[z].LocCounty" />
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="form-group row mb-1">
+                                                <label class="col-xl-2 col-lg-2 col-form-label fw-5">
+                                                    Location Phone<span class="text-danger"></span>
+                                                </label>
+                                                <div class="col-lg-10 col-xl-10">
+                                                    <input class="form-control" type="text" placeholder="Phone Number" asp-for="LocationsList[z].LocPhone" onkeyup="validateEditLocInputLength(this.id)" onchange="validateInputLength(this.id)" />
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                    <div class="form-group row mb-0">
+                                        <div class="col-lg-12 col-xl-12 text-right newPro-btn">
+                                            <input type="submit" class="newProbtn" value="Save Location Details" asp-controller="Member" asp-action="EditProfile" />
+                                            <input type="button" class="newProbtn" value="Cancel" onclick="CancelActiveEdit()" />
+                                        </div>
+                                    </div>
+
+                                </div>
+                                <div class="row form-group d-inline-grid mb-2">
+                                    <label class="col-12 col-md-3">
+                                        <span style="cursor:pointer; color:orange;" onclick="OpenPopup()" id="location-btn"><i class="fa fa-plus" aria-hidden="true"></i><u>Add Location</u></span>
+                                    </label>
+                                    @if (Model.Locations.Count > 0)
+                                    {
+                                        <label class="col-12 col-md-3">
+                                            <span style="cursor:pointer; color:orange;" onclick="ActiveEdit()" id="location-btn"><i class="fa fa-plus" aria-hidden="true"></i><u>Edit Location</u></span>
+                                        </label>
+                                    }
+                                </div>
+                            </div>
+
+                            @* </div>*@
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="">
+                                <div class="row form-group d-inline-grid mb-2 justify-content-between" style="border-bottom:2px solid #ccc">
+                                    <label class="col-6 mb-0"><p class="mb-0 fw-bold">User Information</p></label>
+                                    <div class="col-4 checkbox-inline text-center">
+                                        <label class="mb-0">
+                                            @* <p class="mb-0 fw-bold">User Information</p> *@
+                                        </label>
+                                    </div>
+                                </div>
+                                <div class="form-group col-12 px-0 ">
+                                    <div class="table-responsive cusTable">
+                                        <table class="table table-bordered" id="kt_advance_table_widget_1">
+                                            <thead class="font-weight-bold">
+                                                <tr>
+                                                    <th>Name</th>
+                                                    <th>Email</th>
+                                                    <th>Phone</th>
+                                                    <th>Password </th>
+                                                    <th>Admin</th>
+                                                    <th>Daily Report</th>
+                                                    <th>Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="add-user-tbody newPro-btn text-center">
+                                                @if (Model.ContactList != null)
+                                                {
+                                                    @foreach (var contact in Model.ContactList)
+                                                    {
+                                                        <tr>
+                                                            <td>@contact.Contact</td>
+                                                            <td>@contact.Email</td>
+                                                            <td>@contact.Phone</td>
+                                                            <td class="icon-table">
+                                                                <div class="btn-div">
+                                                                    <button class="btn-sm btn-update-password table-btn2 fa fa-sign-out p-2" onclick="OpenResetModal('@contact.Email')"></button>
+                                                                </div>
+                                                            </td>
+                                                            <td class="text-center">
+                                                                <div class="checkbox-inline">
+                                                                    <label class="checkbox checkbox-square">
+                                                                        <input type="checkbox" onclick="MemberUserAdmin(@Model.ID,'@contact.Email')" value="1" name="member_user_admin" checked="@contact.MainContact">
+                                                                        <span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                            <td>
+                                                                <div class="checkbox-inline">
+                                                                    <label class="checkbox checkbox-square">
+                                                                        <input type="checkbox" name="member_user_daily_report" onclick="MemberUserDailyReport(@Model.ID,'@contact.Email', this)" checked="@contact.Daily" id="chkDailyReport" />                  <span></span>
+                                                                    </label>
+                                                                </div>
+                                                            </td>
+                                                            <td class="icon-table">
+                                                                <button type="button" class="btn-sm btn-reset-email table-btn2 m-1" onclick="OpenEditPopup(@contact.ConID, '@contact.Contact', '@contact.Email', @contact.LocId, '@contact.Phone')">
+                                                                    <i class="fas fa-pencil-alt"></i>
+                                                                </button>
+                                                                <button class="btn-sm btn-reset-email table-btn2" onclick="DeleteUserManagement(@contact.ConID, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></button>
+                                                            </td>
+                                                            @* <td></td> *@
+
+                                                        </tr>
+
+                                                    }
+                                                }
+                                            </tbody>
+
+                                        </table>
+                                    </div>
+                                </div>
+                                <div class="form-group col-12 px-0 text-right newPro-btn">
+                                    <button type="button" class="px-4 add-user-toggle newProbtn" onclick="OpenUserModal()">Add User</button>
+                                </div>
+                                <div class="modal fade usermodal" tabindex="-1" style="display: none;">
+                                    <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                                        <div class="modal-content">
+                                            @* <form method="post" id="resetform"> *@
+                                            <div class="modal-header cusModal-Header">
+                                                <h5 class="modal-title" id="exampleModalLabel">
+                                                    <span class="card-label font-weight-bolder text-white">
+                                                        Forget
+                                                        Password
+                                                    </span>
+                                                </h5>
+                                                <button type="button" onclick="ResetClose()" class="close" data-dismiss="modal" aria-label="Close">
+                                                    <i aria-hidden="true" class="fa fa-times"></i>
+                                                </button>
+                                            </div>
+                                            <div class="modal-body text-left formCls">
+                                                <div class="form-group">
+                                                    <label for="">Enter your registered email address.</label>
+                                                    <input class="form-control form-control-solid form-control" type="text" name="Email" id="UserEmail" placeholder="Email">
+                                                </div>
+                                            </div>
+                                            <div class="modal-footer newPro-btn">
+                                                <input type="hidden" class="member_user_id"
+                                                       name="member_user_id" value="44">
+                                                <input type="submit" asp-action="StaffForgetpassword" asp-controller="Account"
+                                                       class="newProbtn" value="Reset password">
+                                            </div>
+                                            @* </form> *@
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        @* <div class="col-lg-3">
+                        @if (!ActiveInactive)
+                        {
+                        <div class="col-12" style="border-bottom:2px solid #ccc;">
+                        <label class="fw-bold mb-0">Member Directory Preview </label>
+                        </div>
+
+                        <div class="col-12 form-group col-3 pt-2 mb-0">
+                        <div class="preview_directory bytagig-div">
+                        <div class="d-flex mb-2 justify-content-between logoPreview">
+                        <div class="mail-info d-flex logoPreview">
+                        <img src="@Model.Logo" class="img-fluid" height="100" width="100" id="mailerImage" />
+                        </div>
+                        </div>
+                        <div class="companyPreview">
+                        <h5>@Model.Company</h5>
+                        </div>
+                        <div class="preview_directory_left justify-content-between align-items-center mb-10">
+                        <div class="member_info dbaPreview">
+                        <div class="d-flex align-items-start mb-2 address_group">
+                        <p class="m-0">@Model.Dba</p>
+                        </div>
+                        </div>
+                        <div class="member_logo">
+                        <img src="" alt="">
+                        </div>
+                        </div>
+                        <div class="border-bottom mb-5 fw-bold">
+                        <div class="d-flex mb-2 justify-content-between primarycontPreview">
+                        <div class="mail-info d-flex">
+                        <p class="m-0">@Model.ContactName</p>
+                        </div>
+                        </div>
+                        <div class="d-flex mb-2 justify-content-between billaddrPreview">
+                        <div class="mail-info d-flex">
+                        <p class="m-0">@Model.ConsBillAddress</p>
+                        </div>
+                        </div>
+                        <div class="d-flex mb-2 justify-content-between mailaddrPreview">
+                        <div class="mail-info d-flex">
+                        <p class="m-0">@Model.ConsMailAddress</p>
+                        </div>
+                        </div>
+                        <div class="d-flex mb-2 justify-content-between businessPreview">
+                        <div class="mail-info d-flex">
+                        <p class="m-0">@Model.Div</p>
+                        </div>
+                        </div>
+                        <div class="d-flex mb-2 justify-content-between phonePreview">
+                        <div class="mail-info d-flex">
+                        <p class="m-0">@Model.CompanyPhone</p>
+                        </div>
+                        </div>
+                        <div class="d-flex mb-2 justify-content-between emailPreview">
+                        <div class="mail-info d-flex">
+                        <p class="m-0">@Model.Email</p>
+                        </div>
+                        </div>
+                        </div>
+                        <div class="preview_directory_bottom specPreview">
+                        <div class="d-flex align-items-start mb-2 address_group">
+                        <b class="prev-dir mr-2">Specialties :</b>
+                        <p>@Model.Discipline</p>
+                        </div>
+                        </div>
+                        <div class="preview_directory_bottom licensePreview">
+                        <div class="d-flex align-items-start mb-2 address_group">
+                        <b class="prev-dir mr-2">License :</b>
+                        <p>@Model.License</p>
+                        </div>
+                        </div>
+
+                        <div class="preview_directory_bottom row mx-0 licensePreview">
+                        <div class="form-check col-lg-6">
+                        <input class="form-check-input" type="checkbox" value="" id="entity1" checked>
+                        <label class="form-check-label fw-6" for="entity1">
+                        Entity Type
+                        </label>
+                        </div>
+
+                        <div class="form-check col-lg-6">
+                        <input class="form-check-input" type="checkbox" value="" id="entity2" checked>
+                        <label class="form-check-label fw-6" for="entity2">
+                        Entity Type 2
+                        </label>
+                        </div>
+                        </div>
+
+                        </div>
+                        </div>
+                        }
+                        </div> *@
+
+                    </form>
+                </div>
+
+
+                @* <div class="col-12">
+                <div class="row card-custom gutter-b ">
+                <div class="card-body p-0" style="overflow:scroll;">
+
+                <div class="main-heading">
+                <h2 class="">User Management</h2>
+                <p class="pb-0">Premium Full Coverage. Up to 5 Users</p>
+                </div>
+                <div class="box-space">
+                <div class="form-group col-12 px-0 ">
+                <div class="table-responsive cusTable">
+                <table class="table table-bordered" id="kt_advance_table_widget_1">
+                <thead class="font-weight-bold">
+                <tr>
+                <th>Name</th>
+                <th>Email</th>
+                <th>Phone</th>
+                <th>Password Update</th>
+                <th>Admin</th>
+                <th>Daily Project Report</th>
+                <th>Edit information</th>
+                </tr>
+                </thead>
+                <tbody class="add-user-tbody newPro-btn text-center">
+                @if (Model.ContactList != null)
+                {
+                @foreach (var contact in Model.ContactList)
+                {
+                <tr>
+                <td>@contact.Contact</td>
+                <td>@contact.Email</td>
+                <td>@contact.Phone</td>
+                <td class="icon-table">
+                <div class="btn-div">
+                <button class="btn-sm btn-update-password table-btn2 fa fa-sign-out" onclick="OpenResetModal('@contact.Email')"></button>
+                </div>
+                </td>
+                <td class="text-center">
+                <div class="checkbox-inline">
+                <label class="checkbox checkbox-square">
+                <input type="checkbox" onclick="MemberUserAdmin(@Model.ID,'@contact.Email')" value="1" name="member_user_admin" checked="@contact.MainContact">
+                <span></span>
+                </label>
+                </div>
+                </td>
+                <td>
+                <div class="checkbox-inline">
+                <label class="checkbox checkbox-square">
+                <input type="checkbox" name="member_user_daily_report" onclick="MemberUserDailyReport(@Model.ID,'@contact.Email', this)" checked="@contact.Daily" id="chkDailyReport" />                  <span></span>
+                </label>
+                </div>
+                </td>
+                <td class="icon-table">
+                <button type="button" class="btn-sm btn-reset-email table-btn2" onclick="OpenEditPopup(@contact.ConID, '@contact.Contact', '@contact.Email', @contact.LocId, '@contact.Phone')">
+                <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button class="btn-sm btn-reset-email table-btn2" onclick="DeleteUserManagement(@contact.ConID, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></button>
+                </td>
+                <td></td>
+
+                </tr>
+
+                }
+                }
+                </tbody>
+
+                </table>
+                </div>
+                </div>
+                <div class="form-group col-12 px-0 text-right newPro-btn">
+                <button type="button" class="px-4 add-user-toggle newProbtn" onclick="OpenUserModal()">Add User</button>
+                </div>
+                <div class="modal fade usermodal" tabindex="-1" style="display: none;">
+                <div class="modal-dialog modal-dialog-centered modal-sm" role="document">
+                <div class="modal-content">
+                <form method="post" id="resetform">
+                <div class="modal-header cusModal-Header">
+                <h5 class="modal-title" id="exampleModalLabel">
+                <span class="card-label font-weight-bolder text-white">
+                Forget
+                Password
+                </span>
+                </h5>
+                <button type="button" onclick="ResetClose()" class="close" data-dismiss="modal" aria-label="Close">
+                <i aria-hidden="true" class="fa fa-times"></i>
+                </button>
+                </div>
+                <div class="modal-body text-left formCls">
+                <div class="form-group">
+                <label for="">Enter your registered email address.</label>
+                <input class="form-control form-control-solid form-control" type="text" name="Email" id="UserEmail" placeholder="Email">
+                </div>
+                </div>
+                <div class="modal-footer newPro-btn">
+                <input type="hidden" class="member_user_id"
+                name="member_user_id" value="44">
+                <input type="submit" asp-action="StaffForgetpassword" asp-controller="Account"
+                class="newProbtn" value="Reset password">
+                </div>
+                </form>
+                </div>
+                </div>
+                </div>
+                </div>
+
+                </div>
+                </div>
+                </div> *@
+               @*  <div class="col-md-12">
+                    <div class="main-heading">
+                        <div class="row">
+                            <div class="col-md-12 p-0">
+                                <h2 class="">Internal Notes</h2>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-12" id="divNotes">
+                    <div class="row card-custom gutter-b example example-compact">
+                        <div class="card-body">
+                            <div class="col-12 px-0">
+
+
+                                <div class="member_notice_section">
+                                    <div class="notice_head d-flex mb-2">
+                                        <div class="width-10 font-weight-bold">
+                                            <span>Date</span>
+                                        </div>
+                                        <div class="width-80 font-weight-bold">
+                                            <span>Notes</span>
+                                        </div>
+                                    </div>
+                                    @if (Model.NoteList != null)
+                                    {
+                                        for (var i = 0; i < Model.NoteList.Count; i++)
+                                        {
+                                            <div class="date-notes-row">
+                                                <div class="width-10">
+                                                    <span class="text-date-class">
+                                                        @(
+                                                            Model.NoteList[i].LogDate != null ? Model.NoteList[i].LogDate.Value.ToShortDateString() : " "
+                                                            )
+                                                    </span>
+                                                </div>
+                                                <div class="width-80">
+                                                    <span class="text-note-class">@Model.NoteList[i].Note</span>
+                                                </div>
+                                                <div class="notice_row_actions remove_prebid_row float-right">
+                                                    <button id="editNote" onclick="EditNote(this,@Model.NoteList[i].Id,event)"><i class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                    @*<button asp-route-MemId="@Model.ID" asp-route-NoteId="@Model.NoteList[i].Id" asp-action="DeleteNote" asp-controller="StaffAccount" type="submit">
+                                                    <button id="editNote" onclick="DeleteNote(@Model.ID,@Model.NoteList[i].Id)"><i class="fa fa-trash hover-danger" aria-hidden="true"></i></button>
+                                                    <input type="hidden" value="@ViewBag.ErrorMessage" id="tmpHiddenMsg" />
+                                                </div>
+                                            </div>
+                                        }
+                                    }
+                                </div>
+                                <div class="col-12 newPro-btn">
+                                    <button class="add_member_notify_btn newProbtn" style="float: right;" id="formButton">
+                                        @*<i class="icon-md fas fa-file-signature"></i> Add Notes
+                                    </button>
+                                </div>
+                                <div class="add_member_notice form-group col-12">
+                                    <form class="pt-4" id="addnote" style="display:none">
+                                        <div class="form-group col-md-6  d-inline-grid">
+                                            <input type="hidden" value="1" id="CompType" />
+                                            <textarea class="form-contupdate mrol" rows="5" autocomplete="off" id="txtAddNote"></textarea>
+                                            <span class="loginError"></span>
+                                        </div>
+                                        <div class="form-group col-md-6 px-0 d-inline-grid mb-2 newPro-btn">
+                                            <input class="btn btn-sm float-righ newProbtn mr-0" type="button"
+                                                   name="notify_btn" value="Save Changes" onclick="AddNote()">
+                                        </div>
+                                    </form>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div> *@
+
+                @*<div class="col-12 d-flex justify-content-end newPro-btn">
+                <a href="" class="btn btn-sm  newProbtn">Save</a>
+                </div>
+                *@
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Edit Note Modal -->
+<div class="modal m-modal fade noteModal" id="noteModal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder">
+                    Edit Account Info
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row px-0 mx-0">
+                    <div class="col-lg-12 pl-0">
+                        <h6>EDIT NOTE</h6>
+                        <div class="form-group row mb-3">
+                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                Date
+                            </label>
+                            <div class="col-lg-9 col-xl-9">
+                                <span id="spanNotedate">10-10-2022</span>
+                                <input type="hidden" id="hdnNoteId" value="0" />
+                            </div>
+                        </div>
+                        <div class="form-group row mb-3">
+                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                Note<span class="text-danger"></span>
+                            </label>
+                            <div class="col-lg-9 col-xl-9">
+                                <div class="form-group col-md-12 px-0 d-inline-grid mb-2">
+                                    <textarea class="form-control" rows="5" autocomplete="off" id="edittextNote"></textarea>
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="form-group col-md-12 px-0 d-inline-grid mb-2 newPro-btn">
+                                    <button class="newProbtn" name="notify_btn" onclick="UpdateNote()">Save Changes</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Add User Modal -->
+<div class="modal u-modal fade" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder">
+                    Add New User
+                </h4>
+                <button type="button" class="close user-modal" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form method="POST" id="UserForm" class="col-md-12 order-form text-left formCls">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-12 pl-0">
+                            <h6>USER INFORMATION</h6>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Name<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-4 col-xl-4">
+                                    <input class="form-control form-control-solid " type="text" placeholder="First Name" id="Firstname" />
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-lg-4 col-xl-4">
+                                    <input class="form-control form-control-solid " type="text" placeholder="Last Name" id="Lastname" />
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Email<span class="text-danger">*</span>
+                                </label>
+                                <div class="dropdown col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                    <input class="form-control" type="text" placeholder="Email" id="ConEmail">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            @if (Model.Locations != null && Model.Locations.Count > 0)
+                            {
+                                <div class="form-group row mb-3">
+                                    <label class="col-xl-3 col-lg-3 col-form-label ">Assign Location<span class="text-danger"></span></label>
+                                    <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                        <div class="dropdown px-0">
+                                            <input type="hidden" id="hdnLocUser" />
+                                            <select class="form-control form-control-solid mb-1 p-1" placeholder="LocUser" id="LocUser" asp-items="@(new SelectList(ViewBag.LocUser, "Value", "Text", "Selected"))"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Phone<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-8 col-xl-8">
+                                    <input class="form-control" type="text" placeholder="Phone" id="Phone" onchange="validateInputLength(this.id)" />
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Password<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-4 col-xl-4">
+                                    <input class="form-control  copy_email" type="password" placeholder="password" id="Password">
+                                    <input type="hidden" id="hdnPass" />
+                                </div>
+                                <div class="col-lg-4 col-xl-4">
+                                    <input class="form-control  copy_email" type="password" placeholder="Confirm Password" id="PasswordCofirmation">
+                                    <input type="hidden" id="hdnPassConfirm" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-11 subm-btn newPro-btn">
+                            <input type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="submitData()" value="Add User" />
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Add License Modal -->
+<div class="modal li-modal fade" id="tableAddLic" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder">
+                    Add New License
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form method="POST" class="col-md-12 order-form text-left formCls" id="frmPrintForm">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-12 pl-0">
+                            <h5>License Detail</h5>
+
+
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    License Number<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                    <input class="address_zipcode form-control form-control-solid" type="text" placeholder="License" id="idLic">
+                                    <span class="loginError"></span>
+                                </div>
+                                <label class="col-xl-1 col-lg-1 ">
+                                    States<span class="text-danger">*</span>
+                                </label><div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                    <div class="dropdown px-0">
+                                        <select class="form-control form-control-solid" id="LicState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                        <span class="loginError"></span>
+                                    </div>
+                                    @*<div class="dropdown" sytle="display:none;">
+                                    <button class=" p-2 border-0 dropdown-toggle" type="button" id="dropdownMenuButton"
+                                    data-mdb-toggle="dropdown" aria-expanded="false">
+                                    Select States
+                                    </button>
+                                    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton" style="overflow-y: scroll;height: 300px;">
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme1" />
+                                    <label class="form-check-label" for="Checkme1">WA</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme2"/>
+                                    <label class="form-check-label" for="Checkme2">CA</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+                                    <li>
+                                    <a class="dropdown-item" href="#">
+                                    <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" value="" id="Checkme3" />
+                                    <label class="form-check-label" for="Checkme3">FE</label>
+                                    </div>
+                                    </a>
+                                    </li>
+
+                                    </ul>
+                                    </div>*@
+                                </div>
+
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    License Description
+                                </label>
+                                <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                    <textarea class="address_zipcode form-control form-control-solid"
+                                              type="text"
+                                              placeholder="License Description" id="LicDesc"></textarea>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 subm-btn newPro-btn">
+                            <button type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="SaveLic()">Add License</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Add Location Modal -->
+<div class="modal lo-modal fade" id="tableAddLoc" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder">
+                    Add Location
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form method="POST" class="col-md-12 order-form text-left formCls" id="frmPrintForm2">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-12 pl-0">
+                            <h4>Location Details</h4>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label ">Address<span class="text-danger">*</span></label>
+                                <div class="col-lg-6 col-xl-6 mb-lg-0 mb-2">
+                                    <input class="form-control" type="text" placeholder="Address" id="LocationAddress" />
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                    <input class="form-control number-only" type="text" placeholder="Zip" id="LocationZip" maxlength="5" />
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    <span class="text-danger"></span>
+                                </label>
+                                <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                    <input class="address_zipcode form-control form-control-solid" type="text" placeholder="City" id="LocationCity">
+                                    <span class="loginError"></span>
+
+                                </div>
+                                <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                    <div class="dropdown px-0">
+                                        <select class="form-control form-control-solid mb-1 p-1" placeholder="state" id="LocationState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                    <input class="address_zipcode form-control form-control-solid" type="text" placeholder="County" id="LocationCounty" />
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Phone<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input class="form-control" type="text" placeholder="Phone" id="LocationPhone" onchange="validateInputLength(this.id)" />
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 subm-btn newPro-btn">
+                            <button type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="AddLocation()">Add Location</button>
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+<!-- Update User Modal -->
+<div class="modal ue-modal fade" id="tableEdituser" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder">
+                    Edit User123
+                </h4>
+                <button type="button" onclick="ResetClose()" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form method="POST" id="frmEdit" class="col-md-12 order-form text-left formCls">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-12 pl-0">
+                            <h6>Edit User</h6>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Name<span class="text-danger">*</span>
+                                </label>
+                                <input type="hidden" id="EdhdnCid" />
+                                <div class="col-lg-9 col-xl-9">
+                                    <input class="form-control form-control-solid " type="text" placeholder="Name" id="EditName" />
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Email<span class="text-danger">*</span>
+                                </label>
+                                <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                    <input type="hidden" id="hdnEmail">
+                                    <input class="form-control" type="text" placeholder="Email" id="EditConEmail">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            @if (Model.Locations != null && Model.Locations.Count > 0)
+                            {
+                                <div class="form-group row mb-3">
+                                    <label class="col-xl-3 col-lg-3 col-form-label ">Assign Location<span class="text-danger"></span></label>
+                                    <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        <div class="dropdown px-0">
+                                            <input type="hidden" id="EdithdnLocUser" />
+                                            <select class="form-control form-control-solid mb-1 p-1" placeholder="EditLocUser" id="EditLocUser" asp-items="@(new SelectList(ViewBag.LocUser, "Value", "Text", "Selected"))"></select>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Phone<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input class="form-control" type="text" placeholder="Phone" id="EditPhone" onchange="validateInputLength(this.id)" />
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12 subm-btn newPro-btn">
+                            <input type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="UpdateData()" value="Update" />
+                        </div>
+                    </div>
+                </form>
+
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<!-- Open Renewal Modal -->
+
+<div class="modal re-modal fade" id="tableEdituser" role="dialog">
+    <partial name="_membershipView"></partial>
+</div>
+
+<div class="modal fade" id="paymentHistoryModal" tabindex="-1" role="dialog" aria-labelledby="paymentHistoryModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="paymentHistoryModalLabel">Payment History</h5>
+                <button type="button" class="close" id="closehistory" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div id="paymentHistoryContent">
+                    <!-- Payment history table will be loaded here -->
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Subscription</th>
+                                <th>Date</th>
+                                <th>Amount</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody id="paymentHistoryTableBody">
+                            <!-- Payment history rows will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+</div>

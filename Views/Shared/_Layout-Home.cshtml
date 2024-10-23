@@ -1,0 +1,1079 @@
+﻿<!DOCTYPE html>
+<html lang="en"
+      class="csspositionsticky supports backgroundblendmode objectfit object-fit backgroundcliptext cssfilters cssmask backdropfilter">
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#3ed2a7">
+
+    <link rel="shortcut icon" href="~/assets/images/Logo Master Vert Black.jpg">
+
+    <title> Plan Center - @ViewData["Title"]</title>
+
+    @await RenderSectionAsync("google", required: false)
+    @*<link href="~/assets/css/css2" rel="stylesheet">*@
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    <link rel="stylesheet" href="~/assets/css/liquid-icon.min.css">
+    <link rel="stylesheet" href="~/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="/assets/css/font-awesome.min.css">
+    <link href="/admincss/adminstyle.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    <link rel="stylesheet" href="~/assets/css/theme-vendors.min.css">
+    <link rel="stylesheet" href="~/assets/css/theme.min.css">
+    <link rel="stylesheet" href="~/assets/css/mainstyles.css">
+
+
+
+
+    <!-- Head Libs -->
+
+    <script async="" src="~/assets/js/modernizr.min.js"></script>
+
+    @await RenderSectionAsync("IndexJs", required: false)
+    @*<script type="text/javascript" charset="UTF-8" src="~/assets/common.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="~/assets/util.js"></script>*@
+    <link rel="stylesheet" href="~/css/custom.css">
+    @await RenderSectionAsync("CustomCSS", required: false)
+
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y350DCZ35"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-9Y350DCZ35');
+</script>
+<style>
+    .bottom-footer p {
+        color: #fff;
+        text-align: center;
+        margin: 0;
+        padding: 15px;
+    }
+
+    .tawk-min-container .tawk-button-circle {
+        background: #ff9900 !important;
+    }
+
+        .tawk-min-container .tawk-button-circle.tawk-button-large {
+            background: #ff9900 !important;
+        }
+
+       
+    #loader-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .popup-loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /*background-color: black;*/
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .main-nav .link-txt {
+        margin-bottom: 4px;
+    }
+
+    li.nav-item.dropdown.cst-login {
+        /* margin-bottom: 4px; */
+    }
+
+    /* .cus-nav-head .logo-default.logo-full {
+        display: block;
+        max-width: initial;
+        position: absolute;
+        left: -240px;
+        width: 1800px;
+        top: -20px;
+        width: 102vw;
+    } */
+
+    marquee#SpeMsg {
+        color: #f90;
+        letter-spacing: 0.4px;
+        font-size: 18px;
+    }
+
+    .topMarquee {
+       visibility:hidden;
+    }
+
+    .mainbar-wrap.cus-mainbar{
+        position: fixed;
+        width: 100%;
+    }
+
+    .mainbar-container.fixed-header{
+        background: url(/assets/images/header-hm-back.jpg);
+        backdrop-filter: blur(10px);
+        background-position: center;
+        padding: 10px 0 0 0;
+    }
+
+    .fixed_marquee.fixed-header {
+        top: 32px;
+    }
+    @@media (max-width: 992px) {
+
+        .main-nav .link-txt {
+            margin-bottom: unset;
+        }
+
+        @@media (min-width: 1200px) {
+            .logo-default.logo-full {
+                display: block;
+            }
+
+            .logo-default.desktop-img {
+                display: none;
+            }
+        }
+
+        li.nav-item.dropdown.cst-login {
+            margin-bottom: unset;
+        }
+    }
+</style>
+<body data-mobile-nav-trigger-alignment="right" data-mobile-nav-align="left" data-mobile-nav-style="classic"
+      data-mobile-nav-shceme="gray" data-mobile-header-scheme="gray" data-mobile-nav-breakpoint="1199"
+      data-new-gr-c-s-check-loaded="14.1079.0" data-gr-ext-installed="">
+    <input type="hidden" id="hdnMPS" name="hdnMPS" value="N" />
+    <div id="wrap">
+         <div id="loader-overlay" style="display:none;">
+        <div id="loader" class="popup-loader">
+                <img src="/assets/images/loading-gif.gif" style="max-width: 40%;min-width:40%" alt="loading" />
+            </div>
+        </div>
+        <header class="main-header main-header-overlay" data-react-to-megamenu="true" data-sticky-header="true" data-sticky-options="{ &quot;stickyTrigger&quot;: &quot;first-section&quot; }">
+            <div class="mainbar-wrap cus-mainbar">
+                <div class="top-section topMarquee" id="splmsgMarquee">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="d-flex align-items-center justify-content-start rightsec">
+                                    <!--Start of Tawk.to Script-->
+                                    <script type="text/javascript">
+                                        var Tawk_API = Tawk_API || {};
+                                       
+                                        Tawk_LoadStart = new Date();
+
+                                        (function () {
+                                            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+                                            s1.async = true;
+                                            s1.src = 'https://embed.tawk.to/64368f154247f20fefeb30f6/1gtqhtruq';
+                                            s1.charset = 'UTF-8';
+                                            s1.setAttribute('crossorigin', '*');
+                                            s0.parentNode.insertBefore(s1, s0);
+                                        })();
+                                        var originalTitle = document.title;
+                                        setInterval(function () {
+                                            var iframeInitialChatPopup = document.querySelector('div.widget-visible iframe:nth-child(3)');
+                                            if (iframeInitialChatPopup) {
+                                                iframeInitialChatPopup.style.display = 'none';
+                                            }
+
+                                            var iframeWeAreHere = document.querySelector('div.widget-visible iframe:nth-child(4)');
+                                            if (iframeWeAreHere) {
+                                                iframeWeAreHere.style.display = 'none';
+                                            }
+
+                                            if (document.title !== originalTitle) {
+                                                document.title = originalTitle;
+                                            }
+
+                                        }, 1);
+                                    </script>
+
+                                    <!--End of Tawk.to Script-->
+                                    <marquee width="auto" direction="left" id="SpeMsg"></marquee>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mainbar-container newScrolFix" style="padding:10px 0 0 0;">
+                    <div class="scrollOverlay"></div>
+                    <span > </span>
+                    <div class="mainbar container">
+                        <div class="row mainbar-row align-items-lg-stretch">
+                            <div class="col-auto">
+                                <div class="navbar-header cus-nav-head header">
+                                    <a class="navbar-brand p-0" asp-action="index" asp-controller="home">
+                                        <span class="navbar-brand-inner cus-nav-hide">
+                                            @* <img class="logo-default logo-full" src="/assets/images/PCNW_logo_figma.png" alt="Plan Center Northwest" /> *@
+                                            <img class="logo-default logo-full removeLine" src="~/assets/images/Logo Master Horiz Clear White.png"
+                                                 alt="Plan Center Northwest" />
+                                            <img class="mobile-logo-default mobile-img" src="/assets/images/mob-logo.png" alt="Plan Center Northwest" />
+                                            <img class="logo-default desktop-img" src="~/assets/images/Logo Master Horiz Clear White.png"
+                                                 alt="Plan Center Northwest" />
+                                        </span>
+                                    </a>
+                                    <button type="button" class="navbar-toggle collapsed nav-trigger style-mobile"
+                                            data-toggle="collapse" data-target="#main-header-collapse" aria-expanded="false"
+                                            data-changeclassnames="{ &quot;html&quot;: &quot;mobile-nav-activated overflow-hidden&quot; }">
+                                        <span class="sr-only">Toggle navigation</span>
+                                        <span class="bars">
+                                            <span class="bar"></span>
+                                            <span class="bar"></span>
+                                            <span class="bar"></span>
+                                        </span>
+                                    </button>
+                                </div><!-- /.navbar-header -->
+                            </div><!-- /.col -->
+
+                            <div class="col">
+
+                                <div class="collapse navbar-collapse cus-mob-nav" id="main-header-collapse">
+
+                                    <ul id="primary-nav"
+                                        class="main-nav nav align-items-lg-stretch justify-content-lg-start"
+                                        data-submenu-options="{ &quot;toggleType&quot;:&quot;fade&quot;, &quot;handler&quot;:&quot;mouse-in-out&quot; }">
+                                        @{
+                                            var currentcontrolleritem = Context.Request.RouteValues["controller"].ToString();
+                                            var currentactionitem = Context.Request.RouteValues["action"].ToString();
+                                        }
+                                        <li class="@(( currentcontrolleritem=="Home"&&currentactionitem=="Index" ) ? "current-menu-item" : "")">
+                                            <a asp-action="index" asp-controller="home">
+                                                <span class="link-icon"></span>
+                                                <span class="link-txt">
+                                                    <span class="link-ext"></span>
+                                                    <span class="txt">
+                                                        Home
+                                                        <span class="submenu-expander">
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="@(( currentcontrolleritem=="MemberShip"&&currentactionitem=="Register" ) ? "current-menu-item" : "")">
+                                            <a asp-action="Register" asp-controller="MemberShip">
+                                                <span class="link-icon"></span>
+                                                <span class="link-txt">
+                                                    <span class="link-ext"></span>
+                                                    <span class="txt">
+                                                        Membership
+                                                        <span class="submenu-expander">
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="@(( currentcontrolleritem=="Home"&&currentactionitem=="CopyCenter" ) ? "current-menu-item" : "")">
+                                            @{
+                                                string val = "";
+                                            }
+                                            @if (TempData["InActive"] != null)
+                                            {
+                                                TempData["InActive"] = "Yes";
+                                                ViewBag.InActive = "Yes";
+                                                val = ViewBag.InActive == null ? "" : "Yes";
+                                            }
+                                            <a asp-controller="Home" asp-action="CopyCenter" asp-route-val="@val">
+                                                <span class="link-icon"></span>
+                                                <span class="link-txt">
+                                                    <span class="link-ext"></span>
+                                                    <span class="txt">
+                                                        Copy Center
+                                                        <span class="submenu-expander">
+                                                            <i class="fa fa-angle-down"></i>
+                                                        </span>
+                                                    </span>
+                                                </span>
+                                            </a>
+                                        </li>
+                                        <li class="nav-item dropdown cst-login">
+                                            <div>
+                                                <input type="hidden" id="hdnLogId" value="@User.Identity.Name" />
+                                                <input type="hidden" id="hdnConId" name="hdnConId" />
+                                                <input type="hidden" id="hdnId" name="hdnId" />
+                                                <input type="hidden" id="hdnName" name="hdnName" />
+                                                <input type="hidden" id="hdnEmail" name="hdnEmail" />
+                                                <input type="hidden" id="hdnCompany" name="hdnCompany" />
+                                                <input type="hidden" id="hdnPhone" name="hdnPhone" />
+                                                <input type="hidden" id="hdnProfile" name="hdnProfile" />
+                                                <input type="hidden" id="hdnRole" name="hdnRole" />
+                                                <input type="hidden" id="hdnUid" name="hdnUid" />
+                                            </div>
+                                            @if (User != null)
+                                            {
+                                                if (User.Identity.Name != null)
+                                                {
+                                                    @if (User.IsInRole("Admin"))
+                                                    {
+                                                        <a class="nav-link dropdown-toggle" id="" data-toggle="dropdown" aria-expanded="false">
+                                                            <span class="txt" id="lblLogin">@Context.Request.Cookies["loggedinname"]?.ToString()</span>
+                                                        </a>
+                                                        <ul class="dropdown-menu p-0 cus-drop" aria-labelledby="navbarDropdownMenuLink">
+                                                            <li><a class="dropdown-item" asp-action="Dashboard" asp-controller="GlobalMaster"><i class="fa fa-user-circle mr-2" aria-hidden="true"></i>Admin</a></li>
+                                                            <li><a class="dropdown-item" asp-action="Dashboard" asp-controller="Report"><i class="fa fa-unlock-alt mr-2" aria-hidden="true"></i>Report</a></li>
+                                                            <li><a class="dropdown-item" asp-action="Logout" asp-controller="Admin"><i class="fa fa-power-off mr-2" aria-hidden="true"></i> Logout</a></li>
+                                                        </ul>
+                                                    }
+                                                    @if (User.IsInRole("Member"))
+                                                    {
+
+
+                                                        <a class="nav-link dropdown-toggle" id="" data-toggle="dropdown" aria-expanded="false">
+                                                            <span class="txt" id="lblLogin">@Context.Request.Cookies["loggedinname"]?.ToString()</span>
+                                                        </a>
+
+                                                        <ul class="dropdown-menu p-0 cus-drop" aria-labelledby="navbarDropdownMenuLink">
+                                                            <li><a class="dropdown-item" asp-action="MemberProfile" asp-controller="Member"><i class="fa fa-user-circle mr-2" aria-hidden="true"></i> View Profile</a></li>
+                                                            @if (TempData["InActive"] == null)
+                                                            {
+                                                                <li><a class="dropdown-item" asp-action="FindProjectHere" asp-controller="Member"><i class="fa fa-unlock-alt mr-2" aria-hidden="true"></i>Find Projects</a></li>
+                                                            }
+
+                                                            <li><a class="dropdown-item" asp-action="Logout" asp-controller="Account"><i class="fa fa-power-off mr-2" aria-hidden="true"></i> Logout</a></li>
+                                                        </ul>
+                                                    }
+                                                    @if (User.IsInRole("Staff"))
+                                                    {
+                                                        <a class="nav-link dropdown-toggle" id="" data-toggle="dropdown" aria-expanded="false">
+                                                            <span class="txt" id="lblLogin">@Context.Request.Cookies["loggedinname"]?.ToString()</span>
+                                                        </a>
+                                                        <ul class="dropdown-menu p-0 cus-drop" aria-labelledby="navbarDropdownMenuLink">
+                                                            <li><a class="dropdown-item" asp-action="Dashboard" asp-controller="StaffAccount"><i class="fa fa-user-circle mr-2" aria-hidden="true"></i>Dashboard</a></li>
+                                                            <li><a class="dropdown-item" asp-action="MemberManagement" asp-controller="StaffAccount"><i class="fa fa-unlock-alt mr-2" aria-hidden="true"></i>Member Management</a></li>
+                                                            <li><a class="dropdown-item" asp-action="Logout" asp-controller="StaffAccount"><i class="fa fa-power-off mr-2" aria-hidden="true"></i> Logout</a></li>
+                                                        </ul>
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    <a asp-controller="Account" asp-action="Login">
+                                                        <i class="fa-solid fa-right-to-bracket mx-1"></i>
+                                                        Login
+                                                    </a>
+                                                }
+                                            }
+                                            else
+                                            {
+                                                <a asp-controller="Account" asp-action="Login">
+                                                    <i class="fa-solid fa-right-to-bracket mx-1"></i>
+                                                    Login
+                                                </a>
+                                            }
+                                            @*<a href="#" data-toggle="modal" data-target="#exampleModal"><i class="fa-solid fa-right-to-bracket"></i> Login</a>*@
+                                        </li>
+                                    </ul><!-- /#primary-nav  -->
+                                </div><!-- /#main-header-collapse -->
+                            </div><!-- /.col -->
+                            @*<div class="header-module">
+                            <p style="text-align: right; line-height: 1.5em;">
+                            <span class="text-fade-white-09 font-size-14">
+                            <b>Call us:</b> 503-650-0148
+                            </span>
+                            <br>
+                            <span class="text-fade-white-09 font-size-14">
+                            <b>Live Chat Support:</b> (7am -
+                            4pm PST M-F)
+                            </span>
+                            </p>
+                            </div>*@<!-- /.header-module -->
+
+                        </div><!-- /.col -->
+
+                    </div><!-- /.mainbar-row -->
+                </div><!-- /.mainbar -->
+            </div><!-- /.mainbar-container -->
+            <!-- /.mainbar-wrap -->
+        </header><!-- /.main-header -->
+
+        <main id="content" class="content cpy-center-index">
+            <!--Content Area-->
+            @RenderBody()
+
+        </main><!-- /#content.content -->
+
+        <div class="lqd-sticky-footer-wrap">
+
+            <footer class="main-footer bg-cover pt-90 footer-stuck" data-sticky-footer="false">
+
+                <section>
+
+                    <div class="container">
+                        <div class="row">
+
+                            <div class="lqd-column col-md-4 mb-30">
+
+                                <figure class="footer-logo">
+                                    <img src="~/assets/images/Logo Master Vert Clear White.png" alt="Plan Center Northwest"
+                                         style="width: 270px;">
+                                </figure>
+                                @* <p class="mb-0">
+                                Previously Contractor Plan Center Inc.
+                                </p>*@
+
+
+                            </div><!-- /.lqd-column col-md-5 -->
+
+                            <div class="lqd-column col-md-8">
+
+                                <div class="row">
+
+                                    <div class="lqd-column col-md-3 col-sm-6 mb-30">
+
+                                        <h3 class="widget-title mt-0">Company</h3>
+
+                                        <ul class="lqd-custom-menu reset-ul font-weight-light lh-2">
+                                            @*<li><a asp-action="index" asp-controller="home" asp-fragment="About_Us">About Us</a></li>*@
+                                            <li><a asp-action="Faq" asp-controller="home">FAQs</a></li>
+                                            <li><a asp-action="Careers" asp-controller="home">Careers</a></li>
+                                            <li><a asp-action="Advertise" asp-controller="home">Advertise</a></li>
+                                        </ul>
+
+                                    </div><!-- /.col-md-3 col-sm-6 -->
+
+                                    <div class="lqd-column col-md-3 col-sm-6 mb-30">
+
+                                        <h3 class="widget-title mt-0 ">Site Links</h3>
+
+                                        <ul class="lqd-custom-menu reset-ul font-weight-light lh-2">
+                                            <li>
+                                                <a asp-controller="Home" asp-action="CopyCenter">Copy Center</a>
+                                            </li>
+                                            <li><a asp-controller="Account" asp-action="Login">Member Login</a></li>
+                                            <li>
+                                                <a asp-controller="MemberShip" asp-action="Register">
+                                                    Membership Information
+                                                </a>
+                                            </li>
+                                            <li>
+                                                <a asp-controller="Home" asp-action="SendProjectFiles">
+                                                    Send Project Files
+                                                </a>
+                                            </li>
+                                        </ul>
+
+                                    </div><!-- /.col-md-3 col-sm-6 -->
+
+                                    <div class="lqd-column col-md-6 col-sm-12 mb-30" id="Contact">
+
+                                        <h3 class="widget-title mt-0">Contact</h3>
+
+                                        <div class="iconbox iconbox-inline iconbox-xs mb-3">
+                                            <div class="iconbox-icon-wrap">
+                                            </div><!-- /.iconbox-icon-wrap -->
+                                            <h3 class="font-weight-light font-size-15 text-fade-white-06">
+                                                <strong>Business Hours</strong> <strong>:</strong> Mon-Fri / 7 AM - 4 PM PST
+                                            </h3>
+                                        </div><!-- /.iconbox -->
+
+                                        <div class="iconbox iconbox-inline iconbox-xs mb-3">
+                                            <div class="iconbox-icon-wrap">
+                                                <span class="iconbox-icon-container">
+                                                    <i class="fa fa-phone"></i>
+                                                </span>
+                                            </div><!-- /.iconbox-icon-wrap -->
+                                            <h3 class="font-weight-light font-size-15 text-fade-white-06">
+                                                503-650-0148
+                                            </h3>
+                                        </div><!-- /.iconbox -->
+
+                                        <div class="iconbox iconbox-inline iconbox-xs mb-3">
+                                            <div class="iconbox-icon-wrap">
+                                            </div><!-- /.iconbox-icon-wrap -->
+                                            <h3 class="font-weight-light font-size-15 text-fade-white-06" style="white-space:nowrap">
+                                                <b>Live Chat Support</b> <strong>:</strong> Mon-Fri / 7 AM - 4 PM PST
+                                            </h3>
+                                        </div><!-- /.iconbox -->
+
+                                        <div class="iconbox iconbox-inline iconbox-xs mb-3">
+                                            <div class="iconbox-icon-wrap">
+                                                <span class="iconbox-icon-container">
+                                                    <i class="fa fa-envelope-open-o"></i>
+                                                </span>
+                                            </div><!-- /.iconbox-icon-wrap -->
+                                            <h3 class="font-weight-light font-size-15 text-fade-white-06">
+                                                info@plancenternw.com
+                                            </h3>
+                                        </div><!-- /.iconbox -->
+
+                                        <div class="iconbox iconbox-inline iconbox-xs mb-3">
+                                            <div class="iconbox-icon-wrap">
+                                                <span class="iconbox-icon-container">
+                                                    <i class="fa fa-location-arrow"></i>
+                                                </span>
+                                            </div><!-- /.iconbox-icon-wrap -->
+                                            <h3 class="font-weight-light font-size-15 text-fade-white-06">
+                                                PO Box 2486, Clackamas, OR 97015
+                                            </h3>
+                                        </div><!-- /.iconbox -->
+
+                                    </div><!-- /.col-md-5 -->
+
+                                </div><!-- /.row -->
+
+                            </div><!-- /.lqd-column col-md-7 -->
+
+                        </div><!-- /.row -->
+
+                    </div><!-- /.container -->
+
+                </section>
+
+                <section class="" style="border-top: 1px solid #5c8097;">
+                    <div class="container">
+                        <div class="row">
+
+
+                            <div class="bottom-footer">
+                                <p>
+                                    Copyright <span id="CopyYear"></span> Contractor Plan Center, Inc. | <a style="color:#ff992e" href="/home/LegalStuff">Legal Stuff</a>
+                                </p>
+
+                            </div><!-- /.lqd-column col-md-8 text-right -->
+
+                        </div>
+
+                    </div>
+                </section>
+
+            </footer>
+        </div><!-- /.main-footer -->
+    </div><!-- /#wrap -->
+    <!-- Modal -->
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    @*<input type="hidden" id="MemberType" name="MemberType" />
+                    <input type="hidden" id="hdnTerm" name="hdnTerm" />
+                    <input type="hidden" id="RadioExValue" name="RadioExValue" />
+                    <input type="hidden" id="MemberCost" name="MemberCost" />
+                    <input type="hidden" id="CheckRadio" name="CheckRadio" />
+                    <input type="hidden" id="CheckRadioValue" name="CheckRadioValue" />*@
+
+                    <form class="login100-form validate-form" method="post" asp-action="Login" asp-controller="Account">
+                        <span class=" cus-login-logo">
+                            <img alt="logo" src="~/b-assets/images/Logo Master Horiz Clear White.png" />
+                        </span>
+                        <span class="login100-form-title p-b-34 p-t-27">
+                            Login
+                        </span>
+                        <div class="text-danger" id="login-error"></div>
+                        <div class="wrap-input100 validate-input" data-validate="Enter username">
+                            <input class="input100" type="text" id="Email" name="Email" placeholder="Username">
+                            <i class="material-icons focus-input1001">person</i>
+                        </div>
+                        <div class="wrap-input100 validate-input" data-validate="Enter password">
+                            <input class="input100" type="password" id="Password" name="Password" placeholder="Password">
+                            <i class="material-icons focus-input1001">lock</i>
+                        </div>
+                        <div class="contact100-form-checkbox">
+                            <div class="form-check">
+                                <label class="form-check-label">
+                                    <input class="form-check-input" id="RememberMe" name="RememberMe" type="checkbox"> Remember me
+                                    <span class="form-check-sign" asp-for="RememberMe">
+                                        <span class="check"></span>
+                                    </span>
+                                </label>
+                            </div>
+                        </div>
+                        <div class="container-login100-form-btn">
+                            <input type="submit" class="login100-form-btn" onclick="return valiadteLogin()" />
+                        </div>
+                        <div class="text-center p-t-50">
+                            <p class="login-member">Not A Member ?</p>
+                            <a class="txt1" asp-action="Register" asp-controller="Member">
+                                Click here to join
+
+                            </a>
+                        </div>
+                        <div class="text-center p-t-50">
+                            <a class="txt1" href="Forgetpassword">
+                                Forgot Password?
+
+                            </a>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary">Save changes</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+
+    <!-- Modal -->
+    @* <div id="membershipModal" class="modal fade" role="dialog">
+    <div class="modal-dialog modal-xl">
+
+    <!-- Modal content-->
+    <div class="modal-content membership-modal">
+    <div class="modal-header">
+    <h3>Annual Membership Packages</h3>
+    <button type="button" class="close" data-dismiss="modal">&times;</button>
+    </div>
+    <div class="modal-body">
+    <div class="paymentCardBox">
+
+    <div class="row">
+    <div class="col-md-12">
+    <div class="option-head"><h2><span>Select a Payment Method</span></h2></div>
+    <div class="card-time">
+    <div class="custom-control custom-radio custom-control-inline">
+    <input type="radio" class="custom-control-input" id="customRadio1" name="example" value="Yearly" checked>
+    <label class="custom-control-label" for="customRadio1">Yearly</label><br />
+    <span class="custext">Best Value</span>
+    </div>
+    <input type="hidden" id="hdnDiscountId" />
+    <div class="custom-control custom-radio custom-control-inline">
+    <input type="radio" class="custom-control-input" id="customRadio3" name="example" value="Quarterly">
+    <label class="custom-control-label" for="customRadio3">Quarterly</label>
+    </div>
+    <div class="custom-control custom-radio custom-control-inline">
+    <input type="radio" class="custom-control-input" id="customRadio2" name="example" value="Monthly">
+    <label class="custom-control-label" for="customRadio2">Monthly</label>
+    </div>
+
+    </div>
+    </div>
+    <div class="col-md-12 option-head mb-2"> <h2> <span>Select a Regional Package Option</span></h2></div>
+    <div class="col-md-3">
+    <div class="card">
+    <div class="card-body mainCard-body">
+    <h2>Pacific Northwest</h2>
+    <p class="price-text">$<span id="YprcPremium"></span>/Year</p>
+    <span class="" style="display:block;line-height: normal;" id="">(Paid once annually)</span>
+    <span class="price-text" id="prcPremium"></span>
+    <p class="price-text">($2000/Year)</p>
+    <div id="main">
+    <div class="accordion" id="Popfaqq-1">
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead1">
+    <div class="custom-control custom-radio" data-toggle="collapse" data-target="#Popfaq7" aria-expanded="true" aria-controls="Popfaq7">
+    <input type="radio" class="custom-control-input" id="customRadio4" name="cardPacific" value="Pacific Northwest Premium">
+    <label class="custom-control-label" for="customRadio4"></label>
+    </div>
+    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#Popfaq7"
+    aria-expanded="true" aria-controls="Popfaq7">
+    <label for="customRadio4">
+    <span onclick="document.getElementById('customRadio4').click();" id="PacificPremium" style="cursor:pointer">
+
+    </span> <span onclick="document.getElementById('customRadio4').click();" style="cursor:pointer">Premium</span>
+    </label>
+    </a>
+    </div>
+    <div id="Popfaq7" class="collapse show" aria-labelledby="faqhead1" data-parent="#Popfaqq-1">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="PrUserText"></span>
+    </li>
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="PrRegionHead"></span> :
+    <p id="RegionText">
+
+    </p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+    <div class="card-footer-btn">
+    <button type="" class="member-btn" id="btnPacific" onclick="GoToReg(this.id, this)">Join</button>
+    <span class="Error" style="color: red; font-size:17px;"></span>
+    </div>
+    </div>
+    </div>
+    <div class="col-md-3">
+    <div class="card">
+    <div class="card-body mainCard-body" style="background: #6d9d78">
+    <h2>Oregon</h2>
+    <p class="price-text">$<span id="YprcOregon"></span>/Year</p>
+    <span class="price-text" id="prcOregon"></span>
+    <div id="main">
+    <div class="accordion" id="Popfaq">
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead4">
+    <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq1">
+    <input type="radio" class="custom-control-input" id="customRadio5" name="cardOreg" value="Oregon Premium">
+    <label class="custom-control-label" for="customRadio5"></label>
+    </div>
+    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#Popfaq1"
+    aria-expanded="true" aria-controls="Popfaq1"><label for="customRadio5"><span style="cursor:pointer" onclick="document.getElementById('customRadio5').click();" id="OrPrePackage"></span></label></a>
+    </div>
+    <div id="Popfaq1" class="collapse show" aria-labelledby="faqhead4" data-parent="#Popfaq">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPreUser"></span>
+    </li>
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPreRegion"></span> :
+    <p id="OrPreText"></p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead5">
+    <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq2">
+    <input type="radio" class="custom-control-input" id="customRadio6" name="cardOreg" value="Oregon Plus">
+    <label class="custom-control-label" for="customRadio6"></label>
+    </div>
+    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq2"
+    aria-expanded="true" aria-controls="Popfaq2"><label for="customRadio6"><span style="cursor:pointer" onclick="document.getElementById('customRadio6').click();" id="OrPluPackage"></span></label></a>
+    </div>
+    <div id="Popfaq2" class="collapse" aria-labelledby="faqhead5" data-parent="#Popfaq">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPluUser"></span>
+    </li>
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPluRegion"></span> :
+    <p id="OrPluText">
+    </p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead6">
+    <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq3">
+    <input type="radio" class="custom-control-input" id="customRadio7" name="cardOreg" value="Oregon Only">
+    <label class="custom-control-label" for="customRadio7"></label>
+    </div>
+    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq3"
+    aria-expanded="true" aria-controls="Popfaq3"><label for="customRadio7"><span style="cursor:pointer" id="OrOnlPackage" onclick="document.getElementById('customRadio7').click();"></span></label></a>
+    </div>
+    <div id="Popfaq3" class="collapse" aria-labelledby="faqhead6" data-parent="#Popfaq">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrOnlUser"></span>
+    </li>
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrOnlRegion"></span> :
+    <p id="OrOnlText"></p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+    <div class="card-footer-btn">
+    <button type="" class="member-btn Oregon" id="btnOreg" onclick="GoToReg(this.id, this)">Join</button>
+    <span class="Error" style="color: red; font-size:17px;"></span>
+    </div>
+    </div>
+    </div>
+    <div class="col-md-3">
+    <div class="card">
+    <div class="card-body mainCard-body" style="background: #4c829a;">
+    <h2>Washington</h2>
+    <p class="price-text">$<span id="YprcWash"></span>/Year</p>
+    <span class="price-text" id="prcWashington"></span>
+    <div id="main">
+    <div class="accordion" id="Popfaqq">
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead7">
+    <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq4">
+    <input type="radio" class="custom-control-input" id="customRadio8" name="cardWash" value="Washington Premium">
+    <label class="custom-control-label" for="customRadio8"></label>
+    </div>
+    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#PopfaqWash"
+    aria-expanded="true" aria-controls="Popfaq4"><label for="customRadio8"><span style="cursor:pointer" id="WaPrePackage" onclick="document.getElementById('customRadio8').click();"></span></label></a>
+    </div>
+    <div id="PopfaqWash" class="collapse show" aria-labelledby="faqhead7" data-parent="#Popfaqq">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPreUser"></span>
+    </li>
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPreRegion"></span> :
+    <p id="WaPreText"></p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead8">
+    <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq5">
+    <input type="radio" class="custom-control-input" id="customRadio9" name="cardWash" value="Washington Plus">
+    <label class="custom-control-label" for="customRadio9"></label>
+    </div>
+    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq5"
+    aria-expanded="true" aria-controls="Popfaq5"><label for="customRadio9"><span style="cursor:pointer" id="WaPluPackage" onclick="document.getElementById('customRadio9').click();"></span></label></a>
+    </div>
+    <div id="Popfaq5" class="collapse" aria-labelledby="faqhead8" data-parent="#Popfaqq">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPluUser"></span>
+    </li>
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPluRegion"></span> :
+    <p id="WaPluText">
+
+    </p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead9">
+    <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq6">
+    <input type="radio" class="custom-control-input" id="customRadio10" name="cardWash" value="Washington Only">
+    <label class="custom-control-label" for="customRadio10"></label>
+    </div>
+    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq6"
+    aria-expanded="true" aria-controls="Popfaq6"><label for="customRadio10"><span style="cursor:pointer" id="WaOnlPackage" onclick="document.getElementById('customRadio10').click();"></span></label></a>
+    </div>
+    <div id="Popfaq6" class="collapse" aria-labelledby="faqhead9" data-parent="#Popfaqq">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaOnlUser"></span>
+    </li>
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaOnlRegion"></span> :
+    <p id="WaOnlText"></p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+    <div class="card-footer-btn">
+    <button type="" class="member-btn Washington" id="btnWash" onclick="GoToReg(this.id, this)">Join</button>
+    <span class="Error" style="color: red; font-size:17px;"></span>
+    </div>
+    </div>
+    </div>
+    <div class="col-md-3">
+    <div class="card">
+    <div class="card-body mainCard-body" style="background: #626c69">
+    <h2>Project Posting Only</h2>
+    <p id="prcFree" class="price-text"></p>
+    <div id="main">
+    <div class="accordion" id="PopfaqqFree">
+    <div class="card">
+    <div class="card-header cuscard-header" id="faqhead7">
+    <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq8">
+    <input type="radio" class="custom-control-input" id="customRadio11" name="cardFree" value="Free">
+    <label class="custom-control-label" for="customRadio11"></label>
+    </div>
+    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#Popfaq8"
+    aria-expanded="true" aria-controls="Popfaq8"><label for="customRadio11"><span style="cursor:pointer" onclick="document.getElementById('customRadio11').click();">Job Posting Only</span></label></a>
+    </div>
+    <div id="Popfaq8" class="collapse show" aria-labelledby="faqhead8" data-parent="#PopfaqqFree">
+    <div class="card-body">
+    <ul class="inerList">
+    <li>
+    <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="FreeRegion"></span> :
+    <p id="FreeText"></p>
+    </li>
+    </ul>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+
+    </div>
+    <div class="card-footer-btn">
+    <button type="" class="member-btn ProjectPosting" id="btnFree" onclick="GoToReg(this.id, this)">Join</button>
+    <span class="Error" style="color: red; font-size:17px;"></span>
+    </div>
+    </div>
+    </div>
+    <div class="col-md-12">
+    <div class="card-footer-btn mt-3">
+    <input type="hidden" id="hdnPlanId" />
+    <button type="" class="member-btn" id="btnPacific" onclick="GoToReg(this)">Join</button>
+    <span class="Error" style="color: red; font-size:17px;"></span>
+    </div>
+    </div>
+    </div>
+    </div>
+    </div>
+    <div class="modal-footer">
+    <a href="/MemberShip/FreeTrialMember" class="btn btn-default modal-foot-btn" id="btnFreeTrail">Start my Free Trial</a>
+    </div>
+    </div>
+    <form id="NotificationForm" action="">
+    <input type="hidden" id="hdnId" name="hdnId" value="0" />
+    <input type="text" id="autoLogOff" name="LogOff" style="display:none;" />
+    </form>
+    </div>
+    </div>*@
+
+
+    @await RenderSectionAsync("IndexBottomjs", required: false)
+    @* <script src="~/assets/js/js"></script>*@
+    <script src="~/assets/js/jquery.min.js"></script>
+    <script src="~/js/login.js"></script>
+    @*<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.7.1/jquery.min.js"></script>*@
+    @*<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>*@
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    @*<script src="~/assets/js/theme-vendors.js"></script>
+    <script src="~/assets/js/theme.min.js"></script>
+    <script src="~/assets/js/liquidAjaxMailchimp.min.js"></script>*@
+    <script src="~/js/custom-validation.js"></script>
+    <script src="~/lib/lodash.js/lodash.js"></script>
+    <script src="~/js/layouthome.js"></script>
+    @await RenderSectionAsync("MembershipScripts", required: false)
+    <script src="~/js/LayoutMember.js"></script>
+    @*  <script src="~/js/free-trial-member.js"></script> *@
+    @* <script src="~/js/send-project-file.js"></script>*@
+    <script src="~/js/auto-logoff-master.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script>
+
+        //jQuery(document).ready(function () {
+        //    var lastScrollTop = 0;
+        //    jQuery(window).scroll(function () {
+        //    alert('sdf')
+        //        var scrollTop = jQuery(this).scrollTop();
+        //        if (scrollTop > lastScrollTop) {
+        //            // scrolling down
+        //            $('.mainbar-container').slideUp();
+        //        } else {
+        //            // scrolling up
+        //            $('.mainbar-container').slideDown();
+        //        }
+        //        lastScrollTop = scrollTop;
+        //    });
+        //});
+    </script>
+    <script type="text/javascript">
+        //var $loading = jQuery('#loader-overlay').hide();
+        //jQuery(document)
+        //    .ajaxStart(function () {
+        //        $loading.show();
+        //    })
+        //    .ajaxStop(function () {
+        //        $loading.hide();
+        //    });
+
+        var idleTime = 0;
+        jQuery(document).ready(function () {
+
+            //Increment the idle time counter every minute.
+            var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+            //Zero the idle timer on mouse movement.
+            jQuery(this).mousemove(function (e) {
+                idleTime = 0;
+            });
+            jQuery(this).keypress(function (e) {
+                idleTime = 0;
+            });
+
+             jQuery(document).scroll(function () {
+                 if (jQuery(document).scrollTop() >= 50) {
+                     jQuery('.mainbar-container').addClass('fixed-header');
+                    // $('nav div').addClass('visible-title');
+                }
+                 else {
+                     jQuery('.mainbar-container').removeClass('fixed-header');
+                    // $('nav div').removeClass('visible-title');
+                 }
+            });
+        });
+
+        function timerIncrement() {
+            var autologtime;
+            jQuery.ajax({
+                type: "GET",
+                dataType: 'json',
+                url: '/GlobalMaster/GetLogOffList',
+                data: {},
+                async: false,
+                success: function (response) {
+                    jQuery('#hdnId').val(response.data[0].Id);
+                    jQuery('#autoLogOff').val(response.data[0].LogOff);
+                    autologtime = response.data[0].LogOff
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+            var pathname = window.location.pathname;
+            var controller = pathname.substring(0, pathname.lastIndexOf("/") + 1);
+            cont = controller.replaceAll("/", "");
+            var view = pathname.slice(pathname.lastIndexOf('/') + 1);
+            views = view;
+            idleTime = idleTime + 1;
+            if (jQuery('#hdnLogId').val() != '' && jQuery('#hdnLogId').val() != null && jQuery('#hdnLogId').val() != undefined) {
+                if (idleTime >= autologtime) { // 15 minutes
+                    jQuery.ajax({
+                        type: "Get",
+                        dataType: 'json',
+                        url: '/Account/Logout',
+                        data: { 'IsAutoLogout': true },
+                        async: false,
+                        success: function (response) {
+                            window.location.href = "/Account/Login?returnUrl=" + pathname;
+                        },
+                        error: function (response) {
+                            console.log(response.responseText);
+                            window.location.href = "/Account/Login?returnUrl=" + pathname;
+                        },
+                        failure: function (response) {
+                            console.log(response.responseText);
+                        }
+                    });
+                    //window.location.href="/Account/Logout";
+                }
+            }
+        }
+    </script>
+</body>
+<grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>

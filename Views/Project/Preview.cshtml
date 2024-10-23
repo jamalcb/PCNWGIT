@@ -1,0 +1,1897 @@
+﻿@model ProjectInformation;
+@{
+    ViewData["Title"] = "Preview";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+@section CustomCSS{
+    <style>
+        .ui-menu {
+            z-index: 1100 !important;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+        /* #next-btn:hover {
+                            cursor: pointer;
+                        }*/
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /*background-color: black;*/
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+}
+@section Scripts
+    {
+    <script type="text/javascript">
+        var jq = $.noConflict();
+
+        var $loading = jq('#loader-overlay').hide();
+        jQuery(document)
+            .ajaxStart(function () {
+                $loading.show();
+            })
+            .ajaxStop(function () {
+                $loading.hide();
+            });
+
+        jQuery(document).ready(function () {
+            jq("#member").hide();
+            var count = jQuery("h6[class*='extraBid']").length
+            if (count > 0) {
+                jQuery('.bid-preview').text('Note: Primes requests bids at various dates and times.')
+            }
+        });
+        function ShowCard(Id, Uid) {
+            jq("#frmPrintFormMem").trigger('reset');
+            jq('#frmPrintFormMem').find("input[type=text], textarea").val('');
+            jq('#frmPrintFormMem').find("label").html('');
+            jq("#frmPrintFormMem").find("span#message").html('');
+            jq.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: '/Project/ShowCard/',
+                data: { 'Id': Id, 'Uid': Uid },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        jq('#lblCompany').html(response.data.Company);
+                        jq('#lblMail').html(response.data.Email);
+                        jq('#lblContact').html(response.data.ContactName);
+                        jq('#lblPhone').html(response.data.ContactPhone);
+                        console.log(response.data);
+                    }
+                    else {
+                        jq('#message').fadeIn();
+                        jq('#message').text(response.statusMessage).fadeOut(5000);
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+            jq('.li-modal').modal('show');
+        }
+        function ShowPHL(e) {
+            jq('.m-model').modal('show');
+            e.preventDefault();
+        }
+        var filehtml = '';
+        function OpenPrintModel1(FileName, FilePath) {
+            jQuery("#prev-btn").click();
+            jQuery("#frmPrintForm").trigger('reset');
+            jQuery('#frmPrintForm').find("input[type=text], input[type=hidden], input[type=File], textarea").val('');
+            jQuery('#inlineRadio1').prop('checked', true);
+            jQuery('#fileUpload1').removeAttr('disabled');
+            jQuery('#btnfileUpload1').removeAttr('disabled');
+            jQuery('span.loginError').html('');
+            var filename = jq("#FileName").val(FileName);
+            var filepath = jq("#FilePath").val(FilePath);
+            jQuery('#FileName').text(FileName);
+
+            jq.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: '/Project/OrderCopies/',
+                data: { 'filename': FileName, 'filepath': FilePath },
+                async: false,
+                success: function (response) {
+                    if (response.Status == "success") {
+                        filehtml = '';
+                        filehtml += '<tr class="trUpload"><td>1</td><td class="tdUpoadFile">' + response.FileName + '</td><td class="tdUpload">' + response.PageCount + '</td><td><input type="text" class="form-control cus-upload-input"/><span class="loginError"></span></td><td><select class="form-control cus-upload-select"><option value="0" hidden="">-Select-</option><option value="0.15">8.5X11</option><option value="0.20">11x14</option> <option value="0.25">11X17</option> <option value="2.50">24x36</option> <option value="3.50">30x42</option> <option value="4.00">36x48</option> <option value="">Custom</option> </select><span class="loginError"></span></td></tr>';
+                        jQuery("#FileName").val(response.data);
+                        DisplayFiles();
+
+                    }
+                    else {
+                        jQuery('#message').fadeIn();
+                        jQuery('#message').text(response.statusMessage).fadeOut(5000);
+
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+            //jq(".m-modal").modal('show');
+            //event.preventDefault();
+        }
+        function OpenPrintModelAll() {
+            jQuery("#prev-btn").click();
+            jQuery("#frmPrintForm").trigger('reset');
+            jQuery('#frmPrintForm').find("input[type=text], input[type=hidden], input[type=File], textarea").val('');
+            jQuery('#btnfileUpload1').removeAttr('disabled');
+            jQuery('span.loginError').html('');
+            var filename = jq("#FileName").val(FileName);
+            var filepath = jq("#FilePath").val(FilePath);
+            jQuery('#FileName').text(FileName);
+            var model = [];
+            jQuery('.OrderAllClass').each(function (idx, elem) {
+                var PathFile = jq(this).val();
+                const myArray = PathFile.split("$");
+                var classModel = {};
+                classModel.PathInfo = myArray[0];
+                classModel.FileInfo = myArray[1];
+                model.push(classModel)
+            });
+            jq.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: '/Project/OrderCopiesAll/',
+                data: { 'model': model },
+                async: false,
+                success: function (response) {
+                    if (response.Status == "success") {
+                        filehtml = '';
+                        jQuery(response.DirData).each(function (idx, elem) {
+                            console.log(idx);
+                            console.log(elem);
+                            filehtml += '<tr class="trUpload"><td>' + (idx + 1) + '</td><td class="tdUpoadFile">' + elem.FileName + '</td><td class="tdUpload">' + elem.NoP + '</td><td><input type="text" class="form-control cus-upload-input"/><span class="loginError"></span></td><td><select class="form-control cus-upload-select"><option value="0" hidden="">-Select-</option><option value="0.15">8.5X11</option><option value="0.20">11x14</option> <option value="0.25">11X17</option> <option value="2.50">24x36</option> <option value="3.50">30x42</option> <option value="4.00">36x48</option> <option value="">Custom</option> </select><span class="loginError"></span></td></tr>';
+                        });
+
+                        jQuery("#FileName").val(response.data);
+                        DisplayFiles();
+
+                    }
+                    else {
+                        jQuery('#message').fadeIn();
+                        jQuery('#message').text(response.statusMessage).fadeOut(5000);
+
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+            //jq(".m-modal").modal('show');
+            //event.preventDefault();
+        }
+        function DisplayFiles() {
+            setTimeout(function () {
+                jq('#ftbody').html('');
+                jq('#ftbody').html(filehtml);
+                jq('.f-modal').modal('show');
+                //jQuery('.f-modal').modal('show');
+            }, 1000);
+        }
+        var totalPages = 0;
+        var totalCopy = 0;
+        var totalPrice = 0;
+        var obj = [];
+
+        function SaveUploadInfo(e) {
+            totalPages = 0;
+            totalCopy = 0;
+            totalPrice = 0;
+            var uploadHtml = '';
+            obj = [];
+            var isCorrect = true;
+            jq("tr.trUpload").each(function () {
+                var item = {};
+                var Filename = jq(this).find("td.tdUpoadFile").text();
+                item.Filename = Filename;
+                var copy = jq(this).find("input.cus-upload-input").val();
+                var isNumeric = jq.isNumeric(copy);
+                jq(this).find("input.cus-upload-input").next('span').html('');
+                if (!isNumeric || copy == "") {
+                    jq(this).find("input.cus-upload-input").next('span').html('Please enter correct numeric value.');
+                    isCorrect = false;
+                }
+                item.copy = copy;
+                var pages = jq(this).find("td.tdUpload").text();
+                item.pages = pages;
+                var size = jq(this).find("select.cus-upload-select option:selected").text();
+                item.size = size;
+                var price = jq(this).find("select.cus-upload-select option:selected").val();
+                jq(this).find("select.cus-upload-select").next('span').html('');
+                if (price == '0') {
+                    jq(this).find("select.cus-upload-select").next('span').html('Please select a size.');
+                    isCorrect = false;
+                }
+                item.price = price;
+                obj.push(item);
+                totalPages = totalPages + parseInt(pages);
+                totalCopy = totalCopy + parseInt(copy) * parseInt(pages);
+                jq('#inpPages').val(totalPages);
+                jq('#inpCopy').val(totalCopy);
+                jQuery('#inpPages').next('span').html('');
+                jQuery('#inpCopy').next('span').html('');
+                jQuery('#selectCheck').val('Y');
+
+            });
+            //jq('.prcTbody').html('');
+            jq(".prcTbody tr").remove();
+            for (var i = 0; i < obj.length; i++) {
+                console.log(obj[i]);
+                console.log(obj[i].Filename);
+                uploadHtml += '<tr class="prc-row" id="prc-row"><td class="prc-serial" id="prc-serial">' + (i + 1) + '</td><td class="prc-name" id="prc-name">' + obj[i].Filename + '</td><td class="prc-page" id="prc-page">' + obj[i].pages + '</td><td class="prc-copy" id="prc-copy">' + obj[i].copy + '</td><td class="prc-size" id="prc-size">' + obj[i].size + '</td><td class="prc-price" id="prc-price">' + obj[i].price + '</td><td class="prc-total" id="prc-total">' + (parseFloat(obj[i].price) * parseFloat(obj[i].copy) * parseFloat(obj[i].pages)).toFixed(2) + '</td></tr>';
+                totalPrice = totalPrice + (parseFloat(obj[i].price) * parseFloat(obj[i].copy) * parseFloat(obj[i].pages));
+            }
+            console.log(totalPrice);
+            jQuery('#hdnTotalPrice').val(totalPrice);
+            jq('.prcTbody').html(uploadHtml);
+            if (!isCorrect) {
+                jq("#" + e + "").removeAttr("data-dismiss")
+                jq('.f-modal').modal('show');
+            }
+            else {
+                jq('.m-modal').modal('hide');
+                setTimeout(function () {
+                    jq('.m-modal').modal('show');
+                }, 1000);
+                jq("#" + e + "").attr("data-dismiss", "modal")
+            }
+
+            //            jq('#prcFooter').before(uploadHtml);
+        }
+        jQuery("#next-btn").click(() => {
+            var res = validateform();
+            if (res == false)
+                return false;
+
+            var Del = jQuery("#inpDelivery").children("option").filter(":selected").val()
+            if (Del == 1)
+                jQuery("input[name=HowShip]").val('Pickup');
+            if (Del == 2)
+                jQuery("input[name=HowShip]").val('Local Delivery');
+            if (Del == 3)
+                jQuery("input[name=HowShip]").val('UPS');
+            jQuery('#lblModCompany').text(jQuery('#inpCompany').val());
+            var member = jQuery('#memberid').val();
+            var member1 = jQuery("#inpnonmember").val()
+            if (member == '1') {
+
+                jQuery('#lblModContact').text(jQuery("#inpContact").children("option").filter(":selected").text());
+                jQuery('#ModUid').val(jQuery("#inpContact").children("option").filter(":selected").val());
+
+            }
+            else {
+                jQuery('#lblModContact').text(jQuery("#inpnonmember").val());
+            }
+            jQuery('#lblModBillAddr').text(jQuery('#inpAddr').val());
+            jQuery('#lblModCity').text(jQuery('#inpCity').val());
+            jQuery('#lblModState').text(jQuery("#inpState").children("option").filter(":selected").text());
+            jQuery('#lblModDelState').text(jQuery("#inpDelState").children("option").filter(":selected").text());
+            jQuery('#lblModDelivery').text(jQuery("#inpDelivery").children("option").filter(":selected").text());
+            jQuery('#lblModZip').text(jQuery('#inpZip').val());
+            jQuery('#lblModPhone').text(jQuery('#inpPhone').val());
+            jQuery('#lblModEmail').text(jQuery('#inpEmail').val());
+            jQuery('#lblModProjNo').text(jQuery('#inpProjNo').val());
+            jQuery('#lblModPO').text(jQuery('#inpPO').val());
+            jQuery('#lblModPages').text(jQuery('#inpPages').val());
+            jQuery('#lblModCopy').text(jQuery('#inpCopy').val());
+            jQuery('#lblModDLine').text(jQuery('#inpDline').val());
+            jQuery('#lblModDelAddr').text(jQuery('#inpDelAddr').val());
+            jQuery('#lblModDelCity').text(jQuery('#inpDelCity').val());
+            jQuery('#lblModDelZip').text(jQuery('#inpDelZip').val());
+            jQuery('#lblModDelInstruction').text(jQuery('#inpInstruction').val());
+            //jQuery('#lblModPlan').text(jQuery('#hdnFileName').val());
+            //jQuery('#lblModDelInstruction').text(jQuery('#inpInstruction').val());
+            var size = jQuery("#inpCharges option:selected").text();
+            var price = jQuery("#inpCharges option:selected").val();
+            var Print = jQuery("#inpCopy").val();
+            var Count = jQuery("#inpPages").val();
+            var total;
+            //var TotalPrize;
+            if (Del == 2) {
+                jQuery('#delivCharges').text('$ 20');
+                var fpriceTotal = jQuery('#hdnTotalPrice').val();
+                //fpriceTotal = fpriceTotal.replace('$','');
+                var tempTotal = parseFloat(fpriceTotal) + 20;
+                jQuery('#priceTotal').text('$' + tempTotal.toFixed(2));
+            }
+            else {
+                jQuery('#delivCharges').text('$ 0');
+                var fpriceTotal = jQuery('#hdnTotalPrice').val();
+                //fpriceTotal = fpriceTotal.replace('$','');
+                jQuery('#priceTotal').text('$' + parseFloat(fpriceTotal).toFixed(2));
+            }
+            //else
+            //    total = price * Count * Print;
+            //if (Del == 2)
+            //    TotalPrize = '(Size:' + size + ')' + price + '*' + Count + '*' + Print + '+ Delivery = $<span name="spnTotalprice">' + parseInt(total);
+            //else
+            //    TotalPrize = '(Size:' + size + ')' + price + '*' + Count + '*' + Print + ' = $<span name="spnTotalprice">' + parseInt(total);
+            //jQuery("#lblModPrice").html(TotalPrize);
+
+            jQuery('.order-form').css("display", "none") &&
+                jQuery('.review-form').css("display", "block") &&
+                jQuery("#next-btn").hide() &&
+                jQuery("#orderform-head").css("display", "none") &&
+                jQuery("#ordersummary-head").css("display", "block")
+        });
+        jQuery("#prev-btn").click((e) => {
+            jQuery('.review-form').css("display", "none") &&
+                e.preventDefault();
+            jQuery("#next-btn").show() &&
+                jQuery('.order-form').css("display", "block") &&
+                jQuery("#orderform-head").css("display", "block") &&
+                jQuery("#ordersummary-head").css("display", "none")
+        })
+
+        function DelFunction() {
+            var checkBox = document.getElementById("chkDel");
+            if (checkBox.checked == true) {
+                jq("#inpDelAddr").val(jQuery('#inpAddr').val());
+                jq("#inpDelCity").val(jQuery('#inpCity').val());
+                jQuery("#inpDelState option:selected").text(jQuery("#inpState").children("option").filter(":selected").text());
+                jq("#inpDelZip").val(jQuery('#inpZip').val());
+            }
+            validateform();
+        }
+        function validateform() {
+            var isValide = true;
+            var Pcompany = jQuery('#inpCompany').val();
+            jQuery('#inpCompany').next('span').html('');
+            if (Pcompany == undefined || Pcompany == '' || Pcompany == null) {
+                jQuery('#inpCompany').next('span').html('Please enter your compnay name.');
+                isValide = false;
+            }
+
+            //var validatemember = jQuery('#memberid').val();
+            //if (validatemember == '1') {
+            //    // debugger;
+            //    var pcontact = jQuery('select[id=inpContact] option').filter(':selected').val();
+            //    jQuery('#inpContact').next('span').html('');
+            //    if (pcontact == '0') {
+            //        jQuery('#inpContact').next('span').html('Please select contact.');
+            //        isValide = false;
+            //    }
+            //}
+            //else {
+            //    var pcontact = jQuery('#inpnonmember').val();
+            //    jQuery('#inpnonmember').next('span').html('');
+            //    if (pcontact == undefined || pcontact == '' || pcontact == null) {
+            //        jQuery('#inpnonmember').next('span').html('Please select contact.');
+            //        isValide = false;
+            //    }
+            //}
+            var pAdd = jQuery('#inpAddr').val();
+            jQuery('#inpAddr').next('span').html('');
+            if (pAdd == undefined || pAdd == '' || pAdd == null) {
+                jQuery('#inpAddr').next('span').html('Please enter your billing address.');
+                isValide = false;
+            }
+            var pcity = jQuery('#inpCity').val();
+            jQuery('#inpCity').next('span').html('');
+            if (pcity == undefined || pcity == '' || pcity == null) {
+                jQuery('#inpCity').next('span').html('Please enter your billing city.');
+                isValide = false;
+            }
+            var bState = jQuery('select[id=inpState] option').filter(':selected').text();
+            jQuery('#inpState').next('span').html('');
+            if (bState == '--Select State--') {
+                jQuery('#inpState').next('span').html('Please enter your billing state.');
+                isValide = false;
+            }
+            var pzip = jQuery('#inpZip').val();
+            jQuery('#inpZip').next('span').html('');
+            if (pzip == undefined || pzip == '' || pzip == null) {
+                jQuery('#inpZip').next('span').html('Please enter your billing zipcode.');
+                isValide = false;
+            }
+            var phone = jQuery('#inpPhone').val();
+            jQuery('#inpPhone').next('span').html('');
+            if (phone == undefined || phone == '' || phone == null) {
+                jQuery('#inpPhone').next('span').html('Please enter phone number.');
+                isValide = false;
+            }
+            var email = jQuery('#inpEmail').val();
+            jQuery('#inpEmail').next('span').html('');
+            if (email == undefined || email == '' || email == null) {
+                jQuery('#inpEmail').next('span').html('Please enter email.');
+                isValide = false;
+            }
+            var projnum = jQuery('#inpProjNo').val();
+            jQuery('#inpProjNo').next('span').html('');
+            if (projnum == undefined || projnum == '' || projnum == null) {
+                jQuery('#inpProjNo').next('span').html('Please enter project number.');
+                isValide = false;
+            }
+            var ponum = jQuery('#inpPO').val();
+            jQuery('#inpPO').next('span').html('');
+            if (ponum == undefined || ponum == '' || ponum == null) {
+                jQuery('#inpPO').next('span').html('Please enter project order.');
+                isValide = false;
+            }
+            var page = jQuery('#inpPages').val();
+            jQuery('#inpPages').next('span').html('');
+            if (page == undefined || page == '' || page == null) {
+                jQuery('#inpPages').next('span').html('Please enter number of page.');
+                isValide = false;
+            }
+            var copy = jQuery('#inpCopy').val();
+            jQuery('#inpCopy').next('span').html('');
+            if (copy == undefined || copy == '' || copy == null) {
+                jQuery('#inpCopy').next('span').html('Please enter number of copy.');
+                isValide = false;
+            }
+            var Dline = jQuery('#inpDline').val();
+            jQuery('#inpDline').next('span').html('');
+            if (Dline == undefined || Dline == '' || Dline == null) {
+                jQuery('#inpDline').next('span').html('Please choose deadline date.');
+                isValide = false;
+            }
+            var inpDelivery = jQuery('select[id=inpDelivery] option').filter(':selected').val();
+            jQuery('#inpDelivery').next('span').html('');
+            if (inpDelivery == undefined || inpDelivery == '' || inpDelivery == null) {
+                jQuery('#inpDelivery').next('span').html('Please select delivery.');
+                isValide = false;
+            }
+            var pAdd = jQuery('#inpDelAddr').val();
+            jQuery('#inpDelAddr').next('span').html('');
+            if (pAdd == undefined || pAdd == '' || pAdd == null) {
+                jQuery('#inpDelAddr').next('span').html('Please enter your deliver address.');
+                isValide = false;
+            }
+            var pcity = jQuery('#inpDelCity').val();
+            jQuery('#inpDelCity').next('span').html('');
+            if (pcity == undefined || pcity == '' || pcity == null) {
+                jQuery('#inpDelCity').next('span').html('Please enter your deliver city name.');
+                isValide = false;
+            }
+            var bState = jQuery('select[id=inpDelState] option').filter(':selected').text();
+            jQuery('#inpDelState').next('span').html('');
+            if (bState == '--Select State--') {
+                jQuery('#inpDelState').next('span').html('Please enter your deliver state address.');
+                isValide = false;
+            }
+            var pzip = jQuery('#inpDelZip').val();
+            jQuery('#inpDelZip').next('span').html('');
+            if (pzip == undefined || pzip == '' || pzip == null) {
+                jQuery('#inpDelZip').next('span').html('Please enter your deliver zipcode.');
+                isValide = false;
+            }
+            var textAreaCtrl = jQuery('#inpInstruction')
+            var pInstruction = trimfield(textAreaCtrl.val());
+            textAreaCtrl.parent('div').parent('div').find('span').html('');
+            if (pInstruction == undefined || pInstruction == '' || pInstruction == null) {
+                textAreaCtrl.parent('div').parent('div').find('span').html('Please enter additional instructions.');
+                isValide = false;
+            }
+            return isValide;
+        }
+        function trimfield(str) {
+            return str.replace(/^\s+|\s+$/g, '');
+        }
+        //jq(document).ready(function () {
+        //    loadDataTables();
+        //    jq("#member").hide();
+        //    jq("input:text,form").removeAttr("autocomplete");
+        //    jq("#memberid").val(2);
+        //});
+        function submitData(e) {
+            var model = {};
+            var ProjOrderDet = [];
+            // loop throght
+            jQuery('tr.prc-row').each(function () {
+                var ProjOrder = {};
+                ProjOrder.FileName = jQuery(this).find("td.prc-name").text();
+                ProjOrder.Pages = jQuery(this).find("td.prc-page").text();
+                ProjOrder.Copies = jQuery(this).find("td.prc-copy").text();
+                ProjOrder.Size = jQuery(this).find("td.prc-size").text();
+                ProjOrder.Price = jQuery(this).find("td.prc-total").text();
+                ProjOrderDet.push(ProjOrder);
+            });
+            // assign datalist
+            model.GetTblProjs = ProjOrderDet; console.log(model.GetTblProjs);
+            // Main model
+            model.Company = jQuery("label[name=Company]").text();
+            model.Name = jQuery("label[name=Name]").text();
+            model.Addr = jQuery("label[name=Addr]").text();
+            model.City = jQuery("label[name=City]").text();
+            model.State = jQuery("label[name=State]").text();
+            model.Zip = jQuery("label[name=Zip]").text();
+            model.Phone = jQuery("label[name=Phone]").text();
+            model.Email = jQuery("label[name=Email]").text();
+            model.ShipAmt = jQuery("td[id=priceTotal]").text();
+            model.ProjId = jQuery("label[name=ProjId]").text();
+            model.PO = jQuery("label[name=PO]").text();
+            model.Prints = jQuery("label[name=Prints]").text();
+            model.DeliveryDt = jQuery("label[name=DeliveryDt]").text();
+            model.HowShip = jQuery("input[name=HowShip]").val();
+            model.NotifyAddress = jQuery("label[name=NotifyAddress]").text();
+            model.Instructions = jQuery("label[name=Instructions]").text();
+            model.FileName = jQuery("label[id=FileName]").text();
+            model.UID = jQuery("#ModUid").val();
+            var pathChK = jQuery("#FileName").val();
+            jq.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                url: '/StaffAccount/SaveCopyCenterInfo/',
+                data: { 'model': model, 'pathChK': pathChK },
+                async: false,
+                success: function (response) {
+                    jq(".m-modal").modal('hide');
+                    jq(".modalthanks").modal('show');
+                    jq('#uploadCheck').val('N');
+                    jQuery("#hdnFileName").val('');
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        jq(function () {
+            jq("#inpCompany").autocomplete({
+                source: function (request, response) {
+                    jq.ajax({
+                        url: '/Implement/GetCompanyName/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            if (data.length > 0) {
+                                jq("#member").show();
+                                jq("#nonmember").hide();
+                                jq("#memberid").val(1);
+                            }
+                            else {
+                                jq("#member").hide();
+                                jq("#nonmember").show();
+                                jq("#memberid").val(2);
+                            }
+                            response(jq.map(data, function (item) {
+                                return item;
+                            }));
+                            var uicCss = jq('#ui-id-1').attr("style") + " display:block !important;";
+                            jq('#ui-id-1').attr("style", uicCss);
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    jq("#hdninpCompany").val(i.item.val);
+                    if (jq('#inpContact option').length != 0) {
+                        jq('#inpContact').children('option').remove();
+                        jq('#inpContact').append('<option value="0">--Select Contact--</option>');
+                    }
+
+
+                },
+                minLength: 2
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+            // Onchange events
+            jq("#inpCompany").on('change', function () {
+                jq.ajax({
+                    url: '/Implement/GetCompanyAddress',
+                    data: { "Id": parseFloat(jq('#hdninpCompany').val()) },
+                    type: "POST",
+                    async: false,
+                    success: function (response) {
+                        console.log(response.data);
+                        lstContact = response.data.ContactList;
+                        console.log(lstContact);
+                        jq('#inpAddr').val(response.data.BillAddress);
+                        jq('#inpCity').val(response.data.BillCity);
+                        jq("#inpState option:selected").text(response.data.BillState);
+                        jq("#inpZip").val(response.data.BillZip);
+                        jq.each(response.data.ContactList, function (data, value) {
+                            jq("#inpContact").append(jq("<option></option>").val(value.ConID).html(value.Contact));
+                            validateform();
+                        });
+                    },
+                    error: function (response) {
+                        alert(response.responseText);
+                    },
+                    failure: function (response) {
+                        alert(response.responseText);
+                    }
+                });
+            });
+        });
+        jq("#inpContact").on('change', function () {
+            var lstTemp = lstContact.filter(v => v.Contact === jq(this).val());
+            jq("#inpEmail").val(lstTemp[0].Email);
+            jq("#inpPhone").val(lstTemp[0].Phone);
+            validateform();
+            //console.log(lstTemp);
+        });
+        var contactPhone = document.getElementById('inpPhone');
+        var result = document.getElementById('inpPhone');
+
+        contactPhone.addEventListener('input', function (e) {
+            var x = e.target.value.replace(/\D/g, '').match(/(\d{0,3})(\d{0,3})(\d{0,4})/);
+            e.target.value = !x[2] ? x[1] : '(' + x[1] + ') ' + x[2] + (x[3] ? '-' + x[3] : '');
+        });
+    </script>
+    @*<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>*@
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://kit.fontawesome.com/bde2bd25f3.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+    <script type="text/javascript">
+        function demoFromHTML() {
+
+            var pdf = new jsPDF('p', 'pt', 'letter');
+            // source can be HTML-formatted string, or a reference
+            // to an actual DOM element from which the text will be scraped.
+            source = $('#pdf1')[0];
+
+            // we support special element handlers. Register them with jQuery-style
+            // ID selector for either ID or node name. ("#iAmID", "div", "span" etc.)
+            // There is no support for any other type of selectors
+            // (class, of compound) at this time.
+            specialElementHandlers = {
+                // element with id of "bypass" - jQuery style selector
+                '#bypassme': function (element, renderer) {
+                    // true = "handled elsewhere, bypass text extraction"
+                    return true
+                }
+            };
+            margins = {
+                top: 80,
+                bottom: 60,
+                left: 40,
+                width: 522
+            };
+            // all coords and widths are in jsPDF instance's declared units
+            // 'inches' in this case
+            pdf.fromHTML(
+                source, // HTML string or DOM elem ref.
+                margins.left, // x coord
+                margins.top, { // y coord
+                'width': margins.width, // max width of content on PDF
+                'elementHandlers': specialElementHandlers
+            },
+
+                function (dispose) {
+                    // dispose: object with X, Y of the last line add to the PDF
+                    //          this allow the insertion of new lines after html
+                    pdf.save('Test.pdf');
+                }, margins);
+        }
+    </script>
+
+
+    <script type="text/javascript">
+        $("body").on("click", "#printPHL", function () {
+            html2canvas($('#pdf1')[0], {
+                quality: 4,
+                onrendered: function (canvas) {
+                    var data = canvas.toDataURL();
+                    var docDefinition = {
+                        content: [{
+                            image: data,
+                            width: 500
+                        }]
+                    };
+                    pdfMake.createPdf(docDefinition).download("List.pdf");
+                }
+            });
+        });
+        $("body").on("click", "#phlpdf", function () {
+            html2canvas($('#pdf1')[0], {
+                quality: 4,
+                onrendered: function (canvas) {
+                    var data = canvas.toDataURL();
+                    var docDefinition = {
+                        content: [{
+                            image: data,
+                            width: 500
+                        }]
+                    };
+                    pdfMake.createPdf(docDefinition).download("List.pdf");
+                }
+            });
+        });
+    </script>
+}
+<div class="container-fluid">
+    <div class="dashboard-box m-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-heading">
+                    <h2>Project#: @Model.ProjNumber | Arrival Date: @Model.ArrivalDt @*Preview Member Management*@</h2>
+                </div>
+            </div>
+            <div id="loader-overlay" style="display:none;">
+                <div id="loader" class="popup-loader">
+                    <img src="/assets/images/LoaderPCNW.gif" style="max-width: 20%;min-width:20%" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <input type="hidden">
+                <div class="row px-0 mx-0">
+                    <div class="col-lg-6 my-3">
+                        <div class="box-header">
+                            <h5>Title: @Model.Title</h5>
+                        </div>
+                        <div class="col-12 p-3" style="background: antiquewhite;">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <h5>Project Description</h5>
+                                    <p style="text-align:justify">@Model.Story</p>
+                                </div>
+                                @*creating table*@
+                                <div class="col-md-6">
+                                    <h5>Bid Date</h5>
+                                    @if (Model.BidDateTimes != null)
+                                    {
+                                        @for (int i = 0; i < Model.BidDateTimes.Count; i++)
+                                        {
+                                            <h6 class="extraBid">
+                                                @(Model.BidDateTimes[i].BidDate != null ? Convert.ToDateTime(Model.BidDateTimes[i].BidDate).ToString("MM/dd/yyyy") : "")
+                                            </h6>
+                                        }
+                                    }
+                                    @* @if (!string.IsNullOrEmpty(Model.BidDt.ToString()))
+                                    {
+                                    <h6 class="extraBid">
+                                    @(string.IsNullOrEmpty(Model.BidDt.ToString()) ? "" : Convert.ToDateTime(Model.BidDt).ToString("MM/dd/yyyy"))
+                                    </h6>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.BidDt2.ToString()))
+                                    {
+                                    <h6 class="extraBid">
+                                    @(string.IsNullOrEmpty(Model.BidDt2.ToString()) ? "" : Convert.ToDateTime(Model.BidDt2).ToString("MM/dd/yyyy"))
+                                    </h6>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.BidDt3.ToString()))
+                                    {
+                                    <h6 class="extraBid">
+                                    @(string.IsNullOrEmpty(Model.BidDt3.ToString()) ? "" : Convert.ToDateTime(Model.BidDt3).ToString("MM/dd/yyyy"))
+                                    </h6>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.BidDt4.ToString()))
+                                    {
+                                    <h6 class="extraBid">
+                                    @(string.IsNullOrEmpty(Model.BidDt4.ToString()) ? "" : Convert.ToDateTime(Model.BidDt4).ToString("MM/dd/yyyy"))
+                                    </h6>
+                                    }
+                                    @if (!string.IsNullOrEmpty(Model.BidDt5.ToString()))
+                                    {
+                                    <h6 class="extraBid">
+                                    @(string.IsNullOrEmpty(Model.BidDt5.ToString()) ? "" : Convert.ToDateTime(Model.BidDt5).ToString("MM/dd/yyyy"))
+                                    </h6>
+                                    }*@
+                                    <p class="bid-preview text-danger"></p>
+                                </div>
+                                <div class="col-md-12 map-btn">
+                                    <h5>
+                                        Project Location
+                                        @*<a href="#"><i class="fa fa-map-marker"></i> View Map</a>*@
+                                    </h5>
+                                    <p>@Model.LocAddr1 @Model.LocCity @Model.LocAddr2 @Model.LocCity @Model.LocZip</p>
+                                </div>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.PreBidDt.ToString()) || !string.IsNullOrEmpty(Model.PreBidDt2.ToString()) || !string.IsNullOrEmpty(Model.PreBidDt3.ToString()) || !string.IsNullOrEmpty(Model.PreBidDt4.ToString()) || !string.IsNullOrEmpty(Model.PreBidDt5.ToString()))
+                        {
+                            <div class="col-12 mt-5 px-0">
+                                <table class=" table table-bordered ">
+                                    <thead>
+                                        <tr>
+                                            <td>PreBid Meeting</td>
+                                            <td>Mandatory</td>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @if (!string.IsNullOrEmpty(Model.BidDt.ToString()))
+                                        {
+                                            <tr>
+                                                <td> @(Convert.ToDateTime(Model.BidDt).ToString("MM/dd/yyyy")) @Model.PreBidLoc</td>
+                                                <td>No</td>
+                                            </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.BidDt2.ToString()))
+                                        {
+                                            <tr>
+                                                <td> @(Convert.ToDateTime(Model.BidDt2).ToString("MM/dd/yyyy")) @Model.PreBidLoc2</td>
+                                                <td>No</td>
+                                            </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.BidDt3.ToString()))
+                                        {
+                                            <tr>
+                                                <td> @(Convert.ToDateTime(Model.BidDt3).ToString("MM/dd/yyyy")) @Model.PreBidLoc3</td>
+                                                <td>No</td>
+                                            </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.BidDt4.ToString()))
+                                        {
+                                            <tr>
+                                                <td> @(Convert.ToDateTime(Model.BidDt4).ToString("MM/dd/yyyy")) @Model.PreBidLoc4</td>
+                                                <td>No</td>
+                                            </tr>
+                                        }
+                                        @if (!string.IsNullOrEmpty(Model.BidDt5.ToString()))
+                                        {
+                                            <tr>
+                                                <td> @(Convert.ToDateTime(Model.BidDt5).ToString("MM/dd/yyyy")) @Model.PreBidLoc5</td>
+                                                <td>No</td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        <div class="col-12 mt-1 project-type-card">
+                            <div class="d-flex flex-wrap project-div">
+                                <div class="project-type">
+                                    <h6>
+                                        Project Type :
+                                        <span>@Model.ProjTypeIdString</span>
+                                    </h6>
+                                </div>
+                                <div class="project-subtype">
+                                    <h6>
+                                        Project Sub Type :
+                                        <span>@Model.ProjSubTypeIdString</span>
+                                    </h6>
+                                </div>
+                                <div class="project-scope">
+                                    <h6>
+                                        Project Scope :
+                                        <span>@Model.ProjScope</span>
+                                    </h6>
+                                </div>
+                                <div class="bid-bond">
+                                    <h6>
+                                        Bid Bond:
+                                        <span>@Model.BidBond</span>
+                                    </h6>
+                                </div>
+                                <div class="wage">
+                                    <h6>
+                                        Wages :
+                                        @if (Model.PrevailingWage)
+                                        {
+                                            <span>Prevailing wage applicable</span>
+                                        }
+                                    </h6>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 project-type-card pb-2 pt-0">
+                            <h6>
+                                Estimated Completion :
+                                <span style="font-weight: 400;">@Model.CompleteDt</span>
+                            </h6>
+                        </div>
+
+                        @if (Model.Entities != null)
+                        {
+                            @if (Model.Entities != null)
+                            {
+                                <div class="col-12 mt-2 px-0">
+                                    <h6>Project Team</h6>
+                                    <table class="table table-bordered table-responsive">
+                                        <thead class="font-weight-bold table-active">
+                                            <tr>
+                                                <td>Position</td>
+                                                <td class="text-nowrap">Firm Name</td>
+                                                <td>Contact Person</td>
+                                                <td>Address</td>
+                                                <td>Phone Number</td>
+                                                <td>Fax  Number</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            @foreach (var item in Model.Entities)
+                                            {
+                                                <tr>
+                                                    <td>@item.EntityType</td>
+                                                    <td>@item.EntityName</td>
+                                                    <td>@item.EntContact</td>
+                                                    <td>@item.EntAddr</td>
+                                                    <td>@item.EntPhone</td>
+                                                    <td>@item.EntFax</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+                        }
+
+                    </div>
+                    <div class="col-lg-6 pr-0 my-3" style="background: #eff2f8;">
+                        <div class="box-header">
+                            @if (!string.IsNullOrEmpty(Model.BRNote) || (Model.BidResultsFiles != null && Model.BidResultsFiles.Count > 0))
+                            {
+                                <div class="col-12 mt-5">
+                                    <h6>
+                                        Bid Results
+                                        @if (Model.BidResultsFiles.Count > 0)
+                                        {
+                                            <a class="preview-download" href="@Url.Action("ViewBidRes", "StaffAccount", new {Id = Model.ProjId})" target="_blank">View/Download</a>
+                                        }
+                                    </h6>
+                                    <p>@Model.BRNote</p>
+                                    @* <table class="table table-bordered">
+                                <thead class="font-weight-bold table-active">
+                                <tr>
+                                <td></td>
+                                <td></td>
+                                <td></td>
+                                <td> </td>
+                                </tr>
+                                </thead>
+                                <tbody class="table-icons">
+                                @if (Model.BidResultsFiles != null)
+                                {
+                                @if (Model.BidResultsFiles.Count > 0)
+                                {
+                                for (int i = 0; i < Model.BidResultsFiles.Count; i++)
+                                {
+                                string hrefPath = "https://contractor-aws.s3.amazonaws.com/" + Model.BidResultsFiles[i].PathInfo;
+                                if (hrefPath.IndexOf(" ") > -1)
+                                hrefPath = hrefPath.Replace(" ", "+");
+                                <iframe id="my_iframe" style="display:none;"></iframe>
+                                <tr>
+                                <td><a href=@hrefPath target="_blank" class="pdf"><i class="fa fa-file-pdf mr-2"></i> @Model.BidResultsFiles[i].FileInfo</a></td>
+                                <td><a href=@hrefPath target="_blank" class="fa fa-search"></a></td>
+                                <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file=" @Model.BidResultsFiles[i].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-download"></i></a></td>
+                                <td><a href="#">Order<i class="fa fa-cart-arrow-down mx-1"></i></a></td>
+                                </tr>
+                                }
+                                }
+                                }
+                                </tbody>
+                                </table>*@
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.PHLnote))
+                            {
+                                @*onclick = "ShowPHL()demoFromHTML()"*@
+                                <div class="col-12 mt-5">
+                                    <h6>Plan Holders <span class="preview-download" style="cursor:pointer;" onclick="ShowPHL(this.event)">View/Download</span></h6>
+                                    <table class="table table-bordered">
+                                        <thead class="font-weight-bold table-active">
+                                            <tr>
+                                                <td>Type</td>
+                                                <td>Contractor</td>
+                                                <td>Bidding ?</td>
+                                                <td>Contact Info</td>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-icons">
+                                            @if (Model.pInfo != null)
+                                            {
+                                                @if (Model.pInfo.Count > 0)
+                                                {
+                                                    for (int i = 0; i < Model.pInfo.Count; i++)
+                                                    {
+                                                        string Bid = "Yes";
+                                                        Bid = Model.pInfo[i].bidding == null ? "No" : (Convert.ToBoolean(Model.pInfo[i].bidding) ? "Yes" : "No");
+
+                                                        <tr>
+                                                            <td>@Model.pInfo[i].PHLType</td>
+                                                            <td><a class="pdf" onclick="ShowCard(@Model.pInfo[i].memId, '@Model.pInfo[i].Uid')">@Model.pInfo[i].Company</a></td>
+                                                            <td class="text-center">@Bid</td>
+                                                            <td>@Model.pInfo[i].Contact</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+                                    <div class="modal fade li-modal" id="memb-dir" role="dialog">
+                                        <div class="modal-dialog modal-m">
+
+                                            <!-- Modal content-->
+                                            <div class="modal-content">
+                                                <div class="modal-header cusModal-Header">
+                                                    <h4 class="modal-title card-label font-weight-bolder">Plan Holder Information</h4>
+                                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                </div>
+                                                <div class="modal-body" style="background: #f2f5f8;">
+                                                    <span id="message"></span>
+                                                    <form method="POST" id="frmPrintFormMem" class="col-md-12 text-left formCls">
+
+                                                        <div class="row">
+                                                            <div class="col-lg-10 pl-0">
+                                                                <div class="form-group row mb-3">
+                                                                    <div class="dropdown col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label">
+                                                                            <b>Company Name:</b>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="dropdown col-lg-8 col-xl-8 mb-lg-0 mb-2" id="lblCompany">
+                                                                        <label class="col-form-label">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <div class="dropdown col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label">
+                                                                            <b>Contact:</b>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-lg-12 col-xl-12 mb-lg-0 mb-2" id="lblContact">
+                                                                        <label class="col-form-label">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <div class="dropdown col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label">
+                                                                            <b>Email:</b>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label" id="lblMail">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <div class="dropdown col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label">
+                                                                            <b>Phone:</b>
+                                                                        </label>
+                                                                    </div>
+                                                                    <div class="col-lg-8 col-xl-8  mb-lg-0 mb-2" id="lblPhone">
+                                                                        <label class="col-form-label">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                    </form>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            @*Download PHL*@
+
+                            <div class="modal fade m-model" id="viewOrder-Modal2" role="dialog">
+                                <div class="modal-dialog modal-lg">
+
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header cusModal-Header">
+                                            <h4 class="modal-title card-label font-weight-bold">Plan Holder Preview</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div id="pdf1">
+                                            <div class="d-flex justify-content-between mb-3 border-bottom" style="background: #1b2c4a;">
+                                                <div>
+                                                    <img class="img-fluid" src="/assets/images/Logo Master Horiz Clear White.png" alt="" style="width:270px; border-radius:3px;">
+                                                </div>
+                                                <div class=" mr-2" style="color: aliceblue;">
+                                                    <p class="mb-0">5468 SE International Drive, Milwaukie, OR 97222</p>
+                                                    <h4 style="float: right;">Plan Center North West</h4>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <div>
+                                                    <div>
+                                                        <ol style="display: inline-block;">
+                                                            @if (Model.Entities != null && Model.Entities.Count > 0)
+                                                            {
+                                                                foreach (var item in Model.Entities)
+                                                                {
+                                                                    string Detail = string.IsNullOrEmpty(@item.EntityName) ? "" : @item.EntityName;
+                                                                    Detail = string.IsNullOrEmpty(@item.EntAddr) ? Detail : Detail + ", " + @item.EntAddr;
+                                                                    Detail = string.IsNullOrEmpty(@item.EntPhone) ? Detail : Detail + ", " + @item.EntPhone;
+                                                                    Detail = string.IsNullOrEmpty(@item.EntFax) ? Detail : Detail + ", " + @item.EntFax;
+                                                                    <li><b>@item.EntityType</b>: @Detail</li>
+                                                                }
+                                                            }
+                                                        </ol>
+                                                    </div>
+                                                    @if (Model.pInfo != null && Model.pInfo.Count > 0)
+                                                    {
+                                                        <table class="table table-Modal table-bordered ">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Type</th>
+                                                                    <th>Contractor</th>
+                                                                    <th>Bidding</th>
+                                                                    <th>Contact Information</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var item in Model.pInfo)
+                                                                {
+                                                                    string Bid = "Yes";
+                                                                    Bid = item.bidding == null ? "No" : (Convert.ToBoolean(item.bidding) ? "Yes" : "No");
+                                                                    <tr>
+                                                                        <td>@item.PHLTypeString</td>
+                                                                        <td>@item.Company</td>
+                                                                        <td>@Bid</td>
+                                                                        <td>@item.Contact</td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer newPro-btn">
+                                                <button type="button" id="printPHL" class="modl-btn newProbtn">Print</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+                        <h5 class="mt-5">Project Documents</h5>
+                        <div class="col-12 mt-5">
+                            <h6><span href="#" onclick="OpenPrintModelAll()" style="cursor:pointer" class="preview-download">Order All<i class="fa fa-cart-arrow-down mx-1"></i></span></h6>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h6>Plans</h6>
+                            <table class="table table-bordered">
+                                <thead class="font-weight-bold table-active">
+                                    <tr>
+                                        <td>File Name</td>
+                                        <td>View</td>
+                                        <td>Download</td>
+                                        <td>Order Copies</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-icons">
+                                    @if (Model.PlansFiles != null)
+                                    {
+                                        @if (Model.PlansFiles.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.PlansFiles.Count; i++)
+                                            {
+                                                string hrefPath =Model.PlansFiles[i].PathInfo;
+                                                if (hrefPath.IndexOf(" ") > -1)
+                                                    hrefPath = hrefPath.Replace(" ", "+");
+                                                string OrderAll = hrefPath + "$" + Model.PlansFiles[i].FileInfo;
+                                                <input type="hidden" class="OrderAllClass" value="@OrderAll" />
+                                                <iframe id="my_iframe" style="display:none;"></iframe>
+                                                <tr>
+                                                    <td><a href=@hrefPath target="_blank" class="pdf"><i class="fa fa-file-pdf mr-2"></i> @Model.PlansFiles[i].FileInfo</a></td>
+                                                    <td><a href=@hrefPath target="_blank" class="fa fa-search"></a></td>
+                                                    <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file=" @Model.PlansFiles[i].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-download"></i></a></td>
+                                                    <td><a href="#" onclick="OpenPrintModel1('@Model.PlansFiles[i].FileInfo','@hrefPath')">Order<i class="fa fa-cart-arrow-down mx-1"></i></a></td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog modal-xl">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Print Order Form
+                                        </h4>
+                                        <h4 class="modal-title card-label font-weight-bolder" id="ordersummary-head" style="display:none;">
+                                            Print Order Summary
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <!-- Create order Form -->
+                                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="row px-0 mx-0">
+                                                <div class="col-lg-6 pl-0">
+                                                    <h6>Customer Info</h6>
+                                                    <div class="formCls">
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                Company<span class="text-danger">*</span>
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input class="form-control form-control-solid " type="text"
+                                                                       value="" placeholder="Company" id="inpCompany" autocomplete="on" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                                <input type="hidden" id="hdninpCompany" />
+                                                                <input type="hidden" id="FileName" />
+                                                                <input type="hidden" id="FilePath" />
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                Contact<span class="text-danger">*</span>
+                                                            </label>
+                                                            <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2" id="member">
+                                                                <input type="hidden" id="memberid" />
+                                                                <select class="form-control form-control-solid mb-2" id="inpContact" onchange="validateform()"><option value="0">--Select Contact--</option></select>
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                            <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2" id="nonmember">
+                                                                <input type="hidden" id="memberid" />
+                                                                <input class="form-control" type="text" value="" placeholder="Contact" id="inpnonmember" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+
+                                                            <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address<span class="text-danger">*</span></label>
+
+                                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                                <input class="form-control"
+                                                                       type="text" value=""
+                                                                       placeholder="Address" id="inpAddr" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                <span class="text-danger"></span>
+                                                            </label>
+                                                            <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                                <input class="address_zipcode form-control form-control-solid"
+                                                                       name="address_zipcode" type="text" value=""
+                                                                       placeholder="City" id="inpCity" onchange="validateform()">
+                                                                <span class="loginError"></span>
+
+                                                            </div>
+                                                            <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                                                <div class="dropdown px-0">
+                                                                    <select class="form-control form-control-solid mb-2" id="inpState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform()"></select>
+                                                                    <span class="loginError"></span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                                <input class="address_zipcode form-control form-control-solid number-only"
+                                                                       name="address_zipcode" type="text" value=""
+                                                                       placeholder="Zip Code" id="inpZip" onchange="validateform()" maxlength="5">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                Phone<span class="text-danger">*</span>
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input class="form-control"
+                                                                       type="text" value=""
+                                                                       placeholder="Phone" id="inpPhone" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                Email<span class="text-danger">*</span>
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input class="form-control  copy_email"
+                                                                       name="copy_email" type="text" value=""
+                                                                       placeholder="Email" id="inpEmail" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                                            <div class="col-lg-9 col-xl-9 input-group">
+                                                                @*<select class="form-control" id="inpCharges" onchange="validateform()">
+                                                                <option value="" hidden="">-Select-</option>
+                                                                <option value="0.15">8.5X11</option>
+                                                                <option value="0.20">11x14</option>
+                                                                <option value="0.25">11X17</option>
+                                                                <option value="2.50">24x36</option>
+                                                                <option value="3.50">30x42</option>
+                                                                <option value="4.00">36x48</option>
+                                                                <option value="">Custom</option>
+                                                                </select>
+                                                                <span class="loginError"></span>
+                                                                <input type="hidden" id="hdnPrice">
+                                                                *@
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 pr-0">
+                                                    <h6>Order Info</h6>
+                                                    <div class="formCls">
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                Project #
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input class="form-control "
+                                                                       name="project_number" type="text" value=""
+                                                                       placeholder="Project #" id="inpProjNo" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                P.O.
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input class="form-control"
+                                                                       name="order_po" type="text" value=""
+                                                                       placeholder="P.O." id="inpPO" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                No. of Pages
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input class="form-control"
+                                                                       name="number_of_pages" type="text" value=""
+                                                                       placeholder="No. of Pages" id="inpPages" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label ">
+                                                                No. of
+                                                                Copies<span class="text-danger">*</span>
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <input class="form-control"
+                                                                       name="number_of_copies" type="text" value=""
+                                                                       placeholder="No. of Copies" id="inpCopy" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">Deadline<span class="text-danger">*</span></label>
+
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <div class="input-group copy_order_deadline_box"
+                                                                     id=""
+                                                                     data-target-input="nearest">
+                                                                    <input type="date"
+                                                                           class="form-control"
+                                                                           data-target="" value="" id="inpDline" onchange="validateform()">
+                                                                    <span class="loginError"></span>
+
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                Delivery<span class="text-danger">*</span>
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9">
+                                                                <div class="dropdown bootstrap-select ">
+                                                                    <div class="dropdown bootstrap-select">
+                                                                        <select class="form-control" id="inpDelivery" onchange="validateform()">
+                                                                            <option value="" hidden="">-Select-</option>
+                                                                            <option value="1">Pickup at Plan Center NorthWest</option>
+                                                                            <option value="2">Local Delivery(20)-Portland Metro Only</option>
+                                                                            <option value="3">UPS delivery</option>
+                                                                        </select>
+                                                                        <span class="loginError"></span>
+                                                                        <input type="hidden" name="HowShip" />
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+
+                                                            <label class="col-xl-3 col-lg-3 col-form-label"></label>
+
+                                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                                <input type="checkbox" class="mx-1" value="" id="chkDel" onclick="DelFunction()" />Same as Billing Address
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row mb-3">
+
+                                                            <label class="col-xl-3 col-lg-3 col-form-label ">Deliver Address/Recipient Address<span class="text-danger">*</span></label>
+
+                                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                                <input class="form-control"
+                                                                       type="text" value=""
+                                                                       placeholder="Address" id="inpDelAddr" onchange="validateform()">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                <span class="text-danger"></span>
+                                                            </label>
+                                                            <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                                <input class="address_zipcode form-control form-control-solid"
+                                                                       name="address_zipcode" type="text" value=""
+                                                                       placeholder="City" id="inpDelCity" onchange="validateform()">
+                                                                <span class="loginError"></span>
+
+                                                            </div>
+                                                            <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                                <div class="dropdown px-0">
+                                                                    <select class="form-control form-control-solid mb-2" id="inpDelState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform()"></select>
+                                                                    <span class="loginError"></span>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                                <input class="address_zipcode form-control form-control-solid number-only"
+                                                                       name="address_zipcode" type="text" value=""
+                                                                       placeholder="Zip Code" id="inpDelZip" onchange="validateform()" maxlength="5">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 px-0">
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-form-label">
+                                                            Additional Instructions
+                                                        </label>
+                                                        <div class="input-group">
+                                                            <textarea name="instructions"
+                                                                      class="instructions form-control" cols="30"
+                                                                      rows="5" id="inpInstruction" onchange="validateform()" onblur="validateform()"></textarea>
+                                                        </div>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </form>
+                                        <div class="col-md-12 newPro-btn">
+                                            <span id="next-btn" class="newProbtn modl-btn px-4" style="float: right;cursor:pointer">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></span>
+                                        </div>
+                                        <!-- Review Order Form -->
+
+                                        <form action="" class="col-md-12 review-form" style="display: none;">
+                                            <input type="hidden">
+                                            <div class="row px-0 mx-0 text-left">
+                                                <div class="col-lg-6 pl-0">
+                                                    <h6>Customer Info</h6>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">Company</label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="Company" id="lblModCompany">
+
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Contact
+                                                        </label>
+                                                        <input type="hidden" id="ModUid" />
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="Name" id="lblModContact">
+                                                            +1 635544000
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+
+                                                        <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address</label>
+
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="Addr" id="lblModBillAddr">
+
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            <span class="text-danger"></span>
+                                                        </label>
+                                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                            <label class="col-form-label" name="City" id="lblModCity">
+                                                                Carolina
+                                                            </label>
+
+                                                        </div>
+                                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                            <label class="col-form-label" name="State" id="lblModState">
+                                                                Nevada
+                                                            </label>
+
+                                                        </div>
+
+                                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                                            <label class="col-form-label" name="Zip" id="lblModZip">
+                                                                9966TA
+                                                            </label>
+
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Phone
+
+                                                        </label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="Phone" id="lblModPhone">
+                                                            +1 63577799
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Email
+
+                                                        </label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="Email" id="lblModEmail">
+                                                            testing@hotmail.com
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label"> Payment Info</label>
+
+                                                        <div class="col-lg-9 col-xl-9 col-form-label">
+                                                            <select>
+                                                                <option>CC</option>
+                                                                <option>COD</option>
+                                                                <option>Add To Monthly Innvoice</option>
+                                                            </select>
+                                                        </div>
+
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        @*<label class="col-xl-3 col-lg-3 col-form-label">Plan</label>*@
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="FileName" id="lblModPlan">
+
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        @*<label class="col-xl-3 col-lg-3 col-form-label">Price</label>*@
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="ShipAmt" id="lblModPrice">
+
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-lg-6 pr-0">
+                                                    <h6>Order Info</h6>
+
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Project #
+                                                        </label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="ProjId" id="lblModProjNo">
+                                                            Project No#-504111
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label" id="">
+                                                            P.O.
+                                                        </label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="PO" id="lblModPO">
+                                                            400321
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            No. of Pages
+                                                        </label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="pages" id="lblModPages">
+                                                            34
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label ">
+                                                            No. of
+                                                            Copies
+                                                        </label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="Prints" id="lblModCopy">
+                                                            7
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">Deadline</label>
+
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="DeliveryDt" id="lblModDLine">
+                                                            26/9/2023
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Delivery
+
+                                                        </label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="HowShip" id="lblModDelivery">
+                                                            Pickup
+                                                        </label>
+                                                    </div>
+
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address</label>
+                                                        <label class="col-lg-9 col-xl-9 col-form-label" name="NotifyAddress" id="lblModDelAddr">
+                                                            88 Scaremento North Carolina
+                                                        </label>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            <span class="text-danger"></span>
+                                                        </label>
+                                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                            <label class="col-form-label" id="lblModDelCity">
+                                                                Carolina
+                                                            </label>
+
+                                                        </div>
+                                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                            <label class="col-form-label" id="lblModDelState">
+                                                                Nevada
+                                                            </label>
+
+                                                        </div>
+
+                                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                            <label class="col-form-label" id="lblModDelZip">
+                                                                9966TA
+                                                            </label>
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 px-0">
+
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Additional
+                                                            Instructions
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9" style="text-align: justify;">
+                                                            <label id="lblModDelInstruction" name="Instructions">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam omnis accusamus ratione atque incidunt, ipsa eum eveniet maxime deserunt doloribus possimus aperiam temporibus praesentium quo, inventore vitae. Tempora, maxime. Nam.</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-12 pr-0">
+                                                    <table class="table table-bordered price-table-review cusTable">
+                                                        <thead>
+                                                            <tr>
+                                                                <th>S No.</th>
+                                                                <th>File Name</th>
+                                                                <th>No. of pages</th>
+                                                                <th>No. of copies</th>
+                                                                <th>Size</th>
+                                                                <th>Price</th>
+                                                                <th>Total Amount</th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody class="prcTbody">
+                                                        </tbody>
+                                                        <tfoot id="prcFooter">
+                                                            <tr>
+                                                                <td class="font-weight-bold text-right" colspan="6">Delivery Charges</td>
+                                                                <td class="font-weight-bold text-center" id="delivCharges">$0</td>
+                                                            </tr>
+                                                            <tr>
+                                                                <td class="font-weight-bold text-right" colspan="6">Total</td>
+                                                                <td class="font-weight-bold text-center" id="priceTotal">$3024</td>
+                                                            </tr>
+                                                        </tfoot>
+
+                                                    </table>
+                                                    <input type="hidden" id="hdnTotalPrice" />
+                                                </div>
+                                                @* <div class="form-group col-12 pr-0 font-weight-bold">
+                                                    <span style="float:right;"> Text Message Notifications. <input type="checkbox" class="mx-1"></span>
+                                                </div> *@
+                                                <div class="form-group col-12 pr-0">
+                                                    <span style="float: right; cursor:pointer;" class="modl-btn px-4" onclick="submitData(this.event)">Submit</span>
+                                                    <button id="prev-btn" style="float: left;" class="modl-btn px-4">
+                                                        <i class="fa fa-angle-double-left" aria-hidden="true"></i> Previous
+                                                    </button>
+
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal f-modal fade" id="thankyou-Modal" role="dialog">
+                            <div class="modal-dialog modal-lg">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header p-2 cusModal-Header">
+                                        <h4 class="text-white">File Info</h4><button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <table class="table table-bordred select-file-table" id="tblUpload">
+                                            <thead class="text-center">
+                                                <tr>
+                                                    <th>Sl No.</th>
+                                                    <th>File Name</th>
+                                                    <th>No of Page</th>
+                                                    <th style="width: 20%;"># of Copies</th>
+                                                    <th>Page Size</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="ftbody" class="text-center">
+                                            </tbody>
+                                        </table>
+                                    </div>
+
+                                    <div class="modal-footer newPro-btn">
+                                        <button type="button" class="modl-btn newProbtn" id="fileClose" onclick="SaveUploadInfo(this.id)">Ok</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                        @*thanku modal*@
+
+                        <div class="modal modalthanks fade" id="thankyou-Modal" role="dialog">
+                            <div class="modal-dialog modal-lg">
+
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header p-2">
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+
+                                    <div class="modal-body">
+                                        <h1 class="text-success">Thank you</h1>
+                                        <h4>For using our Copy Center. You will receive a message when your order is complete and ready for pickup or delivery.</h4>
+                                    </div>
+
+                                    <div class="modal-footer">
+                                        <button type="button" class="modl-btn" data-dismiss="modal">Close</button>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-12 mt-2">
+                            <h6>Specs</h6>
+                            <table class="table table-bordered">
+                                <thead class="font-weight-bold table-active">
+                                    <tr>
+                                        <td>File Name</td>
+                                        <td>View</td>
+                                        <td>Download</td>
+                                        <td>Order Copies</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-icons">
+                                    @if (Model.SpecsFiles != null)
+                                    {
+                                        @if (Model.SpecsFiles.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.SpecsFiles.Count; i++)
+                                            {
+                                                string hrefPath = Model.SpecsFiles[i].PathInfo;
+                                                if (hrefPath.IndexOf(" ") > -1)
+                                                    hrefPath = hrefPath.Replace(" ", "+");
+                                                string OrderAll = hrefPath + "$" + Model.SpecsFiles[i].FileInfo;
+                                                <input type="hidden" class="OrderAllClass" value="@OrderAll" />
+                                                <tr>
+                                                    <td><a href=@hrefPath target="_blank" class="pdf"><i class="fa fa-file-pdf mr-2"></i> @Model.SpecsFiles[i].FileInfo</a></td>
+                                                    <td><a href=@hrefPath target="_blank" class="fa fa-search"></a></td>
+                                                    <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file=" @Model.SpecsFiles[i].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-download"></i></a></td>
+                                                    <td><a href="#" onclick="OpenPrintModel1('@Model.SpecsFiles[i].FileInfo','@hrefPath')">Order<i class="fa fa-cart-arrow-down mx-1"></i></a></td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 mt-2">
+                            <h6>Addenda</h6>
+                            <table class="table table-bordered table-docs">
+                                <thead class="font-weight-bold table-active">
+                                    <tr>
+                                        <td>File Name</td>
+                                        <td>Download</td>
+                                        <td>View</td>
+                                        <td>Order Copies</td>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-icons">
+                                    @if (Model.AddendaS3Files != null)
+                                    {
+                                        @if (Model.AddendaS3Files.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.AddendaS3Files.Count; i++)
+                                            {
+                                                string hrefPath = Model.AddendaS3Files[i].PathInfo;
+                                                if (hrefPath.IndexOf(" ") > -1)
+                                                    hrefPath = hrefPath.Replace(" ", "+");
+                                                string OrderAll = hrefPath + "$" + Model.AddendaS3Files[i].FileInfo;
+                                                <input type="hidden" class="OrderAllClass" value="@OrderAll" />
+                                                <iframe id="my_iframe" style="display:none;"></iframe>
+                                                bool isFile = false;
+                                                bool.TryParse(Model.AddendaS3Files[i].IsFile.ToString(), out isFile);
+                                                if (isFile)
+                                                {
+                                                    <tr>
+                                                    <td><a href=@hrefPath target="_blank" class="pdf"><i class="fa fa-file-pdf mr-2"></i> @Model.AddendaS3Files[i].FileInfo</a></td>
+                                                    <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file="@Model.AddendaS3Files[i].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-download"></i></a></td>
+                                                    <td><a href=@hrefPath target="_blank" class="fa fa-search"></a></td>
+                                                    <td><a href="#" onclick="OpenPrintModel1('@Model.AddendaS3Files[i].FileInfo','@hrefPath')">Order<i class="fa fa-cart-arrow-down mx-1"></i></a></td>
+                                                </tr>
+                                                }
+                                                else
+                                                {
+                                                    <tr>
+                                                    <td><a target="_blank" class="pdf">@Model.AddendaS3Files[i].FileInfo</a></td>
+                                                        <td class="text-center"><a asp-action="DownLoadZip" asp-controller="Project" asp-route-file="@Model.AddendaS3Files[i].FileInfo" asp-route-filePath="@Model.AddendaS3Files[i].PathInfo"><i class="fa fa-download"></i></a></td>
+                                                    <td></td>
+                                                    <td></td>
+                                                </tr>
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>

@@ -1,0 +1,133 @@
+﻿@{
+    ViewData["Title"] = "Demo Page";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+
+}
+@section CustomCSS{
+    <style>
+        fieldset#autocomplete {
+            border: solid 1px #E6E6E6;
+            padding: 0 20px;
+        }
+
+            fieldset#autocomplete legend {
+                width: 37%;
+            }
+    </style>
+}
+
+    @section Scripts{
+    <script type="text/javascript">
+        var jq = jQuery.noConflict();
+        jq(function () {
+            jq("#txtCustomer").autocomplete({
+                source: function (request, response) {
+                    jq.ajax({
+                        url: '/Implement/AutoComplete/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (response) {
+                            response(jq.map(response.data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            console.log(response.responseText);
+                        },
+                        failure: function (response) {
+                            console.log(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    jq("#hfCustomer").val(i.item.val);
+                },
+                minLength: 0
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+        });
+    </script>
+    <script>
+        function GetProjCode() {
+            jq.ajax({
+                url: '/Implement/GetProjectCode/',
+                data: {},
+                type: "POST",
+                success: function (response) {
+                    jq('#ProjectCode').val(response.data);
+                },
+                error: function (response) {
+                    alert(response.statusMessage);
+                },
+                failure: function (response) {
+                    alert(response.statusMessage);
+                }
+            });
+        }
+        GetProjCode();
+    </script>
+    <script>
+        jq(document).ready(function(){
+            jq('#BtnUpload').on('click', function () {
+                var input = document.getElementById("files");
+                var reader = new FileReader();
+                reader.readAsBinaryString(input.files[0]);
+                reader.onloadend = function () {
+                    var count = reader.result.match(/\/Type[\s]*\/Page[^s]/g).length;
+                    console.log('Number of Pages:', count);
+                }
+                console.log('file uploaded');
+            });
+        });
+    </script>
+}
+
+    <div class="top-heading" style="padding: 25px;">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h1 style="padding-top: 15px;font-size:30px;">AutoComplete Demo Page</h1>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="mainBox">
+        <div class="container">
+            <div class="col-md-12">
+                <div class="col-md-4">
+                    <fieldset id="autocomplete">
+                        <legend>AutoComplete</legend>
+                        <form class="form">
+                            <input type="text" id="txtCustomer" name="CustomerName" />
+                            <input type="hidden" id="hfCustomer" name="CustomerId" />
+                            <br />
+                            <br />
+                            <input type="submit" id="btnSubmit" value="Submit" />
+                            <br />
+                            <br />
+                            @ViewBag.Message
+                        </form>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset id="autocomplete">
+                        <legend>Project Number</legend>
+                        <form class="form">
+                            <input type="text" id="ProjectCode" name="ProjectCode" />
+                        </form>
+                    </fieldset>
+                </div>
+                <div class="col-md-4">
+                    <fieldset class="file-uploder-class">
+                        <legend>Upload Files</legend>
+                        <form class="form">
+                            <input type="file" id="files" name="files" />
+                            <input type="button" id="BtnUpload" name="BtnUpload" class="btn btn-primary" value="Upload Document" />
+                        </form>
+                    </fieldset>
+                </div>
+            </div>
+        </div>
+    </div>

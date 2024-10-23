@@ -1,0 +1,248 @@
+﻿@addTagHelper*, Microsoft.AspNetCore.Mvc.TagHelpers;
+@{
+    ViewData["Title"] = "Upload Pdf File Information";
+    Layout = null;
+}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width">
+    <title>JS Bin</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/es6-shim/0.34.1/es6-shim.js"></script>
+    <script src="https://code.jquery.com/jquery-2.1.4.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css" rel="stylesheet" type="text/css" />
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script src="https://frontenddeveloping.github.io/pdfjs-dist/build/pdf.js"></script>
+    <script src="https://frontenddeveloping.github.io/pdfjs-dist/build/pdf.worker.js"></script>
+    <script>
+        $(document).ready(function () {
+            $("#uploader").on('change', function () {
+                var files = $('#uploader').prop("files");
+                var url = "/Implement?handler=MyUploader";
+                formData = new FormData();
+                formData.append("MyUploader", files[0]);
+
+                jQuery.ajax({
+                    type: 'POST',
+                    url: url,
+                    data: formData,
+                    cache: false,
+                    contentType: false,
+                    processData: false,
+                    beforeSend: function (xhr) {
+                        xhr.setRequestHeader("XSRF-TOKEN",
+                            $('input:hidden[name="__RequestVerificationToken"]').val());
+                    },
+                    success: function (repo) {
+                        if (repo.status == "success") {
+                            alert("File : " + repo.filename + " is uploaded successfully");
+                        }
+                    },
+                    error: function () {
+                        alert("Error occurs");
+                    }
+                });
+            });
+
+            // If you want to upload file on button click, then use below button click event
+            $("#btnUpload").on('click', function () {
+                // add jQuery ajax code to upload
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        function AjaxFormSubmit() {
+            //Set the URL.
+            var url = $("#myForm").attr("action");
+            //Add the Field values to FormData object.
+            var formData = new FormData();
+            formData.append("firstName", $("#txtFirstName").val());
+            formData.append("lastName", $("#txtLastName").val());
+            formData.append("postedFile1", $("#fuPhoto")[0].files[0]);
+            formData.append("postedFile2", $("#fuDocument")[0].files[0]);
+
+            $.ajax({
+                type: 'POST',
+                url: url,
+                data: formData,
+                processData: false,
+                contentType: false
+            }).done(function (response) {
+                if (response.Status === "success") {
+                    $("#lblMessage").html(response.Message);
+                }
+            });
+        }
+    </script>
+</head>
+<body>
+
+    <div class="container">
+        <p>Select pdf file to check number of pages and links inside.</p>
+        @*<form>*@
+        <div class="row">
+            <h2>Upload file using jQuery ajax in Asp.net Core Razor Pages</h2>
+
+            <div class=" form-group  text-center offset-3">
+                <div class="custom-file">
+                    <input type="file" id="uploader" class="uploader">
+                    <button id="btnUpload" class="btn btn-success">Upload</button>
+                </div>
+            </div>
+        </div>
+        @*</form>*@
+    </div>
+    <div class="container">
+        <form id="myForm" method="post" enctype="multipart/form-data" asp-controller="Implement" asp-action="UploadPdf">
+            <table>
+                <tr>
+                    <td>First Name: </td>
+                    <td><input type="text" id="txtFirstName" /></td>
+                </tr>
+                <tr>
+                    <td>Last Name: </td>
+                    <td><input type="text" id="txtLastName" /></td>
+                </tr>
+                <tr>
+                    <td>Photo: </td>
+                    <td><input id="fuPhoto" type="file" name="postedFile1" /></td>
+                </tr>
+                <tr>
+                    <td>Document: </td>
+                    <td><input id="fuDocument" type="file" name="postedFile2" /></td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td><input type="button" value="Submit" onclick="AjaxFormSubmit()" /></td>
+                </tr>
+            </table>
+            <hr />
+            <span id="lblMessage"></span>
+        </form>
+    </div>
+
+    <div class="modal fade" tabindex="-1" role="dialog">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title">PDF info</h4>
+                </div>
+                <div class="modal-body">
+                    <p>Pages: <span class="pdf-pages">in progress</span></p>
+                    <p>Links: <span class="pdf-links">in progress</span></p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script id="jsbin-javascript">
+        function processAnnotations(annotationsData) {
+            for (var i = 0; i < annotationsData.length; i++) {
+                var data = annotationsData[i];
+                if (!data) {
+                    continue;
+                }
+                if (data.subtype === 'Link') {
+                    linkCounter++;
+                }
+            }
+        }
+        function readPDFFile(pdf) {
+            PDFJS.getDocument({ data: pdf }).then(function (pdf) {
+                $pdfPages.text(pdf.pdfInfo.numPages);
+                var pagesPromisesArray = new Array(pdf.pdfInfo.numPages + 1).join('0').split('').map(function (value, index) {
+                    return pdf.getPage(++index);
+                });
+
+                Promise.all(pagesPromisesArray).then(function (pages) {
+                    var pagesAnnotationsPromisesArray = pages.map(function (page) {
+                        return page.getAnnotations();
+                    });
+                    Promise.all(pagesAnnotationsPromisesArray).then(function (annotationsDataArray) {
+                        annotationsDataArray.forEach(function (pageAnnotationsData) {
+                            processAnnotations(pageAnnotationsData);
+                        });
+                        $pdfLinks.text(linkCounter);
+                        $modal.modal('show')
+                    });
+                });
+            });
+        }
+        var linkCounter;
+        var $modal = $('.modal').modal('hide');
+        var $pdfPages = $modal.find('.pdf-pages');
+        var $pdfLinks = $modal.find('.pdf-links');
+        window.onload = function () {
+            document.getElementById('uploader').addEventListener('change', function () {
+                var file = this.files[0];
+                linkCounter = 0;
+                if (!file) {
+                    return;
+                }
+                var fileReader = new FileReader();
+                fileReader.onload = function (e) {
+                    readPDFFile(new Uint8Array(e.target.result));
+                };
+                fileReader.readAsArrayBuffer(file);
+            });
+        };
+    </script>
+
+
+
+    <script id="jsbin-source-javascript" type="text/javascript">
+        function processAnnotations(annotationsData) {
+            for (var i = 0; i < annotationsData.length; i++) {
+                var data = annotationsData[i];
+                if (!data) {
+                    continue;
+                }
+                if (data.subtype === 'Link') {
+                    linkCounter++;
+                }
+            }
+        }
+        function readPDFFile(pdf) {
+            PDFJS.getDocument({ data: pdf }).then(function (pdf) {
+                $pdfPages.text(pdf.pdfInfo.numPages);
+                var pagesPromisesArray = new Array(pdf.pdfInfo.numPages + 1).join('0').split('').map(function (value, index) {
+                    return pdf.getPage(++index);
+                });
+
+                Promise.all(pagesPromisesArray).then(function (pages) {
+                    var pagesAnnotationsPromisesArray = pages.map(function (page) {
+                        return page.getAnnotations();
+                    });
+                    Promise.all(pagesAnnotationsPromisesArray).then(function (annotationsDataArray) {
+                        annotationsDataArray.forEach(function (pageAnnotationsData) {
+                            processAnnotations(pageAnnotationsData);
+                        });
+                        $pdfLinks.text(linkCounter);
+                        $modal.modal('show')
+                    });
+                });
+            });
+        }
+        var linkCounter;
+        var $modal = $('.modal').modal('hide');
+        var $pdfPages = $modal.find('.pdf-pages');
+        var $pdfLinks = $modal.find('.pdf-links');
+        window.onload = function () {
+            document.getElementById('uploader').addEventListener('change', function () {
+                var file = this.files[0];
+                linkCounter = 0;
+                if (!file) {
+                    return;
+                }
+                var fileReader = new FileReader();
+                fileReader.onload = function (e) {
+                    readPDFFile(new Uint8Array(e.target.result));
+                };
+                fileReader.readAsArrayBuffer(file);
+            });
+        };
+    </script>
+</body>
+</html>

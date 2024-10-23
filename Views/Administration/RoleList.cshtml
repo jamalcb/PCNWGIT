@@ -1,0 +1,118 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@model IEnumerable<IdentityRole>;
+
+@inject IAuthorizationService authorizationService
+
+@{
+    ViewData["Title"] = "Role List";
+    Layout = "~/Views/Shared/Layout-Admin-Master.cshtml";
+}
+@section CustomCSS{
+    <style>
+        .card {
+            margin-bottom:15px;
+        }
+        .btn.btn-primary.role-btn{
+            font-size:16px;
+        }
+        .btn.btn-danger.role-btn{
+            font-size:16px;
+        }
+    </style>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Role List</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Administration/UtilityDashboard">Administration</a>
+                        </li>
+                        <li class="breadcrumb-item active">Utilities</li>
+                        <li class="breadcrumb-item active">Role List</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        @if (Model.Any())
+                        {
+                            if ((await authorizationService.AuthorizeAsync(User, "CreateRolePolicy")).Succeeded)
+                            {
+                                <div class="row">
+                                    <div class="col-md-12 mb-1">
+                                        <a class="btn btn-primary role-btn" style="width:auto;"
+                                   asp-controller="administration" asp-action="createrole">
+                                            Add New Role
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row">
+                                @foreach (var role in Model)
+                                {
+                                    <div class="col-md-6">
+                                        <div class="card role-list-section">
+                                            <div class="card-header">
+                                                Role ID : @role.Id
+                                            </div>
+                                            <div class="card-body">
+                                                <h5 class="card-title">
+                                                    Role Name : @role.Name
+                                                </h5>
+                                            </div>
+                                            <div class="card-footer">
+                                                <form asp-action="DeleteRole" asp-controller="administration" asp-route-id="@role.Id" method="post">
+                                                    @if ((await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded)
+                                                    {
+                                                        <a class="btn btn-primary role-btn"
+                                               asp-controller="administration" asp-action="editrole" asp-route-id="@role.Id">
+                                                            Edit
+                                                        </a>
+                                                    }
+                                                    @if ((await authorizationService.AuthorizeAsync(User, "DeleteRolePolicy")).Succeeded)
+                                                    {
+                                                        <button type="submit" class="btn btn-danger role-btn" onclick="return confirm('Are you sure want to delete this role : @role.Name');">
+                                                            Delete
+                                                        </button>
+                                                    }
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card">
+                                <div class="card-header">
+                                    NO roles created yet
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        Use the button below to create role
+                                    </h5>
+                                    <a class="btn btn-primary" style="width:auto;"
+                                   asp-controller="administration" asp-action="createrole">
+                                        Create Role
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

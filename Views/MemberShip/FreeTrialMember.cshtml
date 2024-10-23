@@ -1,0 +1,109 @@
+﻿@{
+    ViewData["Title"] = "FreeTrialMember";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+}
+@section Scripts{
+    <script src="~/js/free-trial-member.js"></script>
+}
+<section>
+    <div class="title-section">
+        <h3>Free 7-day Trial Membership Signup</h3>
+    </div>
+
+    <form id="form" action="">
+        <div class="tab-content">
+            <div id="contact" class="tab-pane fade in active">
+                <div class="contact-info-box formCls">
+                    <div id="onchangevalue">
+                        <div class="form-inner-section">
+                            @* <div class="form-group row">
+                            <a href="/MemberShip/Register" class="update-plan-btn">Update Plan</a>
+                            </div>*@
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label" for="Company">Company<span class="text-danger">*</span></label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input type="hidden" id="hdID" name="ID" value="0">
+                                    <input tabindex="1" type="text" id="Company" class="form-control form-control-solid form-control-lg" placeholder="Company" required="" data-val="true" data-val-required="Please enter company" name="Company">
+                                    <span class="text-danger"></span>
+                                </div>
+                            </div>
+
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label" for="MailAddress">Address <span class="text-danger">*</span></label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input tabindex="2" type="text" id="MailAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" required="" data-val="true" data-val-length="State should be maximum 50 character" data-val-length-max="50" data-val-required="Please enter mail address" maxlength="50" name="MailAddress" value="">
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                <div class="col-lg-3 col-xl-3">
+                                    <input tabindex="4" type="text" id="MailCity" class="form-control form-control-solid form-control-lg" placeholder="City" required="" data-val="true" data-val-length="State should be maximum 50 character" data-val-length-max="50" data-val-required="Please enter mail city" maxlength="50" name="MailCity" value="">
+                                </div>
+                                <div class="col-lg-2 col-xl-2">
+                                    <select tabindex="5" id="MailState" class="form-control form-control-lg form-control-solid mb-2" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                </div>
+                               
+                                <div class="col-lg-2 col-xl-2">
+                                    <input tabindex="3" type="text" id="MailZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" required="" data-val="true" data-val-length-max="50" data-val-required="Please enter mail zip" name="MailZip" value="">
+                                </div>
+                            </div>
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Name<span class="text-danger">*</span></label>
+                                <div class="col-lg-4 col-xl-4">
+                                    <input tabindex="7" type="text" id="FirstName" class="form-control form-control-solid form-control-lg" placeholder="First Name" required="" name="FirstName" value="">
+                                    <span class="text-danger"></span>
+                                </div>
+                                <div class="col-lg-4 col-xl-4">
+                                    <input tabindex="7" type="text" id="LastName" class="form-control form-control-solid form-control-lg" placeholder="Last Name" required="" name="LastName" value="">
+                                    <span class="text-danger"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Contact Number</label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <div class="input-group input-group-solid input-group-lg">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="la la-phone"></i>
+                                            </span>
+                                        </div>
+                                        <input tabindex="8" type="text" onchange="validateInputLength(this.id)" id="ContactPhone" class="form-control form-control-solid form-control-lg" placeholder="(555) 555-5555" required="" name="ContactPhone">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Email For Login<span class="text-danger">*</span></label>
+                                <div class="col-lg-3 col-xl-3">
+                                    <div class="input-group input-group-solid input-group-lg">
+                                        <div class="input-group-prepend">
+                                            <span class="input-group-text">
+                                                <i class="la la-at"></i>
+                                            </span>
+                                        </div>
+                                        <input tabindex="9" type="email" id="ContactEmail" class="form-control form-control-solid form-control-lg" placeholder="Email" required="" data-val="true" data-val-email="The ContactEmail field is not a valid e-mail address." data-val-remote="'ContactEmail' is invalid." data-val-remote-additionalfields="*.ContactEmail" data-val-remote-url="/Home/ValidateEmailAddress" name="ContactEmail">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                    <div class="col-md-12 text-right">
+                        <button class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return FreeTrialMember()">Submit</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+
+</section>

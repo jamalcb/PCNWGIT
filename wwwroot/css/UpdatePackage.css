@@ -1,0 +1,222 @@
+﻿.btn:hover {
+    border-color: transparent;
+    background-color: #ff9900;
+    color: #fff;
+    -webkit-transform: translateY(-1px);
+    transform: translateY(-1px);
+    box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05), 0px 2px 2px rgba(0, 0, 0, 0.05), 0px 4px 4px rgba(0, 0, 0, 0.05), 0px 8px 8px rgba(0, 0, 0, 0.05), 0px 16px 16px rgba(0, 0, 0, 0.05);
+}
+
+.modal-foot-btn {
+    color: #fff;
+    background: rgb(92 128 151);
+    padding: 12px 80px;
+    border-radius: 4px;
+    align-items: center;
+    font-size: 16px;
+    font-weight: 600;
+    text-transform: uppercase;
+    line-height: normal;
+    border: 0;
+    letter-spacing: 0.3px;
+}
+
+.cst-price-modal h4.modal-title {
+    flex: 0 0 95%;
+    text-align: center;
+}
+
+.option-head h2 {
+    font-size: 15px;
+    font-weight: 700;
+    margin: 5px 0;
+    text-align: center;
+    color: #666;
+}
+
+    .option-head h2 span {
+        border-right: 3px solid #9f1d20;
+        border-left: 3px solid #9f1d20;
+        padding: 0 5px;
+    }
+
+.membership-modal .card-time {
+    padding: 10px;
+}
+
+.card-time {
+    text-align: center;
+    padding: 15px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-bottom: 0;
+}
+
+    .card-time .custom-control-inline {
+        flex: 0 0 15%;
+        display: initial;
+    }
+
+    .card-time label {
+        display: inline-block;
+        max-width: 100%;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+.custom-radio input {
+    cursor: pointer;
+}
+
+.card .card-body {
+    padding: 0px;
+}
+
+.custext {
+    font-weight: 600;
+    position: relative;
+    display: block;
+    background: #9f1d20;
+    color: #fff;
+    padding: 3px;
+    border-radius: 40px;
+    width: 60%;
+    margin: auto;
+    font-size: 14px;
+    letter-spacing: 0.35px;
+}
+
+span.custext:before {
+    content: "";
+    position: absolute;
+    bottom: 100%;
+    left: 50%;
+    margin-left: -5px;
+    border-width: 5px;
+    border-style: solid;
+    border-color: transparent transparent #9f1d20;
+}
+
+input[type=radio] {
+    width: 17px;
+    height: 17px;
+}
+/*-------------card css-------------*/
+.card {
+    background: #FFFFFF;
+    box-shadow: 0px 4px 24px rgb(23 36 54 / 2%);
+    border-radius: 2px;
+}
+
+.card-body.mainCard-body {
+    position: relative;
+    background: #ff9529;
+    text-align: center;
+    padding: 10px;
+    height: 430px;
+    color: #fff;
+    border-radius: 4px;
+    box-shadow: 0px 1px 1px rgb(0 0 0 / 5%), 0px 2px 2px rgb(0 0 0 / 5%), 0px 4px 4px rgb(0 0 0 / 5%), 0px 8px 8px rgb(0 0 0 / 5%), 0px 16px 16px rgb(0 0 0 / 5%);
+}
+
+.mainCard-body h2 {
+    font-size: 16px;
+    font-weight: 700;
+    color: #fff;
+    margin: 5px 0;
+}
+
+.price-text {
+    margin-bottom: 0;
+    font-weight: 600;
+}
+
+#main {
+    margin: 10px 0;
+}
+
+    #main .card {
+        border: 0;
+        background: transparent;
+    }
+
+        #main .card .card-header {
+            padding: 0;
+            background: transparent;
+            border: 0;
+            position: relative;
+        }
+
+.cuscard-header {
+    display: flex;
+    align-items: center;
+}
+
+label.custom-control-label {
+    cursor: pointer;
+}
+
+#main .card .collapse.show {
+    background: transparent;
+    line-height: 30px;
+    color: #fff;
+}
+
+.inerList {
+    padding: 0 5px;
+    list-style: none;
+    margin-bottom: 0;
+    padding-left: 1.5rem;
+    text-align: left;
+}
+
+    .inerList li {
+        font-size: 15px;
+        font-weight: 600;
+        line-height: 1.5;
+    }
+
+#main .card .card-header .btn-header-link {
+    color: #fff !important;
+    display: block;
+    text-align: left;
+    background: transparent;
+    color: #222;
+    padding: 5px;
+    font-weight: 600;
+    font-size: 15px;
+    padding-bottom: 0;
+    padding-top: 0;
+}
+
+.member-btn {
+    margin: 0px auto;
+    display: block;
+    background: #626c69;
+    color: #fff;
+    border: none;
+    padding: 7px 10px;
+    font-weight: 600;
+    font-size: 16px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    width: 28%;
+    letter-spacing: 1.3px;
+}
+
+    .member-btn:hover {
+        border-color: transparent;
+        background-color: #9f1d20;
+        color: #fff;
+        -webkit-transform: translateY(-1px);
+        transform: translateY(-1px);
+        box-shadow: 0px 1px 1px rgb(0 0 0 / 5%), 0px 2px 2px rgb(0 0 0 / 5%), 0px 4px 4px rgb(0 0 0 / 5%), 0px 8px 8px rgb(0 0 0 / 5%), 0px 16px 16px rgb(0 0 0 / 5%);
+    }
+/*media query for responsive*/
+@media (min-width: 992px) {
+    .modal-xl {
+        max-width: 1300px;
+        width: auto;
+    }
+}

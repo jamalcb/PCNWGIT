@@ -1,0 +1,235 @@
+﻿
+@{
+    ViewData["Title"] = "LegalStuff";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+}
+@section CustomCss{
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&display=swap" rel="stylesheet">
+}
+
+<style>
+
+    .drag-head {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    .drag-wrap {
+        width: 100%;
+        margin-right: auto;
+        border-radius: 2px;
+        background-color: #2e4261;
+        box-shadow: 0 1px 2px 0 #c9ced1;
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .drag-file {
+        position: relative;
+        max-width: 100%;
+        font-size: 1.0625rem;
+        font-weight: 600;
+    }
+
+    .file__input, .file__value {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        margin-bottom: 0.875rem;
+        color: rgba(255, 255, 255, 0.3);
+        padding: 0.9375rem 1.0625rem;
+    }
+
+    .file__input--file {
+        position: absolute;
+        opacity: 0;
+        height: 80px;
+        width: 74%;
+    }
+
+    .file__input--label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+        .file__input--label:after {
+            /* content: attr(data-text-btn); */
+            content: "Choose Files";
+            border-radius: 3px;
+            background-color: #536480;
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.18);
+            padding: 0.9375rem 1.0625rem;
+            color: white;
+            cursor: pointer;
+            margin: 8px 0px;
+        }
+
+    .file__value {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        /* color: rgba(255, 255, 255, 0.6); */
+        color: #fff;
+        border: 2px solid #8f8f97;
+        padding: 5px;
+        margin: 5px;
+        font-size: 14px;
+    }
+
+        .file__value:hover:after {
+            color: white;
+        }
+
+        .file__value:after {
+            content: "X";
+            cursor: pointer;
+        }
+
+            .file__value:after:hover {
+                color: white;
+            }
+
+    .file__remove {
+        display: block;
+        width: 20px;
+        height: 20px;
+        border: 1px solid #000;
+    }
+
+    button.drag-upload {
+        float: right;
+        border: none;
+        border-radius: 5px;
+        padding: 7px 18px;
+        color: #fff;
+        background: #536480;
+        font-weight: bold;
+        margin: 4px 0px;
+    }
+
+    .main-heading h2 {
+        font-size: 20px;
+        color: #fff;
+        background: #5c8097;
+        padding: 15px;
+        margin-bottom: 0;
+    }
+
+    .dashboard-box {
+        border: 1px solid #cfcfcf;
+        border-radius: 0 0 10px 10px;
+        padding: 20px 0;
+        margin: 0 0 25px 0;
+        background: #fff;
+    }
+
+    .content-box {
+        background: #ededed;
+        padding: 10px 20px;
+        border-radius: 10px;
+        color: #000;
+        font-weight: 500;
+        text-align:justify;
+        font-family: "Helvetica Neue", "Lucida Grande", "Segoe UI", Arial, Helvetica, Verdana, sans-serif;
+        font-family: 'Roboto', sans-serif;
+    }
+
+    hr {
+        background: yellow;
+        border: 0;
+        border-top: 3px solid #546f9a;
+        margin-top: 10px;
+        margin-bottom: 10px;
+    }
+    .border-heading{
+       /*  border-left: 6px solid #546f9a;
+        padding: 0 7px;
+        border-right: 6px solid #546f9a; */
+        line-height: normal;
+        width: fit-content;
+        font-size: 22px;
+    }
+    .title-section small{
+        color: #ff992e;
+    }
+
+    .mainBox {
+        padding: 30px 0;
+    }
+    .content-box p{
+        margin-bottom: 4px;
+    }
+</style>
+<section>
+    <div class="title-section">
+        <h3 class="text-center">Plan Center Northwest <br /><small class="text-center">Terms and Conditions</small></h3>
+    </div>
+    <div class="mainBox">
+        <div class="container">
+            <div class="content-box">
+                <p>Please read the following terms and conditions for online membership (these "Terms"). By using our website, you unconditionally accept and agree to be bound by these terms, as they may be amended from time to time by Plan Center Northwest, ("PCNw"), with or without notice to you. Each time you hereafter enter your user name and password, and login into the member sections of this web site, you reaffirm your prior acceptance and agreement to be bound by these terms, as amended from time to time. PCNw expressly reserves the right to terminate your online membership and your access to the member sections of this web site in accordance with the termination provisions set forth below. </p>
+                <hr>
+
+                <h3 class="my-1 border-heading">Access</h3>
+                <p>Upon acceptance of your registration application and payment of all applicable fees, you will become an active member of PCNw ("Member") for the period that your applicable fees remain paid. As a Member, you will be issued a unique personal user name and password, which you will use to login and access the member sections of this Website. For so long as you are an active Member, PCNw grants to you a non-exclusive, non-transferable license to access the bid information, project details, and project documents (the "Service") of this website. If PCNw terminates you as an Member for any reason and at any time in accordance with the termination provisions set forth below in these Terms, your access to the Service shall immediately terminate.</p>
+                <hr>
+
+                <h3 class="my-1 border-heading">Proprietary rights</h3>
+                <p>You will not, except as expressly permitted by PCNw in these Terms, copy, modify, alter, sell, transfer, assign, publish, distribute, disseminate, allow access to or convey all or any portion of the Service provided on this Website. You agree to protect all copyright and other proprietary rights of PCNw and/or its licensors (i.e., the engineers and architects who prepared the Plans), and to comply with reasonable requests of PCNw and/or its licensors. The Service provided includes copyrighted materials owned by PCNw and/or its licensors. Any reproduction, alteration, reuse of the Service without the express written permission of PCNw and/or its licensors is prohibited, except that you may download and reproduce the portions of the Service for use in preparing bids and proposals pursuant to a request for bid on the project represented by the Plans. All documents, drawings and plans comprising the project documents are images and facsimiles of originals held by PCNw's licensors and that any instance of conflicting information between the copies and the originals, the originals shall control.</p>
+                <hr>
+
+                <h3 class="my-1 border-heading">Term and Termination</h3>
+                <p>Your Annual Membership shall remain in effect until terminated by either you or PCNw. Either party may terminate your Membership at any time by giving notice of such termination by electronic mail or standard U.S. Mail. Termination of Membership by the Member shall not entitle the Member to any credit or refund of unused portion of Annual Membership, nor will Membership be prorated in event of termination of the agreement by the member. PCNw may discontinue or change the Service and its availability to you at any time. Upon termination of your Membership, your access to the Service will be terminated.</p>
+                <hr>
+
+                <h3 class="my-1 border-heading">Fees and Payment</h3>
+                <p>In order to remain an active Member, you agree to pay the Annual Membership subscription fees for Members that is found on our website, which may be amended from time to time. All Membership Fees are for an annual subscription. If a monthly or quarterly payment plan is selected then the Member is committing to make those payments for the duration of one year from the start of Membership. Monthly and Quarterly payment plans must be set up for Auto Payment. Failure to successfully complete the Auto Payment setup will result in a suspended Membership until such time as the Annual Membership fee can be paid in full.</p>
+                <hr>
+
+                <h3 class="my-1 border-heading">No Warranties and Limitations on Liability</h3>
+                <p>PCNw does not make any representations or warranties as to the accuracy or completeness of, or the results to be obtained from, accessing and using the service, nor any of the bid information, project details and documents downloaded by you while using the Service. Except as expressly stated in these terms, PCNw makes no other warranties, express or implied, including, without limitation, any implied warranties of merchantability and/or fitness for a particular purpose, concerning the subject matter of these terms.</p>
+                <hr>
+
+                <h3 class="my-1 border-heading">General Disclaimers</h3>
+                <p>
+                    No action under these terms may be brought by either party against the other party more than one year after the case of action arises. In no event shall PCNw be liable to you or any other person for any indirect, incidental, consequential or punitive damages, including loss of profit or goodwill, for any matter arising out of or relating to your online membership or the Service, whether such liability is asserted on the basis of contract, tort or otherwise even if PCNw has been advised of the possibility of such damages. PCNw's total liability for damages shall be limited to the total fees paid by you to PCNw for your online membership and access to the services.
+                </p>
+                <p>You acknowledge and agree that because electronic documents are subject to data erosion, erasure, alteration, changes in computer software, or computer viruses, that the sources of the information vary in quality and reliability, PCNw makes no representations or warranties regarding the integrity or completeness of any electronic documents comprising the member pages or the plans. PCNw shall not be liable to you or anyone else for any inaccuracy, error or omission, regardless of the cause, in the Service, or any damages resulting there from. You acknowledge that you use the electronic documents at your own risk, and you may only rely on the original documents incorporated into the contract, unless otherwise authorized by the owner or their representative.</p>
+                <p>The information contained herein has been researched by PCNw from reputable sources, however, PCNw does not guarantee the validity or accuracy of any data, claim or opinion that will appear in this information, and is not responsible for any error or omission contained herein.</p>
+                <hr>
+
+                <h3 class="my-1  text-center">Miscellaneous Provisions</h3>
+                <h3 class="my-1 border-heading">Force Majeure</h3>
+                <p> PCNw shall not be liable for any delays resulting from circumstances or causes beyond its reasonable control, including, without limitation, fire or other casualty, act of God, strike or labor dispute, war or other violence, or any law, order or requirement of any governmental agency or authority.</p>
+
+                <h3 class="my-1 border-heading">Choice of Law and Venue</h3>
+                <p> These Terms shall be governed by and construed in accordance with the laws of the state of Oregon, and any legal proceeding to interpret or enforce these Terms shall be brought in Clackamas County, Oregon. The parties each separately acknowledge, consent and agree to venue and jurisdiction in Clackamas County, Oregon.</p>
+
+                <h3 class="my-1 border-heading">Attorney Fees</h3>
+                <p>  In the event either party breaches its obligations under these Terms, the nonbreaching party shall be entitled to all costs and expenses incurred, including reasonable attorney fees, as a result of the breach. In addition, in the event arbitration, suit or action is instituted to enforce any of the terms of the contract, the prevailing party shall be entitled to recover from the other party such sum as the court or arbitrator may adjudge reasonable as attorney fees in arbitration, at trial, and on appeal of such suit or action, in addition to all other sums provided by law.</p>
+
+
+                <h3 class="my-1 border-heading">Arbitration</h3>
+                <p> If any dispute shall arise relative to the interpretation or enforcement of these Terms, the dispute shall be submitted to arbitration according to the then existing rules of Arbitration Services of Portland, Inc. Notice of the demand for arbitration of a dispute shall be filed in writing with the other party to these Terms. The arbitrator shall fix his or her own compensation and shall assess the costs and charges upon either or both parties. The decision in the arbitration shall be binding on all parties and judgment on any arbitration award may be entered in any court of competent jurisdiction. This provision shall be specifically enforceable under the laws of the state of Oregon. This provision shall not prohibit either party seeking equitable relief in any court.</p>
+
+               @* <h3 class="my-1 border-heading">Entire Agreement</h3>
+                <p> These Terms including all exhibits and amendments, constitute the entire agreement between Reliance and the Facility with respect to the subject matter hereof and supersede all other oral and written representation, understandings or agreements relating to the subject matter hereof.</p>
+*@
+                <h3 class="my-1 border-heading">Severability</h3>
+                <p> In the event that any term or provision of these Terms shall be held to be invalid, void or unenforceable, then the remainder of these Terms shall not be affected, impaired or invalidated, and each such term and provision of these Terms shall be valid and enforceable to the fullest extent permitted by law.</p>
+
+                <h3 class="my-1 border-heading">Binding Effect</h3>
+                <p> The provisions of these Terms shall be binding upon and shall inure to the benefit of the respective successors and permitted assigns of the parties.</p>
+
+                <h3 class="my-1 border-heading">No Waiver</h3>
+                <p> No waiver of any provision of these Terms shall be deemed, or shall constitute, a wavier of any other provision, whether or not similar, nor shall any waiver constitute a continuing waiver. No waiver shall be binding unless executed in writing by the party making the waiver.</p>
+            </div>
+        </div>
+    </div>
+
+</section>

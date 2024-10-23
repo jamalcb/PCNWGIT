@@ -1,0 +1,1904 @@
+﻿@model ProjectInformation
+@{
+    ViewData["Title"] = "Project Information";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+@section google{
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+}
+@section Scripts{
+    <script>
+        var jq = $.noConflict();
+        jq(document).ready(function () {
+            var stateHtml = ''
+            jq('.classCounty').html('')
+            jq.ajax({
+                type: "GET",
+                dataType: 'json',
+                url: '/Project/GetCounties/',
+                async: false,
+                success: function (response) {
+                    var model = new Array();
+                    model = response;
+                    jq.each(model, function (index, item) {
+                        stateHtml += '<div class="col-md-3 m-2 form-check form-check-inline">'
+                            + '<input type="checkbox" class="filled-in form-check-input classMcounties" value="' + item.CountyId + '">'
+                            + '<label class="form-check-label">' + item.County + '</label></div>'
+                    });
+                    jq('.classCounty').html(stateHtml);
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        });
+        jq(function () {
+            jq(".datepicker-custom").datepicker({
+                changeMonth: true,
+                changeYear: true,
+                dateFormat: 'mm/dd/yy'
+            });
+        });
+        jq('.datepicker-custom').change(function () {
+    jq(this).focus();
+});
+        function ReInitializeDatePicker(){
+                jq(".datepicker-custom").datepicker({
+                    changeMonth: true,
+                    changeYear: true,
+                    dateFormat: 'mm/dd/yy'
+                });
+            };
+        jq(function () {
+            jq(".datepicker").datepicker({
+                showOn: "button",
+                buttonImage: "../images/date-img.png",
+                buttonImageOnly: true,
+                buttonText: "Select date",
+                defaultDate: new Date(2022, 11, 01)
+            });
+            jq(".datepicker1").datepicker();
+        });
+        var valProjTypeId = 0;
+        function autofill() {
+            var term = jq("#inpProjTypeId").val();
+            jq.ajax({
+                type: "POST",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                url: '/Project/autofill/',
+                data: { 'term': term },
+                async: false,
+                success: function (response) {
+                    console.log(response[0].label);
+                    jq("#inpProjTypeId").val(response[0].label);
+                    jq("#ProjTypeId").val(response[0].val);
+
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+        jq(function () {
+            jq("#inpProjTypeId").autocomplete({
+                source: function (request, response) {
+                    jq.ajax({
+                        url: '/Project/GetProjectType/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            response(jq.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    console.log(i.item.val);
+                    jQuery('input[id = ProjTypeId]').val(i.item.val);
+                    valProjTypeId = i.item.val;
+
+                    //jq("#ProjTypeId").val();
+                },
+                minLength: -1
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+        });
+        var escapeRegexp = jq.ui.autocomplete.escapeRegex;
+        jq.extend(jq.ui.autocomplete, {
+            escapeRegex: function (value) {
+                return '^' + escapeRegexp(value);
+            }
+        });
+        function InitializedAutoCompletePHL() {
+            var ItemId = 0;
+            jq('input[id$="__Company"]').autocomplete({
+                source: function (request, response) {
+                    jq.ajax({
+                        url: '/Project/GetCompanyName/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            response(jq.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    // Get the selected value from the autocomplete
+                    var selectedValue = ui.item.val;
+
+                    // Find the hidden field relative to the selected text input
+                    var hiddenField = jq(this).next('input[type=hidden]');
+                    // Assign the selected value to the hidden field
+                    hiddenField.val(selectedValue);
+                },
+                minLength: 2
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+            jq('input[class$="valContact"]').autocomplete({
+
+                source: function (request, response) {
+                    var Id = jq(this.element).prop("id");
+                    Id = Id.replace("pInfo_", "");
+                    Id = Id.replace("__Contact", "");
+                    Id = "hf_" + Id + "_Company";
+                    ItemId = jq('#' + Id).val();
+                    jq.ajax({
+                        url: '/Implement/GetContactName/',
+                        data: { "Id": ItemId },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+
+                            response(jq.map(data, function (item) {
+                                return item;
+
+                                console.log(data);
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (event, ui) {
+                    // Get the selected value from the autocomplete
+                    var selectedValue = ui.item.val;
+
+                    // Find the hidden field relative to the selected text input
+                    var hiddenField = jq(this).next('input[type=hidden]');
+
+                    // Assign the selected value to the hidden field
+                    hiddenField.val(selectedValue);
+                },
+                minLength: 0
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+        }
+        jq(function () {
+            InitializedAutoCompletePHL()
+        });
+        function InitializedAutoComplete() {
+            jq('[id*=EntityName]').autocomplete({
+                source: function (request, response) {
+                    jq.ajax({
+                        url: '/Project/GetCompanyName/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            response(jq.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    //jq("#hfProjTypeId").val(i.item.val);
+                    //valProjTypeId = i.item.val;
+                },
+                minLength: 2
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+
+            jq('[id*=EntityType]').autocomplete({
+                source: function (request, response) {
+                    jq.ajax({
+                        url: '/Project/GetEntityType/',
+                        data: { "prefix": request.term },
+                        type: "POST",
+                        async: false,
+                        success: function (data) {
+                            response(jq.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    //jq("#hfProjTypeId").val(i.item.val);
+                    //valProjTypeId = i.item.val;
+                },
+                minLength: 2
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+        }
+        jq(function () {
+            InitializedAutoComplete()
+        });
+        jq(function () {
+            var ProjTypeId = jQuery('input[id = ProjTypeId]').val();
+            jq("#inpProjSubTypeId").autocomplete({
+                source: function (request, response) {
+                    jq.ajax({
+                        url: '/Project/GetProjectSubType/',
+                        data: { "prefix": request.term, "ProjTypeId": valProjTypeId },
+                        type: "POST",
+                        success: function (data) {
+                            response(jq.map(data, function (item) {
+                                return item;
+                            }))
+                        },
+                        error: function (response) {
+                            alert(response.responseText);
+                        },
+                        failure: function (response) {
+                            alert(response.responseText);
+                        }
+                    });
+                },
+                select: function (e, i) {
+                    jq("#ProjSubTypeId").val(i.item.val);
+                },
+                minLength: -1
+            }).focus(function () {
+                jq(this).autocomplete("search");
+            });
+        });
+        function GetProjCode() {
+            jq.ajax({
+                url: '/Project/GetProjectCode/',
+                data: {},
+                type: "POST",
+                success: function (response) {
+                    jq('#ProjNumber').val(response.data.Result);
+                },
+
+                failure: function (response) {
+                    alert(response.statusMessage);
+                }
+            });
+        }
+        GetProjCode();
+        jq(document).ready(function () {
+            //var zipCode = $(this).val();
+            jq('#LocZip').keyup(function () {
+                var zip = jq(this).val();
+                jq('#LocCity').val('');
+                jq('#LocState').val('');
+                jq('#LocAddr2').val('');
+                jq('#CountyId').val('');
+                var xmldata = '<CityStateLookupRequest USERID="405PLANC0113"><ZipCode><Zip5>' + zip + '</Zip5></ZipCode></CityStateLookupRequest>';
+                //var apiKey = 'YOUR_API_KEY_HERE';
+                var apiUrl = 'https://production.shippingapis.com/ShippingAPI.dll?API=CityStateLookup&XML=' + xmldata;
+                if (zip.length == 5) {
+                    jq.ajax({
+                        url: apiUrl,
+                        type: 'GET',
+                        dataType: 'xml',
+                        success: function (data) {
+                            console.log(data);
+                            jq(data).find('ZipCode').each(function () {
+                                var City = jq(this).find('City').text();
+                                var State = jq(this).find('State').text();
+                                if (City != null && State != null) {
+                                    //console.log('City : ' + City + ' State : ' + State);
+                                    jq.ajax({
+                                        type: "POST",
+                                        dataType: 'json',
+                                        url: '/Project/CheckCounty/',
+                                        data: { 'City': City, 'State': State },
+                                        async: false,
+                                        success: function (response) {
+                                            console.log(response);
+                                            var county = '';
+                                            var countyId = 0;
+                                            if (response.data != null) {
+                                                debugger;
+                                                county = response.data.County;
+                                                countyId = response.data.CountyId;
+                                            }
+                                            var formattedCity = City.charAt(0).toUpperCase() + City.slice(1).toLowerCase();
+                                            jq('#LocCity').val(formattedCity);
+                                            jq('#LocState').val(State);
+                                            jq('#LocAddr2').val(county);
+                                            jq('#CountyId').val(countyId);
+                                            jq('#Longitude').val(response.data.Longitude);
+                                            jq('#Latitude').val(response.data.Latitude);
+
+                                        },
+                                        error: function (response) {
+                                            alert(response.responseText);
+                                        },
+                                        failure: function (response) {
+                                            alert(response.responseText);
+                                        }
+                                    });
+                                }
+                                else {
+                                    jq('#LocCity').val('');
+                                    jq('#LocState').val('');
+                                    jq('#LocAddr2').val('');
+                                    jq('#CountyId').val('');
+                                }
+                            });
+                        },
+                        error: function (jqXHR, textStatus, errorThrown) {
+                            //console.log(textStatus + ': ' + errorThrown);
+                        }
+                    });
+                }
+            });
+        });
+
+    </script>
+}
+@section ProjectInfoScripts
+    {
+    <script type="text/javascript">
+        // script for adding input on server files icon
+        //var jq = $.noConflict();
+
+        jQuery("#d-input").click(() => {
+            jQuery("#show-input").show() && jQuery("#d-input").hide()
+        })
+        // script for adding new row on project team section.
+        var i = 1;
+        jQuery("#project-row-adder").click(function () {
+            newRowAdd =
+                '<div id="new-addedRow" class="row mb-2 align-items-center">' +
+                '<div class="col-12  col-md-5 col-lg-5">' +
+                '<input type="hidden" id="EntityName_' + i + '_EntityID" type="text" value="" name="Entities[' + i + '].EntityID" />' +
+                '<input autocomplete="off" class="form-control" id="Entities_' + i + '_EntityType" type="text" value="" name="Entities[' + i + '].EntityType" placeholder="Entity Type" />' +
+                '</div>' +
+                '<div class="col-12  col-md-5 col-lg-5">' +
+                '<input type="text" class="form-control  EntityNameClass" id="Entities_' + i + '_EntityName" name="Entities[' + i + '].EntityName" placeholder="Entity Name" />' +
+                '<input type="hidden" id="Entities_' + i + 'NameId" name="Entities[' + i + '].NameId" />' +
+                '</div>' +
+                '<div class="col-1 col-lg-1 col-xl-1 pr-0">' +
+                '<input type="hidden" id="Entities_' + i + 'chkIssue" name="Entities[' + i + '].chkIssue" />' +
+                '<input type="checkbox" class="float-right align-middle" value="" id="chkBoxIssue" onchange="AssignIssue(this)"/>' +
+                '</div>' +
+                '<div class="col-1 col-lg-1 col-xl-1">' +
+                '<div class="remove_prebid_row "><span class="action-del" id="del-addedRow"><i class="fa fa-trash"></i></span></div>' +
+                '</div>' +
+                '</div>';
+
+            jQuery('#newinput').append(newRowAdd);
+            InitializedAutoComplete();
+        });
+        // deleting the row on del-icon click
+        jQuery("body").on("click", "#DeleteRow", function () {
+            $(this).parents("#project-team-row").remove();
+        })
+
+        jQuery("body").on("click", "#del-addedRow", () => {
+            if (confirm("Are you sure you want to delete project team?")) {
+                jQuery("#new-addedRow").remove();
+            }
+        })
+
+
+        // script to add pre-bid info row
+
+        jQuery("#bidInfo-row-add").click(() => {
+
+            var prebidconveniancecount = jQuery("div[class*='prebidconveniancecount']").length;
+            preBidRow =
+                '<div class="row mt-2 pb-2 border-bottom prebidconveniancecount" id="prebid-info-row">' +
+                '<div class="col-2 col-sm-2 col-md-2">' +
+                '<label>Meeting ' + (prebidconveniancecount+1) + '</label>' +
+                '</div>' +
+                //'<div class="col-6 col-sm-6 col-md-6 mb-lg-0 mb-2">' +
+                //'<input type="checkbox" class="mx-1" value="">Mandatory ' +
+                //'</div>' +
+                '<div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2">' +
+                '<div class="row">' +
+                '<div class="col-lg-4 col-md-4">' +
+                '<input type="text" class="form-control datepicker-custom"  id="preBidInfos_' + prebidconveniancecount + '__PreBidDate" name="preBidInfos[' + prebidconveniancecount + '].PreBidDate" onchange="getPreDateIndex((this).id,event)"/>' +
+                '<input type="hidden" id="preBidInfos_' + prebidconveniancecount + '__IsDeleted" name="preBidInfos[' + prebidconveniancecount + '].IsDeleted" class="Pre-Del" > '+
+                '</div>' +
+                '<div class="col-10 col-lg-3 col-md-3 col-sm-3 ">' +
+                '<input tabindex="21" class="form-control" type="time" placeholder="Time" id="preBidInfos_' + prebidconveniancecount + '__PreBidTime" name="preBidInfos[' + prebidconveniancecount + '].PreBidTime">' +
+                '</div>' +
+                '<div class="col-2 col-lg-2 col-md-2 col-sm-2 ">' +
+                '<input tabindex="180" class="form-control" type="text" id="preBidInfos_' + prebidconveniancecount + '__PST" name="preBidInfos[' + prebidconveniancecount + '].PST" placeholder="PST">' +
+                '</div>' +
+                '<div class="col-2 col-lg-2 col-md-2 col-sm-2 ">' +
+                '<div class="form-check form-check-inline">' +
+                '<input class="form-check-input" type="checkbox" onchange="ChangeAnd(this)">' +
+                ' <label class="form-check-label" for="and">and</label>' +
+                '<input type="hidden" id="preBidInfos_' + prebidconveniancecount + '__PreBidAnd" name="preBidInfos[' + prebidconveniancecount + '].PreBidAnd">' +
+                ' </div>' +
+                ' </div>' +
+                '<div class="col-2 col-lg-1 col-md-1 col-sm-1 text-end">' +
+                '<input class="form-check-input" type="checkbox" onchange="ChangeMandatory(this)">' +
+                '<input type="hidden" id="preBidInfos_' + prebidconveniancecount + '__Mandatory" name="preBidInfos[' + prebidconveniancecount + '].Mandatory" >' +
+                '<div class=" remove_prebid_row "><button id="delPrebid-row"><i class="fa fa-trash"></i></button></div>' +
+                '</div>' +
+                '<div class="col-9 col-lg-9 col-md-9 col-sm-9 mt-2">' +
+                '<input tabindex="180" class="form-control" type="text" id="preBidInfos_' + prebidconveniancecount + '__Location" name="preBidInfos[' + prebidconveniancecount + '].Location" placeholder="Location">' +
+                '</div>' +
+                //'<div class="col-2 col-sm-2 col-lg-1 col-xl-1">' +
+                //'<div class="remove_prebid_row pt-2"><span id="delPrebid-row"><i class="fa fa-trash"></i></span></div>' +
+                //'</div>' +
+                '</div>'
+            '</div>'
+            '</div>';
+            if (prebidconveniancecount < 6)
+                jQuery("#bidInfo-input").append(preBidRow);
+            else {
+                preBidRow = '<p class="text-danger error-message" id="TempMessage">You can only have upto 5 pre bid date</p>'
+                jQuery("#bidInfo-input").append(preBidRow);
+                jQuery('.error-message').delay(1000).fadeOut();
+            }
+            ReInitializeDatePicker();
+        })
+
+        jQuery("body").on("click", "#delPrebid-row", function () {
+            if (confirm("Are you sure you want to delete prebid info?")) {
+                jQuery(this).closest("#prebid-info-row").find('input.Pre-Del').val('true');
+                jQuery(this).parents("#prebid-info-row").hide();
+            }
+        })
+        // script to add cost 2 cost row
+        jQuery("#cost-row-add").click(function () {
+
+            var costconveniancecount = jQuery("div[class*='costconveniancecount']").length + 2;
+            newCostRow =
+                '<div class="row align-items-center pb-3 costconveniancecount" id="remove-cost">' +
+                '<div class="col-md-10 col-lg-4 pr-0 mt-990">' +
+                '<input type="" class="form-control" placeholder="Description" />' +
+                '</div>' +
+                '<div class="col-md-5 col-lg-3 text-nowrap ">' +
+                '<input type="" class="form-control pr-0" id="EstCost' + costconveniancecount + 'Range1" name="EstCost' + costconveniancecount + 'Range1" placeholder="Cost"/>' +
+                '</div>' +
+                '<span class="mx-767">to</span>' +
+                '<div class="col-md-5 col-lg-3 pr-0 my-767">' +
+                '<input type="" class="form-control" id="EstCost' + costconveniancecount + 'Range2" name="EstCost' + costconveniancecount + 'Range2" placeholder="Cost"/>' +
+                '</div>' +
+                '<div class="col-md-2 col-lg-1 added-icon">' +
+                '<span class="action-del" id="del-costRow"><i class="fa fa-trash" aria-hidden="true"></i></span>' +
+                '</div>' +
+                '</div>';
+            if (costconveniancecount < 6)
+                jQuery("#costInput").append(newCostRow);
+            else {
+                costDateRow = '<p class="text-danger error-msg" id="TempMessage">You can only have upto 5 Estimated cost</p>'
+                jQuery("#costInput").append(costDateRow);
+                jQuery('.error-msg').delay(1000).fadeOut();
+            }
+        });
+
+        // script to delete cost 2 cost row
+        jQuery("body").on("click", "#del-costRow", function () {
+            if (confirm("Are you sure you want to delete estimated cost?")) {
+                jQuery("#remove-cost").remove();
+            }
+        })
+
+        jQuery("#bidDate-add").click(function () {
+            var x = jQuery("div[class*='biddate']").length + 2;
+            var y = jQuery("div[class*='biddate']").length + 1;
+            newRowAdd =
+                '<div id="bid_Date-row" class="row pt-2 align-items-center biddate">' +
+                '<div class="col-md-1 col-lg-1 col-1">' +
+                '<label class="font-weight-bold">Bid' + x + '</label>' +
+                '</div>' +
+                '<div class="col-md-3 col-lg-3 col-12">' +
+                '<input type="date" class="form-control" id="BidDateTimes_' + y + '__BidDate" name="BidDateTimes[' + y + '].BidDate" placeholder="select date" onchange="getDateIndex((this).id,event)" />' +
+                '</div>' +
+                '<div class="col-md-3 col-lg-3 col-12">' +
+                '<input type="time" class="form-control" id="BidDateTimes_' + y + '__BidDateTime" name="BidDateTimes[' + y + '].BidDateTime" placeholder="select bid date time" />' +
+                '</div>' +
+                '<div  class="col-2 col-sm-2 col-md-2 col-lg-2 mt-575"">' +
+                '<input type="text" class="form-control" placeholder="PST" id="BidDateTimes_' + y + '__PST" name="BidDateTimes[' + y + '].PST" oninput="convertToUppercase(this)" />' +
+                '</div>' +
+                '<div class="col-md-3 col-lg-3 col-sm-3 text-right col-2 remove_prebid_row">' +
+                '<span id="remove-biddate" class="action-del"><i class="fa fa-trash" aria-hidden="true"></i></span>' +
+                '</div>' +
+                '</div>';
+            if (i < 7)
+                jQuery('#bidDate-input').append(newRowAdd);
+            else {
+                newRowAdd = '<p class="text-danger error-message" id="TempMessage">You can only have upto 6  bid date</p>'
+                jQuery("#bidDate-input").append(newRowAdd);
+                jQuery('.error-message').delay(1000).fadeOut();
+            }
+        });
+
+        jQuery("body").on("click", "#remove-biddate", function () {
+            if (confirm("Are you sure you want to delete bid date/time?")) {
+                jQuery(this).parents("#bid_Date-row").remove();
+            }
+        })
+
+        jQuery("#planHolder-add").click((e) => {
+            e.preventDefault();
+            var ddlHtml = '';
+            var planPHLecount = jQuery("div[class*='planPHLecount']").length;
+            jq.ajax({
+                type: "GET",
+                dataType: 'json',
+                //contentType: "application/json; charset=utf-8",
+                url: '/Project/GetPHLType/',
+                async: false,
+                success: function (response) {
+                    console.log(response);
+                    ddlHtml += '<select class="form-control p-0" name="pInfo[' + planPHLecount + '].PHLType" id="pInfo_' + planPHLecount + '__PHLType">';
+                    var selectElement = jq('<select>'); // Create a new <select> element
+
+                    // Loop through the values and create <option> elements
+                    jq.each(response, function (index, value) {
+                        ddlHtml += '<option value="' + value.Value + '" selected="' + value.Selected + '">' + value.Text + '</option>'
+                    });
+                    ddlHtml += '</select>';
+                    console.log(ddlHtml);
+                },
+
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+            planholderRow =
+                '<div class="row mx-0 planPHLecount" id="PHL-row">' +
+                '<div class="col-md-6">' +
+                '<div class="mb-2 row">' +
+                '<div class="col-md-2 col-lg-2">' +
+                '<label for="">Bidding ?</label>' +
+                '<input type="checkbox" onchange="AssignBidding(this)" class="form-control" placeholder="Entity Type" tabindex="205" />' +
+                '<input type="hidden" id="pInfo_' + planPHLecount + '__bidding" name="pInfo[' + planPHLecount + '].bidding" />' +
+                '<input type="hidden" id="pInfo_' + planPHLecount + '__bidding" name="pInfo[' + planPHLecount + '].Undecided" class="Dec-Class"/>' +
+                '</div>' +
+                '<div class="col-md-3 col-lg-3">' +
+                '<label for="">Entity</label>' + ddlHtml +
+                '</div>' +
+                '<div class="col-md-3 col-lg-4">' +
+                '<label for="">Contractor</label>' +
+                '<input type="hidden" name="addenda_file_id[]" value="" tabindex="350">' +
+                '<div>' +
+                '<input class="form-control" type="text" id="pInfo_' + planPHLecount + '__Company" name="pInfo[' + planPHLecount + '].Company" placeholder="Company Name" tabindex="360" id="CompanyName">' +
+                '<input type="hidden" id="hf_' + planPHLecount + '_Company">' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-md-3 col-lg-3">' +
+                '<label for="">Contact</label>' +
+                '<input type="hidden" name="" value="" tabindex="350">' +
+                '<div>' +
+                '<input class="form-control valContact" id="pInfo_' + planPHLecount + '__Contact" name="pInfo[' + planPHLecount + '].Contact" type="text" placeholder="Contact" tabindex="360">' +
+                '<input type="hidden" id="pInfo_' + planPHLecount + '__Uid" name="pInfo[' + planPHLecount + '].Uid">' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="form-group row my-5">' +
+                '<label class="col-sm-2 col-form-label">Note</label>' +
+                '<div class="col-sm-10">' +
+                '<input id="pInfo_' + planPHLecount + '__PHLNote" name="pInfo[' + planPHLecount + '].PHLNote" type="text" class="form-control" id="">' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-md-5 col-lg-5 d-flex align-items-center">' +
+                '<div class="row table-border-cus text-center bid-info mr-0 ml-0">' +
+                '<div class="col-md-3 col-lg-3 text-nowrap cus-border-r p-0">' +
+                '<label for="">Bid 1</label>' +
+                '<div class="col-12 date-img px-2">' +
+                '<div>' +
+                '<input type="date" id="pInfo_' + planPHLecount + '__PhlBidDate_0__BidDate" name="pInfo[' + planPHLecount + '].PhlBidDate[0].BidDate" class="form-control getdate mx-1" placeholder="select date" tabindex="140")" />' +
+                '<div class="">' +
+                '<input class="form-control my-1 mx-1" type="time" id="pInfo_' + planPHLecount + '__PhlBidDate_0__BidDateTime" name="pInfo[' + planPHLecount + '].PhlBidDate[0].BidDateTime" placeholder="Time" tabindex="360">' +
+                '<input class="form-control my-1 ml-1" type="text" id="pInfo_' + planPHLecount + '__PhlBidDate_0__PST" name="pInfo[' + planPHLecount + '].PhlBidDate[0].PST" placeholder="Pst" tabindex="360">' +
+                '<input type="hidden" value="false" id="pInfo_' + planPHLecount + '__PhlBidDate_0__Isextensions" name="pInfo[' + planPHLecount + '].PhlBidDate[0].Isextensions">' +
+                '</div>' +
+                '</div>' +
+                ' </div>' +
+
+                '</div>' +
+                '<div class="col-md-3 col-lg-3 cus-border-r p-0">' +
+                '<label for="">Ext1</label>' +
+                '<div class="col-12 date-img px-2">' +
+                '<input type="date" id="pInfo_' + planPHLecount + '__PhlBidDate_1__BidDate" name="pInfo[' + planPHLecount + '].PhlBidDate[1].BidDate" class="form-control getdate mx-1" placeholder="select date" tabindex="140")" />' +
+                '<div class="">' +
+                '<input class="form-control my-1 mx-1" type="time" id="pInfo_' + planPHLecount + '__PhlBidDate_1__BidDateTime" name="pInfo[' + planPHLecount + '].PhlBidDate[1].BidDateTime" placeholder="Time" tabindex="360">' +
+                '<input class="form-control my-1 ml-1" type="text" id="pInfo_' + planPHLecount + '__PhlBidDate_1__PST" name="pInfo[' + planPHLecount + '].PhlBidDate[1].PST" placeholder="Pst" tabindex="360">' +
+                '<input type="hidden" value="true" id="pInfo_' + planPHLecount + '__PhlBidDate_1__Isextensions" name="pInfo[' + planPHLecount + '].PhlBidDate[1].Isextensions">' +
+                '</div>' +
+                '</div>' +
+
+                '</div>' +
+                '<div class="col-md-3 col-lg-3 cus-border-r p-0"> ' +
+                '<label for="">Ext2</label>' +
+                '<div class="col-12 date-img px-2">' +
+                '<input type="date" id="pInfo_' + planPHLecount + '__PhlBidDate_2__BidDate" name="pInfo[' + planPHLecount + '].PhlBidDate[2].BidDate" class="form-control getdate mx-1" placeholder="select date" tabindex="140")" />' +
+                '<div class="">' +
+                '<input class="form-control my-1 mx-1" type="time" id="pInfo_' + planPHLecount + '__PhlBidDate_2__BidDateTime" name="pInfo[' + planPHLecount + '].PhlBidDate[2].BidDateTime" placeholder="Time" tabindex="360">' +
+                '<input class="form-control my-1 ml-1" type="text" id="pInfo_' + planPHLecount + '__PhlBidDate_2__PST" name="pInfo[' + planPHLecount + '].PhlBidDate[2].PST" placeholder="Pst" tabindex="360">' +
+                '<input type="hidden" value="true" id="pInfo_' + planPHLecount + '__PhlBidDate_2__Isextensions" name="pInfo[' + planPHLecount + '].PhlBidDate[2].Isextensions">' +
+                '</div>' +
+                '</div>' +
+
+                '</div>' +
+                '<div class="col-md-3 col-lg-3 p-0">' +
+                '<label for="">Ext3</label>' +
+                '<div class="col-12 date-img px-2">' +
+                '<input type="date" id="pInfo_' + planPHLecount + '__PhlBidDate_3__BidDate" name="pInfo[' + planPHLecount + '].PhlBidDate[3].BidDate" class="form-control getdate" placeholder="select date" tabindex="140")" />' +
+                '<div class="">' +
+                '<input class="form-control my-1" type="text" id="pInfo_' + planPHLecount + '__PhlBidDate_3__BidDateTime" name="pInfo[' + planPHLecount + '].PhlBidDate[3].BidDateTime" placeholder="Time" tabindex="360">' +
+                '<input class="form-control my-1 ml-1" type="time" id="pInfo_' + planPHLecount + '__PhlBidDate_3__PST" name="pInfo[' + planPHLecount + '].PhlBidDate[3].PST" placeholder="Pst" tabindex="360">' +
+                '<input type="hidden" value="true" id="pInfo_' + planPHLecount + '__PhlBidDate_3__Isextensions" name="pInfo[' + planPHLecount + '].PhlBidDate[3].Isextensions">' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="col-md-1 col-lg-1 d-flex align-items-center justify-content-center">' +
+                '<span id="remove-PHL" class="action-del"><i class="fa fa-trash"></i></span>' +
+                '</div></div>';
+            jQuery("#planholder-input").append(planholderRow);
+            InitializedAutoCompletePHL();
+        });
+        jQuery("body").on("click", "#remove-PHL", function () {
+            if (confirm("Are you sure you want to delete plan holder list?")) 
+                {
+                    jQuery(this).closest("#PHL-row").find('input.Dec-Class').val('true');
+                    jQuery(this).parents("#PHL-row").hide();
+
+                }
+        })
+        
+        // script for adding tables on bid results
+        jQuery(document).ready(function () {
+            var ScopeVal = jQuery('input[name = ProjScope]').val();
+
+            if (ScopeVal.indexOf('New') != -1) {
+                jQuery('#chk_0').prop('checked', true);
+            }
+            if (ScopeVal.indexOf('Remodel') != -1) {
+                jQuery('#chk_1').prop('checked', true);
+            }
+            if (ScopeVal.indexOf('Addition') != -1) {
+                jQuery('#chk_2').prop('checked', true);
+            }
+
+        });
+        function changeScope(id) {
+            //alert(id);
+            var strManipulated = '';
+            var strProjectScope = jQuery('#ProjScope').val();
+            var chkValue = '';
+            if (jQuery('#' + id).is(':checked')) {
+                chkValue = jQuery('#' + id).val();
+                //console.log(chkValue);
+            }
+            var isExists = 'N';
+            if (strProjectScope != '') {
+                var myArray = strProjectScope.split(",");
+                let strValue = "";
+                for (let x in myArray) {
+                    strValue = myArray[x];
+                    if (strValue != "") {
+                        let result = strValue.substring(0, 3);
+                        if (result != ' # ') {
+                            if (strValue == chkValue)
+                                isExists = 'Y';
+                            else
+                                strManipulated += strValue + ",";
+                        }
+                        else
+                            strManipulated += strValue + ",";
+                    }
+                }
+            }
+            if (isExists == 'N')
+                strManipulated += chkValue + ",";
+            jQuery('#ProjScope').val(strManipulated);
+            console.log(jQuery('#ProjScope').val());
+        }
+        //function titlevalidate()
+        //{
+        //    var projecttitle = jQuery('#Title').val();
+        //    jQuery('#Title').next('span').html('');
+        //    if (projecttitle == undefined || projecttitle == '' || projecttitle == null) {
+        //        jQuery('#Title').next('span').html('Please enter project title.');
+        //        return  false;
+        //    }
+        //    return true;
+        //}
+
+
+
+        function checkUniqueDate() {
+            var success = true;
+            var uniqueDate = jQuery('#BidDt').val();
+            var projectNumber = jQuery('#ProjNumber').val();
+            // var data = { "uniqueDate": uniqueDate };
+            jQuery.ajax({
+                type: "POST",
+                url: '/Project/UniqueDate/',
+                data: { "uniqueDate": uniqueDate, "projectNumber": projectNumber },
+                dataType: "json",
+                async: false,
+                //contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.success) {
+                        success = false;
+                        alert(response.statusMessage);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+            return success;
+        }
+        function getDateIndex(id, e) {
+            var BidDate = document.getElementById(id).value;
+            var currentDate = new Date();
+            var month = currentDate.getMonth() + 1;
+            if (month < 10) month = "0" + month;
+            var dateOfMonth = currentDate.getDate();
+            if (dateOfMonth < 10) dateOfMonth = "0" + dateOfMonth;
+            var year = currentDate.getFullYear();
+            var formattedDate = year + "-" + month + "-" + dateOfMonth;
+
+            if (BidDate <= formattedDate) {
+                alert("The Bid Date must be grater to today's date")
+                document.getElementById(id).value = "";
+                return false;
+            }
+
+            var checklistvalide = true;
+            //var dateArr = [];
+            //var date = '';
+            //jQuery('div.dateindex').find('input[type=date]').each(function (index, item) {
+            //    if (jQuery(this).attr('id') == id) {
+            //        date = jQuery(this).val();
+            //    }
+            //    if (jQuery(this).attr('id') != id)
+            //        dateArr.push(jQuery(this).val());
+            //});
+            //for (var idx = 0; idx < dateArr.length; idx++) {
+            //    if (dateArr[idx] == date) {
+            //        alert('date already exists');
+            //        jQuery('#' + id).val('');
+            //        checklistvalide = false;
+            //    }
+            //}
+            return checklistvalide;
+        }
+        function getPreDateIndex(id, e) {
+            var BidDate = document.getElementById(id).value;
+            var currentDate = new Date();
+            var month = currentDate.getMonth() + 1;
+            if (month < 10) month = "0" + month;
+            var dateOfMonth = currentDate.getDate();
+            if (dateOfMonth < 10) dateOfMonth = "0" + dateOfMonth;
+            var year = currentDate.getFullYear();
+            var formattedDate = month + "/" + dateOfMonth + "/" + year;
+
+            if (BidDate <= formattedDate) {
+                alert("The Bid Date must be grater to today's date")
+                document.getElementById(id).value = "";
+                return false;
+            }
+
+            var checklistvalide = true;
+            var dateArr = [];
+            var date = '';
+            jQuery('div.date-index').find('input[class=datepicker-custom]').each(function (index, item) {
+                if (jQuery(this).attr('id') == id) {
+                    date = jQuery(this).val();
+                }
+                if (jQuery(this).attr('id') != id)
+                    dateArr.push(jQuery(this).val());
+            });
+            for (var idx = 0; idx < dateArr.length; idx++) {
+                if (dateArr[idx] == date) {
+                    alert('date already exists');
+                    jQuery('#' + id).val('');
+                    checklistvalide = false;
+                }
+            }
+            return checklistvalide;
+        }
+        function validate() {
+            var BidDt = jQuery('input[name = BidDt]').val();
+            if (BidDt == undefined || BidDt == '' || BidDt == null) {
+                alert('Please enter bid date.');
+                return false;
+            }
+        }
+        function AssignIssue(ctrl) {
+            if (jQuery(ctrl).is(':checked')) {
+                var entityName = jQuery(ctrl).closest('.row').find('input[name*="EntityName"]').val();
+                //jQuery('#Entities_1__chkIssue').val(true);
+                var checkissue = document.querySelectorAll('[id*="chkIssue"]');
+                checkissue.forEach(function (checkbox) {
+                    // if the checkbox is not the one that was just checked, uncheck it
+                    checkbox.value = 'False';
+
+                });
+                jQuery(ctrl).closest('.row').find('input[type="hidden"][name*="chkIssue"]').val('True');
+                jQuery('#IssuingOffice').val(entityName);
+                // get all the checkboxes on the page
+                var checkboxes = document.querySelectorAll('[id*="chkBoxIssue"]');
+
+                // loop through each checkbox
+                checkboxes.forEach(function (checkbox) {
+                    // if the checkbox is not the one that was just checked, uncheck it
+                    if (checkbox !== event.target) {
+                        checkbox.checked = false;
+                    }
+                });
+            }
+            else {
+                jQuery(ctrl).closest('.row').find('input[type="hidden"][name*="chkIssue"]').val('False');
+                jQuery('#IssuingOffice').val(entityName);
+            }
+        }
+        function Undecided(ctrl) {
+            var Assign = ctrl.checked;
+            jq('#BoolUndecided').val(Assign);
+            if (Assign) {
+                jq('#divBids :input').prop('disabled', true);
+            } else {
+                jq('#divBids :input').prop('disabled', false);
+            }
+        }
+        function UndecidedPre(ctrl) {
+            var Assign = ctrl.checked;
+            var TBD = "TBD";
+            
+            if (Assign) {
+                jq('#strPreBidDt').val(TBD);
+                jq('#divPreBids :input').prop('disabled', true);
+            } else {
+                jq('#divPreBids :input').prop('disabled', false);
+            }
+        }
+        function ChangeMandatory(checkbox) {
+            var hiddenInput = checkbox.nextElementSibling; // Get the next sibling element, which is the hidden input
+            hiddenInput.value = checkbox.checked ? "true" : "false"; // Assign the value based on the checkbox checked state
+        }
+        function ChangeAnd(checkbox) {
+            var hiddenInput = checkbox.nextElementSibling.nextElementSibling; // Get the next sibling element, which is the hidden input
+            hiddenInput.value = checkbox.checked ? "true" : "false"; // Assign the value based on the checkbox checked state
+        }
+        
+        function AssignBidding(checkbox) {
+            var hiddenInput = checkbox.nextElementSibling; // Get the next sibling element, which is the hidden input
+            hiddenInput.value = checkbox.checked ? "true" : "false"; // Assign the value based on the checkbox checked state
+        }
+        function AssignMultipleCounties() {
+            var cHtml = '';
+            var cTextHtml = '';
+            jq("input:checkbox").each(function () {
+                var checked = jq(this).prop('checked');
+                if (checked) {
+                    cHtml += jq(this).val() + ', ';
+                    cTextHtml += jq(this).next('label').text() + ', ';
+                }
+
+            });
+            cHtml = cHtml.replace(/,\s*$/, '');
+            cTextHtml = cTextHtml.replace(/,\s*$/, '');
+            if (typeof cHtml !== 'undefined' && cHtml !== null && cHtml.trim() !== "") {
+                jq('#Counties').val(cHtml);
+            }
+            if (typeof cTextHtml !== 'undefined' && cTextHtml !== null && cTextHtml.trim() !== "") {
+                jq('#divsCounty').html(cTextHtml);
+                jq('#divCounty').css('display', 'block');
+                jq('#divsCounty').css('display', 'block');
+            }
+            console.log(cHtml);
+            console.log(cTextHtml);
+            jq(".m-modal").modal('hide');
+        }
+    </script>
+    <script src="/js/custom-validation.js"></script>
+    <script>
+        function convertToUppercase(inputElement) {
+            var inputValue = inputElement.value;
+            inputElement.value = inputValue.toUpperCase();
+        }
+
+    </script>
+}
+
+@section CustomCSS{
+    <style>
+        .project-info .col-md-8 {
+            margin-bottom: 1rem;
+        }
+
+        .add-new-btn button {
+            border: none;
+            background-color: transparent;
+            color: #7e8299;
+        }
+
+        .cus-border {
+            border: 1px solid #ced4da;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .cus-dropdown span {
+            padding: 6px 42px;
+            display: inline-block;
+            border-right: 1px solid #fff;
+        }
+
+        .cus-dropdown .dropdown-menu.show {
+            background-color: #e4e6ef;
+        }
+
+        .cus-minus {
+            background: #e3e3e3;
+            border-radius: 2px;
+            padding: 3px;
+        }
+
+        .project-notice h2 {
+            margin-top: 30px;
+        }
+
+        .cus-refresh {
+            background: #1b2c4a;
+            padding: 10px;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+
+        .table-border-cus {
+            border: 1px solid #1b2c4a;
+            border-radius: 4px;
+        }
+
+
+
+        .cus-label label {
+            font-size: 12px;
+        }
+
+
+        ul#ui-id-3, ul.ui-menu.ui-widget.ui-widget-content.ui-autocomplete.ui-front {
+            max-height: 200px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+
+        input[name=ProjectScopeList] {
+          //  flex: 0 8%;
+        }
+        /*css for fixed box and minimized project from*/
+        .fix-box {
+            position: fixed;
+            top: 103px;
+            width: 98.1%;
+            height: 155px;
+            background-color: #dde3eb;
+            z-index: 999;
+            border: 1px solid #a9a9a9;
+            padding: 8px 10px;
+        }
+
+        .formCls .box-space .form-control {
+            height: 30px
+        }
+
+        .notice-info {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+            text-align: start;
+        }
+
+        .in-height .form-control {
+            height: 30px;
+            background: #f4f4f4;
+            border: 1px solid #706e6e;
+        }
+
+        .mt-note {
+            margin-top: 180px;
+        }
+
+        .tbl-adnda th,
+        .tbl-adnda tr td {
+            padding: 5px;
+        }
+
+        .edit-row label {
+            color: #666;
+        }
+
+        .fix-box .newPro-btn label {
+            color: #666;
+            font-weight: 600;
+        }
+        /*css for fixed box and minimized project from*/
+    </style>
+}
+
+<div class="container-fluid">
+    <form class="form" method="POST">
+        <div class="dashboard-box">
+            <div class="box-space fix-box">
+                <div class="row align-items-end in-height">
+                    <div class="col-md-6">
+                        <div class="row edit-row">
+                            <div class="col-12 col-sm-3 col-md-3 col-lg-3"><label>Project Number</label></div>
+                            <div class="col-12 col-sm-3 col-md-3 col-lg-3">
+                                <div class="input-group mb-2">
+                                   @* <div class="input-groupend">
+                                        <span class="input-group-text" style="height: 33px;" id="basic-addon1">#</span>
+                                    </div>*@
+                                    <input type="text" asp-for="ProjNumber" class="form-control" placeholder="" aria-label="Username" readonly>
+                                </div>
+                            </div>
+                            <div class="col-12 col-sm-2 col-md-2 col-lg-2" style="font-size:15px;">
+                                <label for="">Arrival Date</label>
+                            </div>
+                            <div class="col-12 col-3 col-sm-3 col-md-3 col-lg-3">
+                                <input type="text" asp-for="ArrivalDt" class="form-control datepicker-custom" placeholder="" tabindex="10" />
+                            </div>
+                            <div class="col-12 col-sm-3 col-md-3 col-lg-3">
+                                <label>Project Title</label> <span class="text-danger">*</span>
+                            </div>
+                            <div class="col-12 col-8 col-sm-8 col-md-8 col-lg-8 mb-0">
+                                <textarea asp-for="Title" class="cus-textarea" autofocus="autofocus" rows="2" autocomplete="off" placeholder="Project Title" tabindex="20" required></textarea>
+                                <div class="col-6 col-xs-4 col-sm-4 col-md-4 col-lg-4 mt-2 form-check-inline">
+                                    <input type="checkbox" asp-for="SpecsOnPlans" class="mx-1" tabindex="21" />
+                                    <label style="color: #666;">Plans Available </label>
+                                </div>
+                                <div class="col-6 col-sm-4 col-md-4 col-lg-4 mt-2 form-check-inline">
+                                    <input type="checkbox" asp-for="SpcChk" class="mx-1" tabindex="22" />
+                                    <label style="color: #666;">Specs Available</label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-6 newPro-btn row">
+                        <div class="col-12 col-sm-6 col-md-2 col-lg-2 text-wrap"><label>Project Notice</label></div>
+                        <div class=" col-12 col-sm-6 col-md-8 col-lg-8">
+                            <textarea class="cus-textarea" rows="2" asp-for="ProjNote" autocomplete="off"></textarea>
+                            <p class="notice-info">Information entered here will trigger a notification to members. Use with care.</p>
+                        </div>
+                        <div class="col-12 col-sm-6 col-md-2 col-lg-2">
+                            @*<button onclick="return validate()" class="mt btn btn-sm newProbtn px-15" tabindex="30" asp-controller="Project" asp-action="SaveProjectInfoNew">Save & New</button>*@
+                            <div class="dropdown">
+                                <button tabindex="23" asp-controller="project" asp-action="saveprojectinfonew" style="padding: 10px 15px;" class="newProbtn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                    Save & New
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button tabindex="24" asp-controller="project" asp-action="saveprojectinfonew" class="dropdown-item">Save</button>
+                                    <button tabindex="25" asp-controller="project" asp-action="saveprojectinfoclose" class="dropdown-item">Save  & Close</button>
+                                    <button tabindex="26" asp-controller="project" asp-action="saveprojectinfonew" class="dropdown-item">Save & New</button>
+                                    <button tabindex="27" asp-controller="project" asp-action="saveprojectinfocopy" class="dropdown-item">Save & Copy</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="row" style="margin-top: 117px;">
+                <div class="col-md-12">
+                    <div class="main-heading">
+                        <h2 style="padding: 5px 10px;">PROJECT INFORMATION</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="formPage formCls">
+                <input type="hidden" asp-for="@Model.ProjScope" />
+                <input type="hidden" asp-for="@Model.IssuingOffice" />
+
+                <div class="box-space">
+                    <div class="row">
+                        <div class="col-12 col-md-7">
+                            <div class="border-right">
+                                <div class="row align-items-baseline m-0">
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2">
+                                        <label> Address</label>
+                                    </div>
+                                    <div class="col-12 col-sm-6 col-md-7 col-lg-7">
+                                        <input type="text" asp-for="LocAddr1" class="form-control" placeholder="Address" tabindex="40" />
+                                    </div>
+                                    <div class="col-12 col-sm-3 col-md-3 col-lg-3 mt-575">
+                                        <input type="text" asp-for="LocZip" class="form-control number-only" placeholder="zip code" tabindex="50" maxlength="5" />
+                                    </div>
+
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2"></div>
+                                    <div class="col-12 col-sm-3 col-md-3 col-lg-3 mt-2">
+                                        <input type="text" asp-for="LocCity" class="form-control" placeholder="city" tabindex="60" />
+                                    </div>
+                                    <div class="col-12 col-sm-3 col-md-3 col-lg-3 mt-2">
+                                        <!-- <input type="" class="form-control" placeholder="Alaska" /> -->
+                                        <input type="text" asp-for="LocState" class="form-control" tabindex="65" placeholder="state">
+                                    </div>
+                                    <div class="col-12 col-sm-3 col-md-4 col-lg-4 mt-2 text-center">
+                                        <input type="text" class="form-control" asp-for="LocAddr2" placeholder="county" tabindex="70" />
+                                        <input type="hidden" asp-for="Longitude">
+                                        <input type="hidden" asp-for="Latitude">
+                                        <input type="hidden" class="form-control" asp-for="CountyId" />
+                                        <a href="" data-toggle="modal" data-target="#multi-county"> + Add Multiple Counties</a>
+                                    </div>
+                                    <!-- Modal -->
+                                    <div class="modal m-modal fade" id="multi-county" tabindex="-1" aria-labelledby="countyModalLabel" aria-hidden="true">
+                                        <div class="modal-dialog model-lg">
+                                            <div class="modal-content">
+                                                <div class="modal-header">
+                                                    <h5 class="modal-title" id="countyModalLabel">Add Multiple Counties</h5>
+                                                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                        <span aria-hidden="true">&times;</span>
+                                                    </button>
+                                                </div>
+                                                <div class="modal-body">
+                                                    <!-- Checkboxes row start from here -->
+                                                    <div class="row pt-3 classCounty mx-0 justify-content-between">
+                                                    </div>
+                                                    <div class="float-right newPro-btn">
+                                                        <span class="newProbtn" style="cursor:pointer" onclick="AssignMultipleCounties()">OK</span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <input type="hidden" asp-for="Counties" />
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2" id="divCounty" style="display:none"><label>Counties</label></div>
+                                    <div class="col-12 col-sm-10 col-md-10 col-lg-10" id="divsCounty" style="display:none">
+                                    </div>
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2"><label>Project Type</label></div>
+                                    <div class="col-12 col-sm-4 col-md-4 col-lg-4 mt-2">
+                                        <input type="text" id="inpProjTypeId" class="form-control" placeholder="" tabindex="80" onchange="autofill()" /><input type="hidden" asp-for="ProjTypeId" />
+                                    </div>
+                                    <div class="col-6 col-sm-6 col-md-6 col-lg-6 mt-2 text-nowrap">
+                                        <div class="form-group row mb-0">
+                                            <label for="" class="col-sm-4 col-form-label">Project Subtype</label>
+                                            <div class="col-sm-8">
+                                                <input type="text" class="form-control" id="inpProjSubTypeId" tabindex="100" /><input type="hidden" asp-for="ProjSubTypeId" />
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2">
+                                        <label>Project Scope</label>
+                                    </div>
+                                    <div class="col-12 col-md-10 col-lg-10 col-sm-10 mt-2 pl-2">
+                                        <div class="d-flex align-items-center">
+                                            @for (int i = 0; i < @Model.ProjScopeList.Count; i++)
+                                            {
+                                                   <div class="form-check-inline">
+                                                    <input class="mx-1" name="ProjectScopeList" type="checkbox" id="chk_@i" value="@Model.ProjScopeList[i]" onclick="changeScope(this.id)" tabindex="120">
+
+                                                    <label class="mb-0">@Model.ProjScopeList[i]</label>
+                                                </div>
+                                            }
+                                            <input type="checkbox" asp-for="FutureWork" class="mr-1" placeholder="" tabindex="130" /> Future Work
+                                        </div>
+                                    </div>
+
+                                    @* <div class="col-4 col-sm-3 col-md-3 col-lg-3"><label>Future Work</label></div>
+                                    <div class="col-md-8 col-lg-8 col-sm-8 col-8 mt-2">
+                                    <input type="checkbox" asp-for="FutureWork" class="mr-2" placeholder="" tabindex="130" />Yes
+                                    </div>*@
+
+
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2"><label>Bid Date/Time</label></div>
+                                    <div class="col-12 col-sm-10 col-md-10 col-lg-10">
+                                        <div class="form-check form-check-inline">
+                                            <input type="checkbox" class="mr-1" checked="@Model.BoolUndecided" onchange="Undecided(this)">
+                                            <input type="hidden" asp-for="@Model.BoolUndecided">
+                                            <label class="form-check-label font-weight-bold" for="chkBoxTBDBid">T B D</label>
+                                        </div>
+                                        @*<span class="text-danger float-right font-weight-bold px-2">Multiple Bid Dates - See PHL</span>*@
+                                    </div>
+                                    <div class="col-sm-12 col-md-12 col-lg-12" id="divBids">
+                                        <div class="row dateindex m-0 border py-2">
+                                            <div class="col-md-2 col-lg-2 col-2">
+                                                <label class="font-weight-bold">Bid Date</label>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3 col-12">
+                                                <input type="text" asp-for="BidDt" class="form-control getdate datepicker-custom" placeholder="select date" tabindex="140" onchange="getDateIndex((this).id,event)" />
+                                                <span class="validate"></span>
+                                            </div>
+                                            <div class="col-md-3 col-lg-3 col-12">
+                                                <input autocomplete="off" type="time" asp-for="LastBidDt" class="form-control" placeholder="select bid date time" tabindex="145" />
+                                                <span class="validate"></span>
+                                            </div>
+                                            <div class="col-2 col-sm-2 col-md-2 col-lg-2 mt-575">
+                                                <input type="text" asp-for="strBidDt3" class="form-control" placeholder="PST" tabindex="150" oninput="convertToUppercase(this)" />
+                                            </div>
+                                            @*<div class="col-md-3 col-lg-3 col-sm-3 text-right col-2 remove_prebid_row">
+                                            <span id="" class="action-del"><i class="fa fa-trash pt-1" aria-hidden="true"></i></span>
+                                            </div>*@
+                                            <div id="bidDate-input" class="col-md-12 col-lg-12 col-sm-12 col-12"></div>
+                                            @*<div class="col-md-12 col-lg-12 col-sm-12 col-12 mt-2 add-new-btn">
+                                            <span class="action-add" id="bidDate-add"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                            </div>*@
+
+                                        </div>
+                                    </div>
+                                    <div class="col-4 col-sm-2 col-md-2 col-lg-2"><label>PreBid Info</label></div>
+                                    <div class="col-6 col-sm-10 col-md-10 col-lg-10">
+                                        <div class="form-check form-check-inline">
+                                            <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" onchange="UndecidedPre(this)">
+                                            <input type="hidden" asp-for="strPreBidDt" />
+                                            <label class="form-check-label font-weight-bold" for="inlineCheckbox1">T B D</label>
+                                        </div>
+                                        <span class="float-right">Mandatory</span>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12" id="divPreBids">
+                                        <div class="cus-border mt-0 date-index">
+                                            <div class="row border-bottom pb-2 prebidconveniancecount" id="prebid-info-row">
+                                                <div class="col-2 col-sm-2 col-md-2 mb-lg-0 mb-2">
+                                                    <label>Meeting 1</label>
+                                                </div>
+                                                <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2">
+                                                    <div class="row">
+                                                        <div class="col-lg-4 col-md-4">
+                                                            <input type="text" asp-for="preBidInfos[0].PreBidDate" class="form-control datepicker-custom" placeholder="select date" tabindex="170" onchange="getPreDateIndex((this).id,event)" />
+                                                            <input type="hidden" asp-for="preBidInfos[0].IsDeleted" class="Pre-Del">
+                                                            </div>
+
+                                                        <div class="col-10 col-lg-3 col-md-3  ">
+                                                            <input tabindex="180" asp-for="preBidInfos[0].PreBidTime" class="form-control" type="time" placeholder="Time">
+                                                        </div>
+                                                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 ">
+                                                            <input tabindex="180" class="form-control" type="text" asp-for="preBidInfos[0].PST" placeholder="PST">
+                                                        </div>
+                                                        <div class="col-2 col-lg-2 col-md-2 col-sm-2 ">
+                                                            <div class="form-check form-check-inline">
+                                                                <input class="form-check-input" type="checkbox" onchange="ChangeAnd(this)">
+                                                                <label class="form-check-label" for="and">and</label>
+                                                                <input type="hidden" asp-for="preBidInfos[0].PreBidAnd">
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-2 col-lg-1 col-md-1 col-sm-1">
+                                                            <input class="form-check-input" type="checkbox" id="" value="option1" onchange="ChangeMandatory(this)">
+                                                            <input type="hidden" asp-for="preBidInfos[0].Mandatory">
+                                                            <div class=" remove_prebid_row "><span style="cursor:pointer" id="delPrebid-row"><i class="fa fa-trash"></i></span></div>
+                                                        </div>
+                                                        <div class="col-9 col-lg-9 col-md-9 col-sm-9 mt-2">
+                                                            <input tabindex="180" class="form-control" type="text" asp-for="preBidInfos[0].Location" placeholder="Location">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div id="bidInfo-input"></div>
+                                            <div class="col-md-12 mt-2 add-new-btn pl-0">
+                                                <span class="action-add" id="bidInfo-row-add"><i class="fa fa-plus" aria-hidden="true"></i> <label>Add New</label></span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2"><label>Bid Bond</label></div>
+                                    <div class="col-12 col-sm-10 col-md-10 col-lg-10 ">
+                                        <div class="row">
+                                            <div class="col-6 col-md-6 col-lg-6">
+                                                <input type="text" asp-for="BidBond" class="form-control" placeholder="Bid Bond" tabindex="210" />
+                                            </div>
+                                            <div class="col-6 col-md-6 col-lg-6">
+                                                <input type="checkbox" asp-for="PrevailingWage" class="form-check-input" tabindex="220" />
+                                                <label class="form-check-label">Prevailing Wage</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2"><label>Est. Completion</label></div>
+                                    <div class=" col-12 col-sm-10 col-md-10 col-lg-10 mt-2">
+                                        <input type="text" asp-for="CompleteDt" class="form-control" placeholder="Estimated Completion" tabindex="230" />
+                                    </div>
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2">
+                                        <label>Sub. Approval</label>
+                                    </div>
+                                    <div class="col-12 col-8 col-sm-10 col-md-10 col-lg-10 mt-2">
+                                        <input type="text" asp-for="SubApprov" tabindex="240" class="form-control" placeholder="Substitution Approval" />
+                                    </div>
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2"><label>Estimated Cost</label></div>
+                                    <div class="col-12 col-8 col-sm-10 col-md-10 col-lg-10">
+                                        <div class="row align-items-center mt-1">
+                                            <div class="col-md-12 col-lg-5 mt-767 mt-990">
+                                                <input type="" class="form-control" placeholder="Description" tabindex="205" />
+                                            </div>
+                                            <div class="col-md-5 col-lg-3 text-nowrap ">
+                                                <input type="text" asp-for="EstCostRange1" class="form-control pr-0 number-only" placeholder="Cost" tabindex="190" />
+                                            </div>
+                                            <div class=""><span>to</span></div>
+                                            <div class="col-md-5 col-lg-3 mt-767">
+                                                <input type="text" asp-for="EstCostRange2" class="form-control number-only" placeholder="Cost" tabindex="200" />
+                                            </div>
+                                        </div>
+                                        <div id="costInput" class=" mt-2"></div>
+                                        <div class="col-md-12 mt-2 add-new-btn">
+                                            <span class="action-add" id="cost-row-add"><i class="fa fa-plus" aria-hidden="true"></i><label>Add New</label></span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <!-- Right section of project info -->
+                        <div class="col-12 col-md-5">
+                            <div class="row align-items-center">
+                                <div class="col-12 col-md-12 col-lg-12"><label>Project Description</label></div>
+                                <div class="col-12 col-md-12 col-lg-12 py-2">
+                                    <textarea asp-for="Story" class="cus-textarea" rows="6" autocomplete="off" tabindex="250"></textarea>
+                                </div>
+
+                                <div class="col-12 col-md-12 col-lg-12"><label>Project Team</label> <label class="float-right">Issuing Office</label></div>
+                                <div class="col-12 col-md-12 col-lg-12">
+                                    <div class="cus-border m-0">
+                                        <div class="col-md-12 col-lg-12 mb-lg-0 mb-2 d-flex justify-content-end">
+                                            @*<label class="float-right">Issuing Office</label>*@
+                                        </div>
+                                        <div class="row align-items-center" id="project-team-row">
+                                            <div class="col-12  col-md-5 col-lg-5">
+                                                <input tabindex="260" autocomplete="off" type="text" asp-for="Entities[0].EntityType" class="form-control" value="" placeholder="Entity Type">
+                                            </div>
+                                            <div class="col-12  col-md-5 col-lg-5">
+                                                <input type="hidden" asp-for="Entities[0].EntityID">
+                                                <input tabindex="270" type="text" asp-for="Entities[0].EntityName" class="form-control pr-0 EntityNameClass" placeholder="Entity Name">
+                                            </div>
+                                            <div class="col-1 col-lg-1 col-xl-1 pr-0">
+                                                <input type="hidden" asp-for="Entities[0].chkIssue">
+                                                <input type="checkbox" class="align-middle float-right" id="chkBoxIssue" onchange="AssignIssue(this)" tabindex="275">
+                                            </div>
+                                            <div class="col-1 col-lg-1 col-xl-1">
+                                                <div class="remove_prebid_row"><button id="DeleteRow" class="p-0"><i class="fa fa-trash"></i></button></div>
+                                            </div>
+                                        </div>
+
+                                        <div id="newinput" class=" mt-2"></div>
+                                        <div class="col-md-12 mt-2 add-new-btn ">
+                                            <span class="action-add" id="project-row-adder"><i class="fa fa-plus" aria-hidden="true"></i> <label>Add New</label></span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 col-md-12 col-lg-12 mt-note"><label><b>Project Notes : For Internal Use Only</b></label></div>
+                                <div class="col-12 col-md-12 col-lg-12">
+                                    <textarea asp-for="Story" class="form-control" rows="3" autocomplete="off" tabindex="250"></textarea>
+                                </div>
+
+                                @*<div class="col-4 col-sm-4 col-md-4 col-lg-4 text-wrap"><label>Other–Issuing Agency</label></div>
+                                <div class=" col-8 col-sm-8 col-md-8 col-lg-8">
+                                <input type="text" class="form-control" placeholder="Other–Issuing Agency" tabindex="280" />
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- Project Notice  section  -->
+                <div class="row">
+                    <div class="col-md-7">
+                        <div class="main-heading ">
+                            <h2 style="padding: 5px 10px;">Addenda</h2>
+                        </div>
+                        <div class="box-space py-0">
+                            <div class="row border-right">
+                                @if (Model.AddendaS3 != null)
+                                {
+                                    if (Model.AddendaS3.Count != 0 && Model.AddendaS3.Count != null)
+                                    {
+                                        <table class="table table-borderless text-center tbl-adnda">
+                                            <thead class="border-bottom">
+                                                <tr>
+                                                    <th>File</th>
+                                                    <th>New Bid Date ?</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                @for (int i = 0; i < Model.AddendaS3.Count; i++)
+                                                {
+                                                    <tr>
+
+                                                        <td>@Model.AddendaS3[i]</td>
+                                                        <td><input type="checkbox" class="form-check-input" id=""></td>
+                                                    </tr>
+                                                }
+                                            </tbody>
+                                        </table>
+                                    }
+                                    else
+                                    {
+                                        <p class="p-3 mb-0"><b>No copy center data</b></p>
+                                    }
+                                }
+                                else
+                                {
+                                    <p class="p-3 mb-0"><b>No copy center data</b></p>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 pl-0">
+                        <div class="main-heading">
+                            <h2 style="padding: 5px 10px;">Bid Results</h2>
+                        </div>
+                        <div class="col-12">
+                            <div class="row">
+                                <div class="col-md-10 col-lg-10 mb-0">
+                                    @*<label for="">Bid Results</label>*@
+                                    <textarea tabindex="300" placeholder="Add Note" class="form-control mt-4" rows="3" autocomplete="off" id="InternalNote" name="InternalNote"></textarea>
+                                </div>
+                                @*<div class="col-md-2 col-lg-2 d-flex align-items-end mt-767">
+                                <div class="show btn-sec">
+                                <button type="submit" class="searchBtn" id="dropdownMenuLink">
+                                <span class="border-0">Save</span>
+                                </button>
+
+                                </div>
+                                </div>*@
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @*<div class="main-heading ">
+                <h2>Project Notice : For Internal Use Only</h2>
+                </div>
+                <div class="box-space">
+                <div class="row">
+
+                <div class="col-md-8 log-lg-8 mb-0">
+                <textarea tabindex="300" class="form-control" rows="5" autocomplete="off" asp-for="InternalNote"></textarea>
+                </div>
+                <div class="col-md-4 log-lg-4 d-flex align-items-center justify-content-around">
+                <div class="dropdown show cus-dropdown btn-sec">
+                <a class="searchBtn dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                <span>Save</span>
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                <input type="submit" class="dropdown-item" asp-action="SaveProjectInfoNew" asp-controller="Project" value="Save" onclick="return titlevalidate()" onchange="titlevalidate()" />
+                <input type="submit" class="dropdown-item" asp-action="SaveProjectInfoClose" asp-controller="Project" value="Save & Close" />
+                <input type="submit" class="dropdown-item" asp-action="SaveProjectInfoNew" asp-controller="Project" value="Save & New" />
+                <input type="submit" class="dropdown-item" asp-action="SaveProjectInfoCopy" asp-controller="Project" value="Save & Copy" />
+
+                </div>
+                </div>
+                </div>
+                </div>
+                </div>*@
+
+            </div>
+            <!-- Addenda section  -->
+            @*<div class="main-heading">
+            <h2>Addenda</h2>
+            </div>
+            <div class="box-space">
+            <div class="col-md-12 col-12">
+
+            <div class="border">
+            @if (Model.AddendaS3.Count != 0)
+            {
+
+            <div class="col-md-12 col-12 d-flex">
+            <div class="col-lg-4">
+            <label class="col-12 col-form-label">Issue Date</label>
+            <div class="col-lg-12 px-0">
+            <div class="form-group px-0 col-12 mb-3 px-0">
+            <input type="hidden" name="" value="">
+            </div>
+            </div>
+            </div>
+            <div class="col-lg-4">
+            <label class="col-12 col-form-label">Server Files</label>
+            <div class="col-lg-12 px-0">
+            <div class="form-group px-0 col-12 mb-3 px-0">
+            <input type="text" id="show-input" class="form-control" style="display:none">
+
+
+            </div>
+            </div>
+            </div>
+            <div class="col-lg-4">
+            <label class="col-12 col-form-label">Make Viewable</label>
+            <div class="col-lg-12 px-0">
+            </div>
+            </div>
+            </div>
+            for (int i = 0; i < Model.AddendaS3.Count; i++)
+            {
+            <div class="col-md-12 col-12 d-flex">
+            <div class="col-lg-4">
+            <div class="col-lg-12 px-0">
+            <div class="form-group px-0 col-12 mb-3 px-0">
+            <input type="hidden" name="" value="">
+            <div class="col-12">
+            <input class="form-control" type="date" placeholder="Issue Date">
+            </div>
+            </div>
+            </div>
+            </div>
+            <div class="col-lg-4">
+            <div class="col-lg-12 px-0">
+            <div class="form-group px-0 col-12 mb-3 px-0">
+            <input type="text" id="show-input" class="form-control" style="display:none">
+            <div class="col-12">
+            <label for="">@Model.AddendaS3[i]</label>
+            </div>
+
+            <!-- <div class="col-12">
+            <i class="fa fa-refresh cus-refresh" id="d-input" aria-hidden="true"></i>
+            </div> -->
+            </div>
+            </div>
+            </div>
+            <div class="col-lg-4">
+            <div class="col-lg-12 px-0">
+            <div class="col-12">
+            <label class="switch">
+            <input type="checkbox">
+            <span class="slider round"></span>
+            </label>
+            </div>
+            </div>
+            </div>
+            </div>
+            }
+            <div id="addenda-input" class="col-12 col-md-12"></div>
+            }
+            else
+            {
+            <p class="p-3 mb-0"><b>No copy center data</b></p>
+            }
+            </div>
+
+            </div>*@
+        </div>
+        <!-- plan holder bid results section   -->
+        <div class="main-heading ">
+            <h2 style="padding: 5px 10px">Plan Holders List</h2>
+        </div>
+        <div class="box-space formCls in-height border" style="background:#fff;">
+            <div class="row">
+                <div class="col-md-7 col-lg-7 px-0">
+                    <div class="row mx-0 mb-2">
+                        <label for="" class="col-md-2 col-lg-2">PHL General Note </label>
+                        <div class="col-md-8 col-lg-8 mb-0">
+                            <textarea tabindex="300" class="cus-textarea" rows="2" placeholder="Add Info" autocomplete="off" id="" name=""></textarea>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 planPHLecount" id="PHL-row">
+                    <div class="mb-2 row">
+                        <div class="col-md-2 col-lg-2">
+                            <label for="">Bidding ?</label>
+                            <input type="checkbox" class="form-control" manifest="chkBidding" onchange="AssignBidding(this)" tabindex="205" />
+                            <input type="hidden" asp-for="pInfo[0].bidding" />
+                            <input type="hidden" asp-for="pInfo[0].Undecided" />
+                        </div>
+                        <div class="col-md-3 col-lg-3">
+                            <label for="">Entity</label>
+                            <select asp-for="pInfo[0].PHLType" class="form-control p-0" tabindex="380" asp-items="@(new SelectList(ViewBag.PHLType, "Value", "Text", "Selected"))">
+                            </select>
+                        </div>
+                        <div class="col-md-3 col-lg-4">
+                            <label for="">Contractor</label>
+                            <div>
+                                <input class="form-control" type="text" asp-for="pInfo[0].Company" placeholder="Company Name" tabindex="360">
+                                <input type="hidden" id="hf_0_Company" />
+                            </div>
+                        </div>
+                        <div class="col-md-3 col-lg-3 rowFind">
+                            <label for="">Contact</label>
+                            <input type="hidden" name="" value="" tabindex="350">
+                            <div>
+                                <input class="form-control valContact" type="text" asp-for="pInfo[0].Contact" placeholder="Contact" tabindex="360">
+                                <input type="hidden" asp-for="pInfo[0].Uid">
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group row my-5">
+                        <label for="inputPassword" class="col-sm-2 col-form-label">Note</label>
+                        <div class="col-sm-10">
+                            <input type="text" class="form-control" asp-for="pInfo[0].PHLNote">
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-5 col-lg-5 d-flex align-items-center">
+                    <div class="row table-border-cus text-center bid-info mr-0 ml-0">
+                        <div class="col-md-3 col-lg-3 text-nowrap cus-border-r p-0">
+                            <label for="">Bid 1</label>
+                            <div class="col-12 date-img px-2">
+                                <div>
+                                    @*<input class="form-control datepicker text-center" type="text" placeholder="Date" tabindex="390">*@
+                                    <input type="date" asp-for="pInfo[0].PhlBidDate[0].BidDate" class="form-control getdate mx-1" placeholder="select date" tabindex="140" )" />
+                                    <div class="">
+                                        <input asp-for="pInfo[0].PhlBidDate[0].BidDateTime" type="time" class="form-control my-1 mx-1" placeholder="Time" tabindex="360">
+                                        <input asp-for="pInfo[0].PhlBidDate[0].PST" class="form-control my-1 ml-1" type="text" placeholder="Pst" tabindex="360">
+                                        <input type="hidden" asp-for="pInfo[0].PhlBidDate[0].Isextensions" value="false" />
+                                    </div>
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 col-lg-3 cus-border-r p-0">
+                            <label for="">Ext1</label>
+                            <div class="col-12 date-img px-2">
+                                @*<input class="form-control datepicker text-center" type="text" placeholder=" Date" tabindex="400">*@
+                                <input type="date" asp-for="pInfo[0].PhlBidDate[1].BidDate" class="form-control getdate mx-1" placeholder="select date" tabindex="140" )" />
+                                <div class="">
+                                    <input asp-for="pInfo[0].PhlBidDate[1].BidDateTime" class="form-control my-1 mx-1" type="time" placeholder="Time" tabindex="360">
+                                    <input asp-for="pInfo[0].PhlBidDate[1].PST" class="form-control my-1 ml-1" type="text" placeholder="Pst" tabindex="360">
+                                    <input type="hidden" asp-for="pInfo[0].PhlBidDate[1].Isextensions" value="true" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 col-lg-3 cus-border-r p-0">
+                            <label for="">Ext2</label>
+                            <div class="col-12 date-img px-2">
+                                @*<input class="form-control datepicker text-center" type="text" placeholder=" Date" tabindex="400">*@
+                                <input type="date" asp-for="pInfo[0].PhlBidDate[2].BidDate" class="form-control getdate mx-1" placeholder="select date" tabindex="140" )" />
+                                <div class="">
+                                    <input asp-for="pInfo[0].PhlBidDate[2].BidDateTime" class="form-control my-1 mx-1" type="time" placeholder="Time" tabindex="360">
+                                    <input asp-for="pInfo[0].PhlBidDate[2].PST" class="form-control my-1 ml-1" type="text" placeholder="Pst" tabindex="360">
+                                    <input type="hidden" asp-for="pInfo[0].PhlBidDate[2].Isextensions" value="true" />
+                                </div>
+                            </div>
+
+                        </div>
+                        <div class="col-md-3 col-lg-3 p-0">
+                            <label for="">Ext3</label>
+                            <div class="col-12 date-img px-2">
+                                @*<input class="form-control datepicker text-center" type="text" placeholder=" Date" tabindex="400">*@
+                                <input type="date" asp-for="pInfo[0].PhlBidDate[3].BidDate" class="form-control getdate mx-1" placeholder="select date" tabindex="140" )" />
+                                <div class="">
+                                    <input asp-for="pInfo[0].PhlBidDate[3].BidDateTime" class="form-control my-1 mx-1" type="time" placeholder="Time" tabindex="360">
+                                    <input asp-for="pInfo[0].PhlBidDate[3].PST" class="form-control my-1 ml-1" type="text" placeholder="Pst" tabindex="360">
+                                    <input type="hidden" asp-for="pInfo[0].PhlBidDate[3].Isextensions" value="true" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                @* <div class="col-md-4 col-lg-2 mx-767">
+                <label>Type</label>
+                <div>
+                <div class="form-group col-12 mb-3">
+                <div class="mx-767">
+                <!-- <input  class="form-control"  type="text" placeholder="Type"> -->
+                <select id="cities" name="browser" class="form-control" tabindex="380">
+                <option disabled>Select</option>
+                <option value="Montana">Montana</option>
+                <option value="Utah">Utah</option>
+                <option value="Washington">Washington</option>
+                <option value="Manchester">Manchester</option>
+                <option value="Nevada">Nevada</option>
+
+                </select>
+                </div>
+                </div>
+                </div>
+                </div>
+                <div class="col-md-4 col-lg-2">
+                <label>Contractor</label>
+                <div class="col-lg-12 px-0">
+                <div class="form-group px-0 col-12 mb-3 px-0">
+                <input type="hidden" name="addenda_file_id[]" value="" tabindex="350">
+
+                <div>
+                <input class="form-control" type="text" placeholder="Company Name" tabindex="360" id="CompanyName">
+                </div>
+                </div>
+                </div>
+                </div>
+                <div class="col-md-4 col-lg-2 mx-767">
+                <label>Contact</label>
+                <div>
+                <div class="form-group px-0 col-12 mb-3 px-0">
+                <input type="hidden" name="" value="" tabindex="350">
+
+                <div>
+                <input class="form-control" type="text" placeholder="Contact" tabindex="360">
+                </div>
+                </div>
+                </div>
+                </div>
+                <div class="col-md-8 col-lg-4 cus-label calender-input bid-info-pb">
+                <div class="row table-border-cus text-center bid-info mr-0 ml-0">
+                <div class="col-12 px-0">
+                <h5 class="table-heading">Bidding Information</h5>
+                </div>
+                <div class="col-md-3 col-lg-3 text-nowrap cus-border-r p-0">
+                <label for="">Bid Date/Time</label>
+                <div class="col-12 date-img px-2">
+                <div>
+                <input class="form-control datepicker text-center" type="text" placeholder="Date" tabindex="390">
+                </div>
+                </div>
+
+                </div>
+                <div class="col-md-3 col-lg-3 cus-border-r p-0">
+                <label for="">Ext1</label>
+                <div class="col-12 date-img px-2">
+                <input class="form-control datepicker text-center" type="text" placeholder=" Date" tabindex="400">
+                </div>
+
+                </div>
+                <div class="col-md-3 col-lg-3 cus-border-r p-0">
+                <label for="">Ext2</label>
+                <input class="form-control datepicker text-center" type="text" placeholder="Date" tabindex="410">
+                </div>
+
+                </div>
+                <div class="col-md-3 col-lg-3 p-0">
+                <label for="">Ext3</label>
+                <div class="col-12 date-img px-2">
+                <input class="form-control datepicker text-center" type="text" placeholder="Date" tabindex="420">
+                </div>
+                </div>
+                </div>
+                </div>
+
+                <div class="col-md-4 col-lg-2 cus-label my-767">
+                <div class="row table-border-cus text-center mr-0 ml-0">
+                <div class="col-12 px-0 d-flex">
+                <h5 class="table-heading">Plan Holders Information</h5>
+                </div>
+                <div class="col-md-12 col-lg-12 cus-border-r p-0 pb-2 ">
+                <label for="">Bidding(y/n)</label>
+                <div class="col-12  pb-1">
+                <select class="form-control" id="">
+                <option disabled>select</option>
+                <option>Yes</option>
+                <option>No</option>
+                </select>
+                </div>
+                </div>
+                </div>
+                </div>*@
+
+                @* <div class="col-md-6 col-lg-3 cus-label">
+                <div class="row table-border-cus text-center mr-0 ml-0">
+                <div class="col-12 px-0 d-flex">
+                <h5 class="table-heading">Bid Result</h5>
+                <button type="button" class="btn-open-modl" data-toggle="modal" data-target="#table-Modal"><i class="fa fa-pencil edit-table" aria-hidden="true"></i></button>
+                <!-- Modal -->
+                <div class="modal fade" id="table-Modal" role="dialog">
+                <div class="modal-dialog">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                <div class="modal-header">
+                <h4 class="modal-title card-label font-weight-bolder text-dark">ADD NOTE</h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+                <div class="modal-body">
+                <textarea tabindex="450" class="form-control" rows="4" autocomplete="off"></textarea>
+                </div>
+                <div class="modal-footer">
+                <button type="button" class="modl-btn" data-dismiss="modal">Save Changes</button>
+                </div>
+                </div>
+
+                </div>
+                </div>
+                </div>
+                <div class="col-md-4 col-lg-4 text-nowrap cus-border-r p-0">
+                <label for="">Bid Amount</label>
+                <div class="col-12"><input class="form-control" type="text" placeholder="Amount" tabindex="455"></i></div>
+
+                </div>
+                <div class="col-md-4 col-lg-4 cus-border-r p-0 pb-4">
+                <label for="">Rank</label>
+                <div class="col-12  pb-1">
+                <select class="form-control" id="">
+                <option>1</option>
+                <option>2</option>
+                <option>3</option>
+                <option>4</option>
+                </select>
+                </div>
+                </div>
+                <div class="col-md-4 col-lg-4 p-0">
+                <label for="">Award</label>
+                <div class="col-12  pb-1"><input class="form-control" type="text" placeholder="Type" tabindex="480"></div>
+                </div>
+
+                </div>
+                </div>*@
+            </div>
+            @* <div class="col-md-12 mt-2 px-0">
+            <div class="row">
+            <div class="col-md-6 log-lg-6 mb-0">
+            <label for="">Note</label>
+            <textarea tabindex="300" class="form-control" rows="2" placeholder="Add Info" autocomplete="off" id="" name=""></textarea>
+            </div>
+            <div class="col-md-6 log-lg-6 d-flex align-items-end mt-767">
+            <div class="show btn-sec">
+            <button type="submit" class="searchBtn" id="dropdownMenuLink">
+            <span class="border-0">Save</span>
+            </button>
+
+            </div>
+            </div>
+            </div>
+            </div>*@
+            <div id="planholder-input" class="row mt-2"></div>
+            <div class="col-md-12 mt-2 add-new-btn">
+                <span class="action-add" id="planHolder-add"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+            </div>
+        </div>
+        @*<div class="main-heading">
+        <h2>Bid Results</h2>
+        </div>
+        <div class="box-space">
+        <div class="row">
+        <div class="col-md-6 log-lg-6 mb-0">
+        <label for="">Bid Results</label>
+        <textarea tabindex="300" placeholder="Add Note" class="form-control" rows="3" autocomplete="off" id="InternalNote" name="InternalNote"></textarea>
+        </div>
+        <div class="col-md-6 log-lg-6 d-flex align-items-end mt-767">
+        <div class="show btn-sec">
+        <button type="submit" class="searchBtn" id="dropdownMenuLink">
+        <span class="border-0">Save</span>
+        </button>
+
+        </div>
+        </div>
+        </div>
+        </div>*@
+    </form>
+</div>

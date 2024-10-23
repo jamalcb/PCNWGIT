@@ -1,0 +1,104 @@
+﻿@{
+    ViewData["Title"] = "Communication";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+@section Scripts{
+    <script src="~/js/communication.js"></script>
+   
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"></script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Communications</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Marketing Reports</li>
+                        <li class="breadcrumb-item active">Communication</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Choose Member</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="row cus-date-to">
+                            <div class="col-sm-6 col-lg-2 col-md-2">
+                                <div class="form-check form-check-radio">
+                                    <label>
+                                        <input class="with-gap" name="RdRange" type="radio" id="All" value="All" checked="checked">
+                                        <span>All Members</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-2 col-md-2">
+                                <div class="form-check form-check-radio">
+                                    <label>
+                                        <input class="with-gap" name="RdRange" type="radio" id="OR" value="OR">
+                                        <span>OR Members</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-2 col-md-2">
+                                <div class="form-check form-check-radio">
+                                    <label>
+                                        <input class="with-gap" name="RdRange" type="radio" id="WA" value="WA">
+                                        <span>WA Members</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="col-sm-6 col-lg-2 col-md-2">
+                                <div class="form-check form-check-radio">
+                                    <label>
+                                        <input class="with-gap" name="RdRange" type="radio" id="Expiring" value="Expiring">
+                                        <span>Expiring Members</span>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Communication Report</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="exampless" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 mTables">
+                                <thead>
+                                    <tr>
+                                        <th>Company Name</th>
+                                        <th>Email</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblCommunication" class="active-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</section>
+
+
+
+

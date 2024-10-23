@@ -1,0 +1,145 @@
+﻿@model IEnumerable<PaymentInfo>
+@{
+    ViewData["Title"] = "ManagePricing";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts{
+    <script src="~/js/ManagePricing.js"></script>
+}
+<style>
+    .modl-btn.save {
+        border: none;
+        background: #ff9a27;
+        padding: 8px 20px;
+        border-radius: 5px;
+    }
+</style>
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Manage Pricing</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-1">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Membership Package </li>
+                        <li class="breadcrumb-item active">Manage Pricing</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Manage Pricing</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Plan</th>
+                                        <th>Package</th>
+                                        <th>Yearly Fee</th>
+                                        <th>Quarterly Fee</th>
+                                        <th>Monthly Fee</th>
+                                        <th>Edit</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <input type="hidden" value="@item.MemberShipPlanId" />
+                                            <input type="hidden" value="@item.SubMemberShipPlanId" />
+                                            <td>@item.MemberShipPlanName</td>
+                                            <td>@item.SubMemberShipPlanName</td>
+                                            <td>@item.YearlyPrice</td>
+                                            <td>@item.QuarterlyPrice</td>
+                                            <td>@item.MonthlyPrice</td>
+                                            <td><span title="Edit" class="btn btn-primary icon-edit" onclick="ManagePricing(this, @item.SubMemberShipPlanId)"><i class="fas fa-pencil-alt" aria-hidden="true"></i></span></td>
+                                            @*<td></td>*@
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                            <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header cusModal-Header">
+                                            <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                                Save / Update Details
+                                            </h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="frmPrintForm2" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                                <div class="formCls">
+                                                    <span id="message" class="loginError"></span>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Package Name
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input type="hidden" id="idSubPlan" />
+                                                            <label class="form-control form-control-solid SubPlanName" id="idSubPlanName" autocomplete="on" ></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Yearly Price
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input class="form-control form-control-solid " type="text"
+                                                                   value="" id="YPrice" autocomplete="on" />
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                   </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Quarterly Price
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input class="form-control form-control-solid " type="text"
+                                                                   value="" id="QPrice" autocomplete="on"/>
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Monthly Price
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input class="form-control form-control-solid " type="text"
+                                                                   id="MPrice" autocomplete="on"/>
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group mb-3 text-right">
+                                                        <button id="next-btn" class="newProbtn modl-btn save" onclick="return SavePackageData()">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

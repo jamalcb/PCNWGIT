@@ -1,0 +1,731 @@
+﻿@using System.Globalization;
+@model IEnumerable<StaffDashboardViewModel>
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+@section dataTablesCss{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <link href="~/assets/css/datatable.css" rel="stylesheet" />
+}
+@section dataTablesJs{
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+}
+@section Scripts{
+    <script src="~/js/staff-dashboard.js"></script>
+}
+@section CustomCSS{
+    <style>
+        .bg-blue {
+            background: #5c8097;
+        }
+
+        .project-tabs li {
+            width: 25%;
+        }
+
+            .project-tabs li a {
+                color: black !important;
+                font-weight: 500 !important;
+            }
+
+            .project-tabs li .active {
+                background: #1b2c4a !important;
+                border: 1px solid #1b2c4a !important;
+                color: #fff !important;
+                font-weight: 600 !important;
+                border-top: 4px solid #ffbe08 !important;
+            }
+
+        .active {
+            background-color: #fff !important;
+        }
+
+        div#table-id-pending_info, div#table-id-pending_paginate, div#table-id-pending_length, div#table-id-pending_filter {
+            color: #666;
+        }
+
+        .btn-new-proj {
+            color: #000;
+            background: #ff9900;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: capitalize;
+            line-height: normal;
+            border: 0;
+        }
+
+        .cusTable tbody tr td {
+            font-size: 15px;
+        }
+
+        thead tr th {
+            white-space: nowrap;
+        }
+
+        .cus-scroll-tbl {
+            max-height: 600px;
+        }
+
+            .cus-scroll-tbl table {
+                /*overflow-y: scroll;
+                                                    height: 600px;
+                                                    width: fit-content;*/
+                display: inline-table;
+            }
+
+        div.dataTables_filter {
+            position: sticky;
+            top: 0;
+            background-color: #f9f9f9;
+            width: 50%;
+            padding: 5px;
+            margin: 0 0 0px 0;
+        }
+
+        div.dataTables_length {
+            position: sticky;
+            top: 0;
+            background-color: #f9f9f9;
+            width: 50%;
+            padding: 8px;
+            margin: 0 0 0px 0;
+        }
+
+        .highlight {
+            background-color: red;
+        }
+
+        .fix-thead {
+            width: 100%;
+            /*top: 45px;*/
+            bottom: auto;
+            position: sticky;
+            background: #f5f5f5;
+        }
+
+            .fix-thead.fix-top {
+                top: 45px;
+            }
+
+        .main-content {
+            padding: 5px 0;
+        }
+
+        .div.dataTables_length, .div.dataTables_filter {
+            /*margin: 0 0 0px 0;*/
+        }
+
+        .MEMloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            /*display:none;*/
+        }
+
+            .MEMloader img {
+                display: block;
+                margin: 0 auto;
+                width: 80px;
+                margin-top: 20%;
+            }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,600,700&display=swap" rel="stylesheet">
+    <link href="~/css/staff-dashboard.css" rel="stylesheet" />
+ }
+ @{
+    //DateTime date_1 = DateTime.Now.AddMonths(-18);
+    DateTime date_1 = DateTime.MinValue;
+    DateTime date_2 = DateTime.Now;
+
+
+    var activeProjects = Model.Where(item =>
+{
+    string strbd = "";
+    if (item.strBidDt == "TBD" || item.BidDt == null)
+    {
+        strbd = "TBD";
+    }
+    else
+    {
+        var BiDateValue = DateTime.Now;
+        DateTime pastTime;
+        if (DateTime.TryParse(item.LBidDt, out DateTime parsedTime))
+        {
+            pastTime = (DateTime)item.BidDt + parsedTime.TimeOfDay;
+        }
+        else
+        {
+            pastTime = (DateTime)item.BidDt;
+        }
+
+        string inputDate = pastTime >= BiDateValue ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+        if (!string.IsNullOrEmpty(inputDate))
+        {
+            DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            string BidTime = DateTime.TryParseExact(item.LBidDt, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime) ? parsedDateTime.ToString("hh:mm tt") : "";
+            string formattedDate = date.ToString("MMM dd");
+            strbd = string.IsNullOrEmpty(BidTime) ? formattedDate : formattedDate + " - " + BidTime + " PT";
+        }
+    }
+
+    return !string.IsNullOrEmpty(strbd);
+}).ToList();
+
+    activeProjects = activeProjects.Where(item => (bool)item.Publish).ToList();
+
+// Filter Model for Past Projects with date range check
+var pastProjects = Model
+    .Where(item => item.BidDt != null && 
+                   item.BidDt >= date_1 && 
+                       item.BidDt <= date_2)
+    .ToList();
+
+   var pendingProjects = Model.Where(item =>
+{
+    string strbd = "";
+    if (item.strBidDt == "TBD" || item.BidDt == null)
+    {
+        strbd = "TBD";
+    }
+    else
+    {
+        DateTime BiDateValue = DateTime.Now;
+        DateTime pastTime;
+        if (DateTime.TryParse(item.LBidDt, out DateTime parsedTime))
+        {
+            pastTime = (DateTime)item.BidDt + parsedTime.TimeOfDay;
+        }
+        else
+        {
+            pastTime = (DateTime)item.BidDt;
+        }
+
+        string inputDate = pastTime >= BiDateValue ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+        if (!string.IsNullOrEmpty(inputDate))
+        {
+            DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", CultureInfo.InvariantCulture);
+            string BidTime = DateTime.TryParseExact(item.LBidDt, "HH:mm", CultureInfo.InvariantCulture, DateTimeStyles.None, out DateTime parsedDateTime) ? parsedDateTime.ToString("hh:mm tt") : "";
+            string formattedDate = date.ToString("MMM dd");
+            strbd = string.IsNullOrEmpty(BidTime) ? formattedDate : formattedDate + " - " + BidTime + " PT";
+        }
+    }
+
+    return !string.IsNullOrEmpty(strbd) && (!(bool)item.Publish||item.Publish==null);
+}).ToList();
+}
+<div class="MEMloader" id="Memloader">
+    <img src="/assets/images/loading-gif.gif" style="max-width: 5%;min-width:5%" alt="loading" />
+</div>
+<div class="container-fluid">
+    <input type="hidden" value="@ViewBag.SuccessMessage" id="tmpHiddenMsg" />
+    <input type="hidden" value="@ViewBag.SearchText" id="hdnSearchText" />
+    <input type="hidden" value="@ViewBag.ActiveTab" id="hdnTab" />
+    <input type="hidden" value="@ViewBag.ActivesearchText" id="hdnActSearchText" />
+    <input type="hidden" value="@ViewBag.PastSearchText" id="hdnPastSearchText" />
+    <div class="dashboard-box" style="border-radius:0px;">
+        <div class="main-heading bg-blue">
+            <div class="row m-0">
+                <div class="col-md-12 d-flex justify-content-between">
+                    <h2>Project Dashboard</h2>
+                    <form class="form m-2" method="get">
+                        <input type="submit" asp-action="EditProjectInfo" asp-controller="Project" class="btn-new-proj" value="New Project" />
+                    </form>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="row mt-1">
+        <div class="col-md-12">
+            <div class="layout">
+                <input name="nav" type="radio" class="nav home-radio" id="home" onclick="PandingTextValue()" checked="checked" />
+                <div class="page home-page pt-0">
+                    <div class="page-contents">
+                        <div class="table-responsive cus-scroll-tbl">
+                            <table class="table table-bordered table-responsive table-striped pTables cusTable " id="table-id-pending">
+                                <thead class="fix-thead">
+                                    <tr class="table-secondary">
+                                        <th style="width:90px;">Project</th>
+                                        <th style="width:400px;">ProjectTitle</th>
+                                        <th style="width:130px;">City</th>
+                                        <th style="width:40px;">State</th>
+                                        <th style="width:130px;">ProjectType</th>
+                                        <th style="width:180px;">BidDate</th>
+                                        <th>BidDate1</th>
+                                        <th>Plans</th>
+                                        <th>Specs</th>
+                                        <th>Publish</th>
+                                        <th>ArrivalDate</th>
+                                        <th>ArrivalDate1</th>
+                                        <th>Entity</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pendingTblBody">
+                                    @{
+                                        int a = 1;
+                                    }
+
+                                    @foreach (var item in pendingProjects)
+                                    {
+                                        string Entities = "";
+                                        if (item.Entities != null && item.Entities.Count > 0)
+                                        {
+                                            Entities = string.Join(",", item.Entities);
+                                        }
+                                        var strbd = "";
+                                        var BiDateValue = DateTime.Now;
+                                        bool publish = item.Publish != null ? (bool)item.Publish : false;
+                                        bool plan = item.SpecsOnPlans != null ? (bool)item.SpecsOnPlans : false;
+                                        bool spc = item.SpcChk != null ? (bool)item.SpcChk : false;
+                                        DateTime dateTimeValue = DateTime.MinValue;
+                                        TimeSpan PendingSpan = TimeSpan.Zero;
+                                        try
+                                        {
+                                            PendingSpan = TimeSpan.Parse(item.LBidDt);
+                                        }
+                                        catch
+                                        {
+                                            PendingSpan = TimeSpan.Zero;
+                                        }
+                                        DateTime? pastTime = PendingSpan == TimeSpan.Zero ? item.BidDt : item.BidDt + PendingSpan;
+                                        try
+                                        {
+                                            dateTimeValue = DateTime.ParseExact(item.LBidDt, "HH:mm", CultureInfo.InvariantCulture);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            // Handle the exception here, e.g., log an error or set a default value
+                                            dateTimeValue = DateTime.MinValue;
+                                        }
+                                        string BidTime = dateTimeValue == DateTime.MinValue ? "" : dateTimeValue.ToString("hh:mm tt");
+                                        @* string timeString = item.LBidDt;
+                                    DateTime time;
+                                    if (DateTime.TryParseExact(timeString, "HH:mm", null, System.Globalization.DateTimeStyles.None, out time))
+                                    {
+                                    string formattedTime = time.ToString("hh:mm tt");
+
+                                    }*@
+                                        //DateTime BidDt = item.BidDt != null ? Convert.ToDateTime(Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy")) : DateTime.Now.AddDays(-1);
+                                        if (item.strBidDt == "TBD" || item.BidDt == null)
+                                        {
+                                            strbd = "TBD";
+                                        }
+                                        else
+                                        {
+                                            string inputDate = pastTime >= BiDateValue ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+                                            if (inputDate != "")
+                                            {
+                                                DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                                string formattedDate = date.ToString("MMM dd");
+                                                strbd = formattedDate;
+                                                strbd = BidTime == "" ? strbd : strbd + " - " + BidTime + " PT";
+                                            }
+
+                                        }
+
+                                        if (!publish && !string.IsNullOrEmpty(strbd))
+                                        {
+                                            if (plan && spc)
+                                            {
+
+                                                <tr style="@(item.memberId == -1 ? "background-color: #dceff5;" : "")">
+                                                    @*<td><a asp-route-nameId="@item.ProjNumber" asp-action="ToMountedDrive" asp-controller="Common" name="nameId">@item.ProjNumber</a></td>*@
+                                                    <td>@item.ProjNumber</td>
+                                                    <td class="" style="width:420.5px">
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <a href="#" style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" name="titleId" onclick="TitleSearchText(this)"><b>@Html.DisplayFor(modelItem => item.Title)</b></a>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                    </td>
+                                                    <td>@Html.DisplayFor(modelItem => item.LocCity)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.LocState)</td>
+                                                    <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                    <td class="">@strbd</td>
+                                                    <td class="">@(item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("yyyy/MM/dd") : "")</td>
+                                                    <td class="text-center" id="tdPlan"><input id="chkPlan_@a" type="checkbox" value="@item.ProjId" onchange="ChangeSpecsOnPlans(this.checked, this.value, this.id)"></td>
+                                                    <td class="text-center" id="tdSpc"><input id="chkSpc_@a" type="checkbox" value="@item.ProjId" onchange="ChangeSpc(this.checked, this.value, this.id)"></td>
+                                                    <td id="tdPub" class="text-center"><input id="chkPub_@a" type="checkbox" value="@item.ProjId" disabled onchange="ChangePublish(this.checked, this.value, this.id,this)" onclick="return confirm('Are you sure you want to publish this project?');"></td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("MM/dd/yyyy") : "")</td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("yyyyy/MM/dd") : "")</td>
+                                                    <td>@Entities</td>
+                                                    <td class="icon-td">
+                                                        <form asp-action="Preview" asp-controller="StaffAccount" method="post" asp-route-id="@item.ProjId" target="_blank">
+                                                            <button><i class="fa fa-eye" aria-hidden="true" data-bs-toggle="tooltip" title="Customer View"></i></button>
+                                                        </form>
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <button onclick="return searchtext(this)"><i class="fa fa-pencil" aria-hidden="true" data-bs-toggle="tooltip" title="Edit"></i></button>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                        @* <form asp-action="DeleteProject" method="post" asp-controller="StaffAccount" asp-route-id="@item.ProjId">*@
+                                                        <span class="span-del" onclick="DeleteProject(@item.ProjId, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></span>
+                                                        @*</form>*@
+                                                    </td>
+                                                </tr>
+                                            }
+                                            if (!plan && !spc)
+                                            {
+                                                <tr style="@(item.memberId == -1 ? "background-color: #dceff5;" : "")">
+                                                    @*<td><a href="https://localhost:8090/Home/ToMountedDrive?nameId=@item.ProjNumber" name="nameId">@item.ProjNumber</a></td>*@
+                                                    <td>@item.ProjNumber</td>
+                                                    <td style="width:420.5px">
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <a href="#" style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" name="titleId" onclick="TitleSearchText(this)"><b>@Html.DisplayFor(modelItem => item.Title)</b></a>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                    </td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocCity)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocState)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                    <td>@strbd </td>
+                                                    <td class="">@(item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("yyyy/MM/dd") : "")</td>
+                                                    <td class="text-center" id="tdPlan"></td>
+                                                    <td></td>
+                                                    <td id="tdPub" class="text-center"><input id="chkPub_@a" type="checkbox" value="@item.ProjId" onchange="ChangePublish(this.checked, this.value, this.id,this)" onclick="return confirm('Are you sure you want to publish this project?');"></td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("MM/dd/yyyy") : "")</td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("yyyy/MM/dd") : "")</td>
+                                                   <td>@Entities</td>
+                                                    <td class="icon-td">
+                                                        <form asp-action="Preview" asp-controller="StaffAccount" method="post" asp-route-id="@item.ProjId" target="_blank">
+                                                            <button><i class="fa fa-eye" aria-hidden="true" data-bs-toggle="tooltip" title="Customer View"></i></button>
+                                                        </form>
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <button onclick="return searchtext(this)"><i class="fa fa-pencil" aria-hidden="true" data-bs-toggle="tooltip" title="Edit"></i></button>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                        @* <form asp-action="DeleteProject" method="post" asp-controller="StaffAccount" asp-route-id="@item.ProjId">*@
+                                                        <span class="span-del" onclick="DeleteProject(@item.ProjId, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></span>
+                                                        @*</form>*@
+                                                    </td>
+                                                </tr>
+                                            }
+                                            if (plan && !spc)
+                                            {
+                                                <tr style="@(item.memberId == -1 ? "background-color: #dceff5;" : "")">
+                                                    <td>@item.ProjNumber</td>
+                                                    @*<td><a asp-route-nameId="@item.ProjNumber" asp-action="ToMountedDrive" asp-controller="Common" name="nameId">@item.ProjNumber</a></td>*@
+                                                    <td style="width:420.5px">
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <a href="#" style="color:#5c8097;cursor:pointer;white-space:normal;font-size: 14px;font-weight: 400;" name="titleId" onclick="TitleSearchText(this)"><b>@Html.DisplayFor(modelItem => item.Title)</b></a>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                    </td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocCity)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocState)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                    <td>@strbd</td>
+                                                    <td class="">@(item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("yyyy/MM/dd") : "")</td>
+                                                    <td class="text-center" id="tdPlan"><input id="chkPlan_@a" type="checkbox" value="@item.ProjId" onchange="ChangeSpecsOrPlans(this.checked, this.id)"></td>
+                                                    <td></td>
+                                                    <td id="tdPub" class="text-center"><input id="chkPub_@a" type="checkbox" value="@item.ProjId" onchange="ChangePublish(this.checked, this.value, this.id,this)" onclick="return confirm('Are you sure you want to publish this project?');" disabled></td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("MM/dd/yyyy") : "")</td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("yyyy/MM/dd") : "")</td>
+                                                    <td>@Entities</td>
+                                                    <td class="icon-td">
+                                                        <form asp-action="Preview" asp-controller="StaffAccount" method="post" asp-route-id="@item.ProjId" target="_blank">
+                                                            <button><i class="fa fa-eye" aria-hidden="true" data-bs-toggle="tooltip" title="Customer View"></i></button>
+                                                        </form>
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <button onclick="return searchtext(this)"><i class="fa fa-pencil" aria-hidden="true" data-bs-toggle="tooltip" title="Edit"></i></button>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                        @* <form asp-action="DeleteProject" method="post" asp-controller="StaffAccount" asp-route-id="@item.ProjId">*@
+                                                        <span class="span-del" onclick="DeleteProject(@item.ProjId, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></span>
+                                                        @*</form>*@
+                                                    </td>
+                                                </tr>
+                                            }
+                                            if (!plan && spc)
+                                            {
+                                                <tr style="@(item.memberId == -1 ? "background-color: #dceff5;" : "")">
+                                                    <td>@item.ProjNumber</td>
+                                                    @*<td><a asp-route-nameId="@item.ProjNumber" asp-action="ToMountedDrive" asp-controller="Common" name="nameId">@item.ProjNumber</a></td>*@
+                                                    <td style="width:420.5px">
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <a href="#" style="color:#5c8097;cursor:pointer;white-space:normal;" name="titleId" onclick="TitleSearchText(this)"><b>@Html.DisplayFor(modelItem => item.Title)</b></a>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                    </td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocCity)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocState)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                    <td>@strbd</td>
+                                                    <td class="">@(item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("yyyy/MM/dd") : "")</td>
+                                                    <td class="text-center" id="tdPlan"></td>
+                                                    <td class="text-center" id="tdSpc"><input id="chkSpc_@a" type="checkbox" value="@item.ProjId" onchange="ChangeSpecsOrPlans(this.checked, this.id)" /></td>
+                                                    <td id="tdPub" class="text-center"><input id="chkPub_@a" type="checkbox" value="@item.ProjId" disabled onchange="ChangePublish(this.checked, this.value, this.id,this)" onclick="return confirm('Are you sure you want to publish this project?');"></td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("MM/dd/yyyy") : "")</td>
+                                                    <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("yyyy/MM/dd") : "")</td>
+                                                    <td>@Entities</td>
+                                                    <td class="icon-td">
+                                                        <form asp-action="Preview" asp-controller="StaffAccount" method="post" asp-route-id="@item.ProjId" target="_blank">
+                                                            <button><i class="fa fa-eye" aria-hidden="true" data-bs-toggle="tooltip" title="Customer View"></i></button>
+                                                        </form>
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <button onclick="return searchtext(this)"><i class="fa fa-pencil" aria-hidden="true" data-bs-toggle="tooltip" title="Edit"></i></button>
+                                                            <input type="hidden" id="SearchText" name="search" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                        @* <form asp-action="DeleteProject" method="post" asp-controller="StaffAccount" asp-route-id="@item.ProjId">*@
+                                                        <span class="span-del" onclick="DeleteProject(@item.ProjId, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></span>
+                                                        @*</form>*@
+                                                    </td>
+                                                </tr>
+                                            }
+                                            a++;
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <label class="nav" for="home">
+                    <span>
+                        Pending Projects
+                    </span>
+                </label>
+                <input name="nav" type="radio" class="about-radio" id="about" onclick="ActiveTextValue()" />
+                <div class="page about-page pt-0">
+                    <div class="page-contents">
+                        <div class="table-responsive cus-scroll-tbl">
+                            <table class="table table-bordered table-responsive table-striped cusTable sTables" id="table-id-active">
+                                <thead class="fix-thead">
+                                    <tr class="table-secondary">
+                                        <th style="width:90px;">Project </th>
+                                        <th style="width:400px;">ProjectTitle</th>
+                                        <th style="width:130px;">City</th>
+                                        <th style="width:40px;">State</th>
+                                        <th style="width:130px;">ProjectType</th>
+                                        <th style="width:180px;">BidDate</th>
+                                        <th>BidDate1</th>
+                                        <th>Publish</th>
+                                        <th>ArrivalDate</th>
+                                        <th>ArrivalDate1</th>
+                                        <th>Entity</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="activeTblBody">
+                                    @foreach (var item in activeProjects)
+                                    {
+                                        string Entities = "";
+                                        if (item.Entities != null && item.Entities.Count > 0)
+                                        {
+                                            Entities = string.Join(",", item.Entities);
+                                        }
+                                        var strbd = "";
+                                        var BiDateValue = DateTime.Now;
+                                        bool publish = item.Publish != null ? (bool)item.Publish : false;
+                                        DateTime dateTimeValue = !string.IsNullOrEmpty(item.LBidDt) ? DateTime.ParseExact(item.LBidDt, "HH:mm", CultureInfo.InvariantCulture) : DateTime.MinValue;
+                                        string BidTime = dateTimeValue == DateTime.MinValue ? "" : dateTimeValue.ToString("hh:mm tt");
+                                        TimeSpan ActiveSpan = TimeSpan.Zero;
+                                        try
+                                        {
+                                            ActiveSpan = TimeSpan.Parse(item.LBidDt);
+                                        }
+                                        catch
+                                        {
+                                            ActiveSpan = TimeSpan.Zero;
+                                        }
+                                        DateTime? pastTime = ActiveSpan == TimeSpan.Zero ? item.BidDt : item.BidDt + ActiveSpan;
+                                        if (item.strBidDt == "TBD" || item.BidDt == null)
+                                        {
+                                            strbd = "TBD";
+                                        }
+                                        else
+                                        {
+                                            string inputDate = pastTime >= BiDateValue ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+                                            if (inputDate != "")
+                                            {
+                                                DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                                string formattedDate = date.ToString("MMM dd");
+                                                strbd = formattedDate;
+                                                strbd = BidTime == "" ? strbd : strbd + " - " + BidTime + " PT";
+                                            }
+
+                                        }
+                                       
+                                        //DateTime pastTime = PastSpan == TimeSpan.Zero ? item.BidDt : Convert.ToDateTime(item.BidDt) + PastSpan;
+                                        
+                                        //DateTime BidDt = item.BidDt != null ? Convert.ToDateTime(Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy")) : DateTime.Now.AddDays(-1);
+                                        if (publish && !string.IsNullOrEmpty(strbd))
+                                        {
+                                            <tr style="@(item.memberId == -1 ? "background-color: #dceff5;" : "")">
+                                                <td>@item.ProjNumber</td>
+                                                <td>
+                                                    <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                        <a href="#" style="color:#5c8097;cursor:pointer;white-space:normal;" name="titleId" onclick="TitleActiveText(this)"><b>@Html.DisplayFor(modelItem => item.Title)</b></a>
+                                                        <input type="hidden" id="ActiveSearchText" name="ActiveSearch" />
+                                                        <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                    </form>
+                                                </td>
+                                                @* <td><a style="color:#5c8097;cursor:pointer" asp-route-id="@item.ProjId" asp-action="EditProjectInfo" asp-controller="Project" name="titleId" onclick="return searchtextActive()"><b>@Html.DisplayFor(modelItem => item.Title)</b></a></td>*@
+                                                <td> @Html.DisplayFor(modelItem => item.LocCity)</td>
+                                                <td> @Html.DisplayFor(modelItem => item.LocState)</td>
+                                                <td> @Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                <td class="">@strbd</td>
+                                                <td class="">@(item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("yyyy/MM/dd") : "")</td>
+                                                <td id="tdPub" class="text-center"><input id="chkPub" type="checkbox" value="@item.ProjId" checked="@item.Publish" onchange="ChangeUnPublish(this.checked, this.value, this.id,this)" onclick="return confirm('Are you sure you want to unpublish this project?');"></td>
+                                                <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("MM/dd/yyyy") : "")</td>
+                                                <td>@(item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("yyyy/MM/dd") : "")</td>
+                                                <td>
+                                                   @Entities
+                                                </td>
+                                                <td class="icon-td">
+                                                    <form asp-action="Preview" asp-controller="StaffAccount" method="post" asp-route-id="@item.ProjId" target="_blank">
+                                                        <button><i class="fa fa-eye" aria-hidden="true" data-bs-toggle="tooltip" title="Customer View"></i></button>
+                                                    </form>
+                                                    <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                        <button onclick="return searchtextActive(this)"><i class="fa fa-pencil" aria-hidden="true" data-bs-toggle="tooltip" title="Edit"></i></button>
+                                                        <input type="hidden" id="ActiveSearchText" name="ActiveSearch" />
+                                                        <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                    </form>
+                                                    @* <form asp-action="DeleteProject" method="post" asp-controller="StaffAccount" asp-route-id="@item.ProjId">*@
+                                                    <span class="span-del" onclick="DeleteProject(@item.ProjId, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></span>
+                                                    @*</form>*@
+                                                </td>
+                                            </tr>
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <label class="nav" for="about">
+                    <span>
+                        Active Projects
+                    </span>
+                </label>
+                <input name="nav" type="radio" class="contact-radio" id="contact" onclick="PastSearchTextValue()" />
+                <div class="page contact-page pt-0">
+                    <div class="page-contents">
+                        <div class="table-responsive cus-scroll-tbl">
+                            <table class="table table-bordered table-responsive table-striped cusTable tTables" id="table-id-past">
+                                <thead class="fix-thead">
+                                    <tr class="table-secondary">
+                                        <th style="width:90px;">Project </th>
+                                        <th style="width:400px;">ProjectTitle</th>
+                                        <th style="width:130px;">City</th>
+                                        <th style="width:40px;">State</th>
+                                        <th style="width:130px;">ProjectType</th>
+                                        <th style="width:180px;">BidDate</th>
+                                        <th>BidDate1</th>
+                                        <th>BidResults</th>
+                                        <th>Entity</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="pastTblBody">
+                                    @foreach (var item in pastProjects)
+                                    {
+                                        string Entities = "";
+                                        if (item.Entities != null && item.Entities.Count > 0)
+                                        {
+                                            Entities = string.Join(",", item.Entities);
+                                        }
+                                          @* DateTime date1 = DateTime.Now.AddMonths(-18); *@
+                                        DateTime date1 = DateTime.MinValue;
+                                        DateTime date2 = DateTime.Now;
+                                        var strbd = "";
+                                        DateTime dateTimeValue = DateTime.MinValue;
+                                        try
+                                        {
+                                            dateTimeValue = DateTime.ParseExact(item.LBidDt, "HH:mm", CultureInfo.InvariantCulture);
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            // Handle the exception here, e.g., log an error or set a default value
+                                            dateTimeValue = DateTime.MinValue;
+                                        }
+                                        string BidTime = dateTimeValue == DateTime.MinValue ? "" : dateTimeValue.ToString("hh:mm tt");
+                                        string inputDate = item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+                                        //DateTime inputDat = item.BidDt != null ? Convert.ToDateTime(item.BidDt) : "";
+                                        TimeSpan PastSpan = TimeSpan.Zero;
+                                        try
+                                        {
+                                            PastSpan = TimeSpan.Parse(item.LBidDt);   
+                                        }
+                                        catch
+                                        {
+                                            PastSpan = TimeSpan.Zero;
+                                        }
+                                        //DateTime pastTime = PastSpan == TimeSpan.Zero ? item.BidDt : Convert.ToDateTime(item.BidDt) + PastSpan;
+                                        DateTime? pastTime = PastSpan == TimeSpan.Zero ? item.BidDt : item.BidDt + PastSpan;
+                                        if (inputDate != "")
+                                        {
+                                            DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                            string formattedDate = date.ToString("MMM dd");
+                                            strbd = formattedDate;
+                                            strbd = BidTime == "" ? strbd : strbd + " - " + BidTime + " PT";
+                                        }
+
+                                        if (item.BidDt != null)
+                                        {
+                                            if (pastTime >= date1 && pastTime <= date2)
+                                            {
+                                                <tr style="@(item.memberId == -1 ? "background-color: #dceff5;" : "")">
+                                                    <td>@item.ProjNumber</td>
+                                                    @*<td><a asp-route-nameId="@item.ProjNumber" asp-action="ToMountedDrive" asp-controller="Common" name="nameId">@item.ProjNumber</a></td>*@
+                                                    <td>
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <a href="#" style="color:#5c8097;cursor:pointer;white-space:normal;" name="titleId" onclick="TitlePastText(this)"><b>@Html.DisplayFor(modelItem => item.Title)</b></a>
+                                                            <input type="hidden" id="PastSearchText" name="PastSearch" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                    </td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocCity)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.LocState)</td>
+                                                    <td> @Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                    <td class="">@strbd</td>
+                                                    <td class="">@(item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("yyyy/MM/dd") : "")</td>
+                                                    <td class="" id="tdSpc">
+                                                        <input type="checkbox" checked="@item.BR" id="BRChecked" onclick="BRChecked(@item.ProjId, this)" @if (item.BR == true) {
+                                            <text>disabled</text>
+                                            } />
+                                                    </td>
+                                                    <td>@Entities</td>
+                                                    <td class="icon-td">
+                                                        <form asp-action="Preview" asp-controller="StaffAccount" method="post" asp-route-id="@item.ProjId" target="_blank">
+                                                            <button><i class="fa fa-eye" aria-hidden="true" data-bs-toggle="tooltip" title="Customer View"></i></button>
+                                                        </form>
+                                                        <form asp-action="EditProjectInfo" method="post" asp-controller="Project" asp-route-id="@item.ProjId">
+                                                            <button onclick="return PastTextValue(this)"><i class="fa fa-pencil" aria-hidden="true" data-bs-toggle="tooltip" title="Edit"></i></button>
+                                                            <input type="hidden" id="PastSearchText" name="PastSearch" />
+                                                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                                        </form>
+                                                        <span class="span-del" onclick="DeleteProject(@item.ProjId, this)"> <i class="fa fa-trash" aria-hidden="true" data-bs-toggle="tooltip" title="Delete"></i></span>
+                                                    </td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <label class="nav" for="contact">
+                    <span>
+                        Past Projects
+                    </span>
+                </label>
+            </div>
+        </div>
+    </div>
+</div>

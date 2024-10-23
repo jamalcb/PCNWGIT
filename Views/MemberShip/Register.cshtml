@@ -1,0 +1,1087 @@
+﻿@model MemberShipRegistration;
+@{
+    ViewData["Title"] = "Memebrship Registration Page";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+
+}
+@section MembershipScripts{
+    <script src="~/js/new-member-register.js" type="text/javascript"></script>
+    @*<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>*@
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+
+ }
+@section google{
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+}
+
+@section CustomCSS{
+    <link href="~/css/member-register.css" rel="stylesheet" />
+    <style>
+        .lblHidden {
+            display: none;
+        }
+
+        .modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+
+        .enable-input {
+            position: relative;
+            z-index: 1;
+        }
+        .freespandiv {
+            margin: 25% 10% 5% 10%;
+            line-height: 20px;
+            text-align: center;
+            word-spacing: 3px;
+        }
+        .freespan {
+            line-height: 0px !important;
+            font-size: 17px;
+            font-weight: 100;
+        }
+    </style>
+
+}
+@*<div class="top-heading">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>New Member Signup</h3>
+                </div>
+            </div>
+        </div>
+    </div>*@
+<div class="title-section cstMembSignUp" style="position:relative;" id="scrollscreen">
+    <div class="overlay"></div>
+    <h3 class="signuph3">New Member Signup</h3>
+</div>
+<div class="mainBox pt-2">
+    <div class="container">
+        <ul class="nav nav-tabs cusTab d-flex justify-content-between">
+            <li id="MemPlan" class="active"><a id="MemPlan" data-toggle="tab" href="#plan" class="active in" onclick="chnageStep('MemPlan',0)">1. Choose Plan</a></li>
+            <li id="MemDet" class=""><a id="MemDet"  href="#contact" class="" onclick="chnageStep('MemDet',1)">2. Member Information</a></li>
+            <li id="MemRev"><a id="MemRev" href="#preview" onclick="AcceptPay(this.value)">3. Review</a></li>
+            @* <li id="MemPay"><a id="MemPay" href="#payment" onclick="chnageStep('MemPay', 3)">4. Payment</a></li> *@
+            <li id="MemFinish"><a id="MemFinish" href="#finish">4. Finish</a></li>
+        </ul>
+        <form class="form" method="POST" id="myForm">
+            <input type="hidden" value="@Model.hdnpreStep" id="hdnpreStep" />
+            <input type="hidden" value="@Model.hdnnextStep" id="hdnnextStep" />
+            <input type="hidden" value="@Model.hdncurrentStep" id="hdncurrentStep" />
+            <input type="hidden" id="hdnTabPer" />
+            <input type="hidden" asp-for="@Model.isFromFree" />
+            <input type="hidden" asp-for="@Model.MemberCost" id="MemberCost" />
+            <input type="hidden" asp-for="Additionalcost" />
+            <input type="hidden" asp-for="@Model.CheckRadio" />
+            <input type="hidden" asp-for="@Model.CheckRadioValue" />
+            <input type="hidden" asp-for="RadioExValue" />
+            <input type="hidden" asp-for="@Model.CheckRadioEx" />
+            <input type="hidden" asp-for="@Model.CheckRadioExValue" />
+            <input type="hidden" asp-for="@Model.hdnPass" />
+            <input type="hidden" asp-for="@Model.hdnPassConfirm" />
+            <input type="hidden" asp-for="@Model.hdnTerm" />
+            <input type="hidden" asp-for="@Model.MinorityStatus" />
+            <input type="hidden" asp-for="@Model.MemberType" />
+            <input type="hidden" asp-for="@Model.MSPChk" />
+            <input type="hidden" asp-for="@Model.ToDelete" />
+            <input type="hidden" asp-for="PayCardString" />
+            <input type="hidden" asp-for="ColorString" />
+            <input type="hidden" id="AddlPrice" />
+            <input type="hidden" id="hdnDiscId" asp-for="DiscountId">
+            <input type="hidden" asp-for="PayModeRef" value="CC">
+            @* <input type="hidden" value="@ViewBag.PaymentTab" id="hdnnextStepP" />*@
+            @*<input type="hidden" asp-for="@Model.BillState" />
+            <input type="hidden" asp-for="@Model.BillCity" />
+            <input type="hidden" asp-for="@Model.BillZip" />
+            <input type="hidden" asp-for="@Model.BillAddress" />*@
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="tab-content">
+                <div id="plan" class="tab-pane fade in active">
+                    <div class="contact-info-box formCls px-3 pb-3">
+                        <div class="paymentCardBox inTab border-none p-0 my-0">
+
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="option-head"><h2><span>Select a Payment Schedule</span></h2></div>
+                                    <div class="card-time pb-3">
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" id="customRadio1" name="example" value="Yearly" checked>
+                                            <label class="custom-control-label" for="customRadio1">Yearly</label><br />
+                                            <span class="custext">Best Value</span>
+                                        </div>
+                                        <input type="hidden" id="hdnDiscountId" />
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" id="customRadio3" name="example" value="Quarterly">
+                                            <label class="custom-control-label" for="customRadio3">Quarterly</label>
+                                        </div>
+                                        <div class="custom-control custom-radio custom-control-inline">
+                                            <input type="radio" class="custom-control-input" id="customRadio2" name="example" value="Monthly">
+                                            <label class="custom-control-label" for="customRadio2">Monthly</label>
+                                        </div>
+
+                                    </div>
+                                </div>
+                                @* <div class="col-md-12 option-head mb-2"> <h2> <span>Select a Regional Package Option</span></h2></div> *@
+                                <div class="mb-3 mb-lg-0  col-md-6 col-lg-3">
+                                    <div class="card">
+                                        <div class="card-body mainCard-body">
+                                            <h2>Pacific Northwest</h2>
+                                            <p class="price-text">$<span id="YprcPremium"></span>/Year</p>
+                                            @*<span class="" style="display:block;line-height: normal;" id="">(Paid once annually)</span>*@
+                                            <span class="price-text" id="prcPremium"></span>
+                                            @*<p class="price-text">($2000/Year)</p>*@
+                                            <div id="main">
+                                                <div class="accordion" id="Popfaqq-1">
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead1">
+                                                            <div class="custom-control custom-radio" data-toggle="collapse" data-target="#Popfaq7" aria-expanded="true" aria-controls="Popfaq7">
+                                                                <input type="radio" class="custom-control-input" id="customRadio4" name="cardPacific" value="Pacific Northwest Premium">
+                                                                <label class="custom-control-label" for="customRadio4"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#Popfaq7"
+                                                               aria-expanded="true" aria-controls="Popfaq7">
+                                                                <label for="customRadio4">
+                                                                    @*<span onclick="document.getElementById('customRadio4').click();" id="PacificPremium" style="cursor:pointer">*@
+
+                                                                   @* </span>*@ <span onclick="document.getElementById('customRadio4').click();" style="cursor:pointer">Premium</span>
+                                                                </label>
+                                                            </a>
+                                                        </div>
+                                                        <div id="Popfaq7" class="collapse show" aria-labelledby="faqhead1" data-parent="#Popfaqq-1">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="PrUserText"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="PrRegionHead"></span> :
+                                                                        <p id="RegionText">
+
+                                                                        </p>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        @* <div class="card-footer-btn">
+                                        <button type="" class="member-btn" id="btnPacific" onclick="GoToReg(this.id, this)">Join</button>
+                                        <span class="Error" style="color: red; font-size:17px;"></span>
+                                        </div>*@
+                                    </div>
+                                </div>
+                                <div class="mb-3 mb-lg-0  col-md-6 col-lg-3">
+                                    <div class="card">
+                                        <div class="card-body mainCard-body" style="background: #6d9d78">
+                                            <h2>Oregon</h2>
+                                            <p class="price-text">$<span id="YprcOregon"></span>/Year</p>
+                                            <span class="price-text" id="prcOregon"></span>
+                                            <div id="main">
+                                                <div class="accordion" id="Popfaq">
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead4">
+                                                            <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq1">
+                                                                <input type="radio" class="custom-control-input" id="customRadio5" name="cardOreg" value="Oregon Premium">
+                                                                <label class="custom-control-label" for="customRadio5"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#Popfaq1"
+                                                               aria-expanded="true" aria-controls="Popfaq1"><label for="customRadio5"><span style="cursor:pointer" onclick="document.getElementById('customRadio5').click();" id="OrPrePackage"></span></label></a>
+                                                        </div>
+                                                        <div id="Popfaq1" class="collapse show" aria-labelledby="faqhead4" data-parent="#Popfaq">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPreUser"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPreRegion"></span> :
+                                                                        <p id="OrPreText"></p>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead5">
+                                                            <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq2">
+                                                                <input type="radio" class="custom-control-input" id="customRadio6" name="cardOreg" value="Oregon Plus">
+                                                                <label class="custom-control-label" for="customRadio6"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq2"
+                                                               aria-expanded="true" aria-controls="Popfaq2"><label for="customRadio6"><span style="cursor:pointer" onclick="document.getElementById('customRadio6').click();" id="OrPluPackage"></span></label></a>
+                                                        </div>
+                                                        <div id="Popfaq2" class="collapse" aria-labelledby="faqhead5" data-parent="#Popfaq">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPluUser"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrPluRegion"></span> :
+                                                                        <p id="OrPluText">
+                                                                        </p>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead6">
+                                                            <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq3">
+                                                                <input type="radio" class="custom-control-input" id="customRadio7" name="cardOreg" value="Oregon Only">
+                                                                <label class="custom-control-label" for="customRadio7"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq3"
+                                                               aria-expanded="true" aria-controls="Popfaq3"><label for="customRadio7"><span style="cursor:pointer" id="OrOnlPackage" onclick="document.getElementById('customRadio7').click();"></span></label></a>
+                                                        </div>
+                                                        <div id="Popfaq3" class="collapse" aria-labelledby="faqhead6" data-parent="#Popfaq">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrOnlUser"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="OrOnlRegion"></span> :
+                                                                        <p id="OrOnlText"></p>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        @*<div class="card-footer-btn">
+                                        <button type="" class="member-btn Oregon" id="btnOreg" onclick="GoToReg(this.id, this)">Join</button>
+                                        <span class="Error" style="color: red; font-size:17px;"></span>
+                                        </div>*@
+                                    </div>
+                                </div>
+                                <div class="mb-3 mb-lg-0  col-md-6 col-lg-3">
+                                    <div class="card">
+                                        <div class="card-body mainCard-body" style="background: #4c829a;">
+                                            <h2>Washington</h2>
+                                            <p class="price-text">$<span id="YprcWash"></span>/Year</p>
+                                            <span class="price-text" id="prcWashington"></span>
+                                            <div id="main">
+                                                <div class="accordion" id="Popfaqq">
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead7">
+                                                            <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq4">
+                                                                <input type="radio" class="custom-control-input" id="customRadio8" name="cardWash" value="Washington Premium">
+                                                                <label class="custom-control-label" for="customRadio8"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#PopfaqWash"
+                                                               aria-expanded="true" aria-controls="Popfaq4"><label for="customRadio8"><span style="cursor:pointer" id="WaPrePackage" onclick="document.getElementById('customRadio8').click();"></span></label></a>
+                                                        </div>
+                                                        <div id="PopfaqWash" class="collapse show" aria-labelledby="faqhead7" data-parent="#Popfaqq">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPreUser"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPreRegion"></span> :
+                                                                        <p id="WaPreText"></p>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead8">
+                                                            <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq5">
+                                                                <input type="radio" class="custom-control-input" id="customRadio9" name="cardWash" value="Washington Plus">
+                                                                <label class="custom-control-label" for="customRadio9"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq5"
+                                                               aria-expanded="true" aria-controls="Popfaq5"><label for="customRadio9"><span style="cursor:pointer" id="WaPluPackage" onclick="document.getElementById('customRadio9').click();"></span></label></a>
+                                                        </div>
+                                                        <div id="Popfaq5" class="collapse" aria-labelledby="faqhead8" data-parent="#Popfaqq">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPluUser"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaPluRegion"></span> :
+                                                                        <p id="WaPluText">
+
+                                                                        </p>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead9">
+                                                            <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq6">
+                                                                <input type="radio" class="custom-control-input" id="customRadio10" name="cardWash" value="Washington Only">
+                                                                <label class="custom-control-label" for="customRadio10"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#Popfaq6"
+                                                               aria-expanded="true" aria-controls="Popfaq6"><label for="customRadio10"><span style="cursor:pointer" id="WaOnlPackage" onclick="document.getElementById('customRadio10').click();"></span></label></a>
+                                                        </div>
+                                                        <div id="Popfaq6" class="collapse" aria-labelledby="faqhead9" data-parent="#Popfaqq">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaOnlUser"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="WaOnlRegion"></span> :
+                                                                        <p id="WaOnlText"></p>
+                                                                    </li>
+                                                                </ul>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        @*<div class="card-footer-btn">
+                                        <button type="" class="member-btn Washington" id="btnWash" onclick="GoToReg(this.id, this)">Join</button>
+                                        <span class="Error" style="color: red; font-size:17px;"></span>
+                                        </div>*@
+                                    </div>
+                                </div>
+                                <div class="mb-3 mb-lg-0  col-md-6 col-lg-3">
+                                    <div class="card">
+                                        <div class="card-body mainCard-body" style="background: #626c69">
+                                            <h2>Project Posting Only</h2>
+                                            <p id="prcFree" class="price-text"></p>
+                                            <div id="main">
+                                                <div class="accordion" id="PopfaqqFree">
+                                                    <div class="card">
+                                                        <div class="card-header cuscard-header" id="faqhead7">
+                                                            <div class="custom-control custom-radio" aria-expanded="true" aria-controls="Popfaq8">
+                                                                <input type="radio" class="custom-control-input" id="customRadio11" name="cardFree" value="Free">
+                                                                <label class="custom-control-label" for="customRadio11"></label>
+                                                            </div>
+                                                            <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#Popfaq8"
+                                                               aria-expanded="true" aria-controls="Popfaq8"><label for="customRadio11"><span style="cursor:pointer" onclick="document.getElementById('customRadio11').click();">Project Posting Only</span></label></a>
+                                                        </div>
+                                                        <div id="Popfaq8" class="collapse show" aria-labelledby="faqhead8" data-parent="#PopfaqqFree">
+                                                            <div class="card-body">
+                                                                <ul class="inerList">
+                                                                     <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="FreepostText"></span>
+                                                                    </li>
+                                                                    <li>
+                                                                        <i class="fa fa-check-circle" aria-hidden="true"></i> <span id="FreeRegion"></span> 
+                                                                        <p id="FreeText"></p>
+                                                                    </li>
+                                                                </ul>
+                                                                <div class="freespandiv">
+                                                                    <span class="freespan">
+                                                                        For Prime Contractors, Developers and Owners: Projects may be posted for anywhere in the US. However, members use our site to primarily find projects located in the Pacific Northwest.
+                                                                    </span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+                                        @*<div class="card-footer-btn">
+                                        <button type="" class="member-btn ProjectPosting" id="btnFree" onclick="GoToReg(this.id, this)">Join</button>
+                                        <span class="Error" style="color: red; font-size:17px;"></span>
+                                        </div>*@
+                                    </div>
+                                </div>
+                                <div class="col-md-12">
+                                    <div class="card-footer-btn mt-3 text-center">
+                                        <div class="">
+                                            <a href="/MemberShip/FreeTrialMember" class="btn btn-default modal-foot-btn d-block" id="btnFreeTrail">Start my Free Trial</a>
+                                        </div>
+                                        @* <input type="hidden" id="hdnPlanId" />
+                                        <button type="" class="member-btn" id="btnPacific" onclick="GoToReg(this)">Join</button>
+                                        <span class="Error" style="color: red; font-size:17px;"></span> *@
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between">
+                            <input type="hidden" id="hdnPlanId" />
+                            <span class="Error" id="errortext" style="color: red; font-size:17px;"></span>
+                            <button type="" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" id="btnPacific" onclick="GoToReg(this);return false;">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <div id="contact" class="tab-pane fade">
+                    <div class="contact-info-box formCls">
+                        <div id="onchangevalue">
+                            <div class="frm-title">
+                                <div class="row">
+                                    <div class="pkg-name">
+                                        <h2 id="pkgMem"></h2>
+                                    </div>
+                                    <div>
+                                       @* <span class="text-danger"></span> &nbsp;&nbsp;
+                                        <button type="button" id="chgPackage" onclick="UpdatePayment()" class="btn modal-foot-btn">Change Package <i class="fa fa-refresh mx-1" aria-hidden="true"></i></button>
+*@
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-inner-section">
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="Company" class="col-xl-3 col-lg-3 col-form-label">Company<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input type="hidden" id="hdID" name="ID" value="0" />
+                                        <input tabindex="10" type="text" id="Company" asp-for="Company" class="form-control form-control-solid form-control-lg" placeholder="Company"  />
+                                        <span class="" style="color:red" id="ComExist"></span>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="Dba" class="col-xl-3 col-lg-3 col-form-label">DBA</label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="20" type="text" id="Dba" asp-for="Dba" class="form-control form-control-solid form-control-lg" placeholder="DBA" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="MailAddress" class="col-xl-3 col-lg-3 col-form-label">Company Address<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="30" type="text" id="MailAddress" asp-for="MailAddress" class="form-control form-control-solid form-control-lg" placeholder="Address"  />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <input tabindex="50" type="text" id="MailCity" asp-for="MailCity" class="form-control form-control-solid form-control-lg" placeholder="City"  />
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <select tabindex="60" class="form-control" id="MailState" asp-for="MailState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" ></select>
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="70" type="text" class="form-control form-control-solid form-control-lg" placeholder="USA"  value="USA" />
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="40" type="text" asp-for="MailZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5"  />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Company Phone<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="80" asp-for="CompanyPhone" type="text" class="form-control form-control-solid form-control-lg" onchange="validateInputLength(this.id)" placeholder="(555) 555-5555" />
+                                        <span class="loginError"></span>
+
+                                    </div>
+                                </div>
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact<span class="text-danger">*</span></label>
+                                    <div class="col-lg-4 col-xl-4">
+                                        <input tabindex="90" type="text" id="FirstName" asp-for="FirstName" class="form-control form-control-solid form-control-lg" placeholder="FirstName"  />
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-5 col-xl-5">
+                                        <input tabindex="100" type="text" id="LastName" asp-for="LastName" class="form-control form-control-solid form-control-lg" placeholder="LastName"  />
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact Phone<br> (If different from above)</label>
+
+                                    <div class="col-lg-4 col-xl-4">
+                                        <div class="input-group input-group-solid input-group-lg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-phone"></i>
+                                                </span>
+                                            </div>
+                                            <input asp-for="ContactPhone" onchange="validateInputLength(this.id)" tabindex="110" type="text" class="form-control form-control-solid form-control-lg" placeholder="(555) 555-5555" />
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-1 col-xl-1">
+                                        <input asp-for="Extension" tabindex="120" type="text" class="form-control form-control-solid form-control-lg" placeholder="Ext" maxlength="4" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact Email (Username)<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9 px-0">
+                                        <div style="display:grid;">
+                                            <div class="col-lg-5 col-xl-5">
+                                                <div class="input-group input-group-solid input-group-lg">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="la la-at"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input tabindex="130" type="email" id="ContactEmail" class="form-control form-control-solid form-control-lg" asp-for="ContactEmail" placeholder="Email" >
+                                                    <span id="EmailError" style="color:red;"></span>
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-5 col-xl-5 my-2">
+                                                <input tabindex="140" id="ContactPassword" class="form-control form-control-solid form-control-lg" asp-for="ContactPassword" type="password" placeholder="Password" autocomplete="off"><span toggle="#ContactPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                            </div>
+                                            <div class="col-lg-5 col-xl-5">
+                                                <div class="input-group input-group-solid input-group-lg">
+                                                    <div class="input-group-prepend">
+                                                        <span class="input-group-text">
+                                                            <i class="la la-phone"></i>
+                                                        </span>
+                                                    </div>
+                                                    <input onkeyup="ValidateConfirmPass()" tabindex="150" type="password" class="form-control form-control-solid form-control-lg" asp-for="ContactPasswordCofirmation" placeholder="Confirm Password">
+                                                    <span id="PassError" style="color:red;"></span>
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <ul id="error_message" class="col-xl-3 col-lg-3">
+                                        <li><b>Password must contain the following:</b></li>
+                                        <li id="letter" class="invalid">A <b>lowercase</b> letter</li>
+                                        <li id="capital" class="invalid">A <b>capital (uppercase)</b> letter</li>
+                                        <li id="number" class="invalid">A <b>number</b></li>
+                                        <li id="length" class="invalid">Minimum <b>8 characters</b></li>
+                                    </ul>
+                                </div>
+                                @*==========*@
+                                @* <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                <div class="col-lg-3 col-xl-3">
+                                <div class="form-check">
+                                <input tabindex="160" type="checkbox" class="form-check-input" id="chkSame" name="chkSame">
+                                <label class="form-check-label" for="chkSame">Same As Company Address</label>
+                                </div>
+                                </div>
+                                </div>*@
+                                <div class="BillInfoClass">
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-lg-3 col-form-label" disabled="disabled">Billing Information<br> (If different from above)</label>
+                                        <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                        <div class="col-lg-9 col-xl-9">
+                                            <input tabindex="170" type="text" id="BillAddress" asp-for="BillAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" />
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+
+                                    <!--end::Group-->
+                                    <!--begin::Group-->
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                        <div class="col-lg-3 col-xl-3">
+                                            <input tabindex="190" type="text" id="BillCity" asp-for="BillCity" class="form-control form-control-solid form-control-lg" placeholder="City" />
+                                            <span class="loginError"></span>
+                                        </div>
+                                        <div class="col-lg-2 col-xl-2">
+
+                                            <select tabindex="200" id="BillState" class="form-control form-control-lg form-control-solid mb-2" asp-for="BillState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                            <span class="loginError"></span>
+                                        </div>
+                                        <div class="col-lg-2 col-xl-2">
+                                            <input tabindex="210" type="text" class="form-control " placeholder="USA" value="USA" />
+                                        </div>
+                                        <div class="col-lg-2 col-xl-2">
+                                            <input tabindex="180" type="text" id="BillZip" asp-for="BillZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" />
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row">
+                                        <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                        <div class="col-lg-9 col-xl-9">
+                                            <input tabindex="230" type="email" id="BillEmail" asp-for="BillEmail" class="form-control form-control-solid form-control-lg" placeholder="Billing Email" />
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-info-box formCls d-none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2>OTHER INFORMATION</h2>
+                            </div>
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-form-label col-xl-3 col-lg-3">Division</label>
+                                <div class="col-xl-9 col-lg-9">
+                                    <select class="form-control form-control-lg form-control-solid mb-2" asp-for="Div" asp-items="@(new SelectList(ViewBag.Divisions, "Value", "Text", "Selected"))">
+                                    </select>
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Scope of Work</label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input asp-for="Scope" class="form-control form-control-solid form-control-lg mb-2" type="text">
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-form-label col-xl-3 col-lg-3">Minority Status</label>
+                                <div class="col-xl-9 col-lg-9 col-form-label">
+                                    <div style="display: inline">
+                                        @for (int i = 0; i < @Model.MinorityStatusList.Count; i++)
+                                        {
+                                            <label class="minority" style="display: inline">
+                                                <input name="MinorityStatusList" type="checkbox" id="chk_@i" value="@Model.MinorityStatusList[i]" onclick="changeMinority(this.id)">
+                                                <span></span>@Model.MinorityStatusList[i]
+                                            </label>
+                                        }
+                                        <input asp-for="Certification" class="form-control form-control-solid form-control-lg w-auto" type="text" value="" placeholder="Certification #">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                        </div>
+                    </div>
+
+                    <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                        <div class="col-md-12 text-right">
+                            <span id="scrollToTopButton" tabindex="240" style="cursor:pointer" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" value="Next" onclick="return AcceptPay('Next')">Next</span>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 2-->
+                @if (Model == null)
+                {
+                    <div id="preview" class="tab-pane fade">No data preview available Please first fill the details</div>
+                }
+                else
+                {
+                    <div id="preview" class="tab-pane">
+                        <div class="contact-info-box formCls">
+                            <div class="frm-title">
+                                <h4 class="review-cost" id="pkgRev"></h4>
+                                <h3>CONTACT INFORMATION</h3>
+                            </div>
+                            <div class="form-inner-section review-inner-sec">
+                                <div class="row">
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <input type="hidden" id="hdnPayment" value="@Model.MemberCost" />
+                                                <label>Company</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblCompany"></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>DBA</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblDba"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Address</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblAddress"></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Billing Information</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblBillAddress"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Billing Email</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblBillingEmail"></p>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Company Phone</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblCompanyPhone"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Contact Name</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblContactName"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Contact Phone</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblContactPhone"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-12">
+                                        <div class="row">
+                                            <div class="col-md-2">
+                                                <label>Contact Email</label>
+                                            </div>
+                                            <div class="col-md-10">
+                                                <p id="lblContactEmail"></p>
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-info-box formCls d-none">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>OTHER INFORMATION</h2>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Division</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <p>@Model.Div</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Scope of Work</label>
+                                </div>
+                                <div class="col-md-9">
+                                    @if (string.IsNullOrEmpty(Model.Scope))
+                                    {
+                                        <p>No scope of work mentioned</p>
+                                    }
+                                    else
+
+                                    {
+                                        <p>@Model.Scope</p>
+                                    }
+
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Minority Status</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <ul class="Mstatus">
+                                        @if (@Model.MinorityStatusList.Count == 0)
+                                        {
+                                            <li>Minorty Status is not selected</li>
+                                        }
+                                        else
+                                        {
+                                            @for (int i = 0; i < @Model.MinorityStatusList.Count; i++)
+                                            {
+                                                <li>@Model.MinorityStatusList[i]</li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Certification</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <p>@Model.Certification</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-inner-section formCls">
+                            <div class="row">
+                                <div class="col-md-12" id="PreminumPKG" style="display:none;">
+                                    <h4 class="addSeats">*The Regional Package selected includes 10 users</h4>
+                                </div>
+                                <div class="col-md-12" id="OtherPKG" style="display:none;">
+                                    <h4 class="addSeats">*The Regional Package selected includes 3 users</h4>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-2">
+                                    <label>Additional Users :</label>
+                                </div>
+                                <div class="col-md-1">
+                                    <select class="form-control form-control-solid" id="AdditionalCost" onchange="AdditionCost()">
+                                        <option value="0">0</option>
+                                        <option value="1">1</option>
+                                        <option value="2">2</option>
+                                        <option value="3">3</option>
+                                        <option value="4">4</option>
+                                        <option value="5">5</option>
+                                        <option value="6">6</option>
+                                        <option value="7">7</option>
+                                        <option value="8">8</option>
+                                        <option value="9">9</option>
+                                        <option value="10">10</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Additional Cost/</label><label id="RadioExVal">@Model.RadioExValue :</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <label id="AddlCost"></label>
+                                </div>
+                                <div class="col-md-2">
+                                    <label>Total Cost</label>
+                                </div>
+                                <div class="col-md-2">
+                                    <label id="addcost"></label><label id="lblpackage"></label>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <p>Access for the users on your account can be configured under your Profile settings after you login.</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-info-box formCls">
+                            <div class="frm-title">
+                                <h3>TERMS</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-inner-section">
+                                        <p>
+                                            Membership is non-refundable and non-transferable. Annual membership payment plans will be invoiced 45 days prior to renewing or can be set up on AutoPay. Monthly and Quarterly payment options will be required to be setup for AutoPay or subject to suspension or cancelation. Renewal payments not made by the renewal date will be subject to suspension or cancelation. Plan Center Northwest will not issue a notice of suspension or cancelation for memberships that are past due. Membership upgrades will be prorated to the next annual renewal date.
+                                        </p>
+                                        <p class="mb-0">
+                                            The benefits and use of the Plan Center Northwest website are for the above-named business. Members are prohibited from giving out their login credentials to anyone other than an employee doing business for the member company. It is the responsibility of the member to contact us if they believe their membership is or could be used by an unauthorized person. Any unauthorized access to Plan Center Northwest’s website by a non-member using a member’s access information could result in the termination of membership. Terminated memberships forfeit all time remaining and will not be eligible for a refund on membership dues.
+                                        </p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card-time cus-card-time">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" id="customRadio12" name="secCustom" value="customEx">
+                                        <label class="custom-control-label" for="customRadio12">I agree to the above terms</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                            <div class="mr-2">
+                                <span style="cursor:pointer" onclick="chnageStep('MemDet',1)" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Previous</span>
+                            </div>
+                            <div>
+                                @if (Model.CheckRadioValue == "Free")
+                                {
+                                    <button id="btnFree" type="submit" asp-action="GoToStep4" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptTnC()">Checkout</button>
+                                }
+                                else
+                                {
+                                    <span style="cursor:pointer" id="btnPay" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptTnC()">Checkout</span>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!--Step 3-->
+                <div id="payment" class="tab-pane fade">
+                    <div class="contact-info-box formCls">
+                        <div class="frm-title">
+                            <h4 class="review-cost" id="pkgPay"></h4>
+                            <h3>Choose Payment Method Below</h3>
+                        </div>
+                        <div class="form-inner-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="CPBox isActive">
+                                        <i class="fa fa-credit-card" aria-hidden="true"></i>
+                                        <p>Pay with Credit Card</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="CPBox">
+                                        <i class="fa fa-phone" aria-hidden="true"></i>
+                                        <p>Pay with E-check or ACH</p>
+                                    </div>
+                                </div>
+                                <div class="paymentInfo" id="payModeCC">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="CardHolderName">CARDHOLDER NAME:</label>
+                                                <input type="text" class="form-control enable-input" id="CardHolderName">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="CardNumber">CARD INFORMATION:</label>
+                                                <input type="text" class="form-control enable-input" placeholder="Card Number" id="CardNumber">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mt-2">
+                                                <label for="ExpiryDate"></label>
+                                                <input type="text" class="form-control enable-input" placeholder="MM / YY" id="ExpiryDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group mt-2">
+                                                <label for="CVC"></label>
+                                                <input type="text" class="form-control enable-input" placeholder="CVC" id="CVC">
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mx-0">
+                                            <div class="col-md-4 pr-0">
+                                                <div class="form-group my-2">
+                                                    <label> Membership Packages Cost :</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group my-2">
+                                                    <label id="MemPacCost"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mx-0">
+                                            <div class="col-md-4 pr-0">
+                                                <div class="form-group my-2">
+                                                    <label for="usr"> Additional User Cost :</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group my-2">
+                                                    <label id="AddUserCost"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mx-0">
+                                            <div class="col-md-4 pr-0">
+                                                <div class="form-group my-2">
+                                                    <label for="usr"> Total Amount :</label>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="form-group my-2">
+                                                    <label id="TotalAmmount"></label><label id="lblpkg"></label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="paymentPhone dis-pay" id="payModechk">
+                                    <div class="row">
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="BankName">Bank NAME:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" id="BankName" placeholder="Bank Name">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="CheckNum">Cheque INFORMATION:</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <input type="text" class="form-control" placeholder="Card Number" id="CheckNum">
+                                            </div>
+                                        </div>
+                                        @*<div class="col-md-12">
+                                        <h3>You will pay by phone!</h3>
+                                        <p>We will contact by phone number as you entered. Please wait!</p>
+                                        </div>*@
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                        <div class="mr-2">
+                            <span onclick="chnageStep(1,2)" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Previous</span>
+                        </div>
+                        <div>
+                            <button type="submit" id="checkoutchargebee" asp-action="GoToStep4" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return GoToStep4()">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 4-->
+                @if (Model.PayStatus == "Y")
+                {
+                    <div id="finish" class="tab-pane fade">
+                        <div class="contact-info-box formCls">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card-body text-center congo-text">
+                                        <h6>Congratulations on becoming the newest member of Plan Center Northwest!</h6>
+                                        <p>Please click here to log in and begin finding your next project, completing your company profile and setting up any additional users for your account</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+                else
+                {
+                    <div id="finish" class="tab-pane fade">
+                        <div class="contact-info-box formCls">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="card-body text-center congo-text">
+                                        <h6>Congratulations on becoming the newest member of Plan Center Northwest!</h6>
+                                        <p class="text-danger">Your payment is not completed</p>
+                                        <p>Please click here to log in and begin finding your next project, completing your company profile and setting up any additional users for your account</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </form>
+    </div>
+</div>

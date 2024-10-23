@@ -1,0 +1,65 @@
+﻿@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout-Administrator.cshtml";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Dashboard</h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="">
+                    <div class="header">
+                    </div>
+                    <div class="body">
+                        <div class="row">
+                            <div class="col-lg-3 col-sm-6">
+                                <a href="/Report/Dashboard">
+                                    <div class="counter-box text-center l-bg-red position-relative report-box">
+                                        <i class="fas fa-file-invoice font-40" style="color: #fde9e9;"></i>
+                                        <div class="mt-3 text font-30 m-b-5 report-txt">Reports</div>
+                                        <div class="icon">
+                                        </div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-sm-6">
+                                <a href="/Globalmaster/Dashboard">
+                                    <div class="counter-box text-center white l-bg-cyan">
+                                        <i class="fas fa-user-cog font-40" style="color: #fde9e9;"></i>
+                                        <div class="mt-3 text font-30 m-b-5 admin-txt">Admin</div>
+                                    </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-sm-6">
+                                <a href="/Administration/UtilityDashboard">
+                                <div class="counter-box text-center white l-bg-orange">
+                                        <i class="fas fa-cogs font-40" style="color: #fde9e9;"></i>
+                                    <div class="mt-3 utility-text text font-30 m-b-5">Utility</div>
+                                </div>
+                                </a>
+                            </div>
+                            <div class="col-lg-3 col-sm-6">
+                                <div class="counter-box text-center green">
+                                    <div class="text font-17 m-b-5">Search AQ</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

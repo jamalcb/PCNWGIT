@@ -1,0 +1,1331 @@
+﻿@model MemberShipRegistration;
+@{
+    ViewData["Title"] = "Memebrship Registration Page";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+
+}
+@section MembershipScripts{
+    <script src="~/js/member-register.js" type="text/javascript"></script>
+    @*<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>*@
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script type="text/javascript">
+        function AcceptTnC() {
+            if (jQuery('input[name = CheckRadioEx]').val() != 'Term') {
+                alert('You need to agree to terms and condition');
+                return false;
+            }
+            AdditionCost();
+            return true;
+
+        }
+        jQuery(document).ready(function () {
+            jQuery('#addcost').text(jQuery('#payment').val());
+            var pkgs = jQuery('#payment').val();
+            var additionalcost = jQuery('#Additionalcost').val();
+            if (additionalcost != null && additionalcost != 0) {
+                var TotalAmt = parseInt(pkgs) + parseInt(additionalcost);
+                jQuery('#TotalAmmount').text(TotalAmt);
+                jQuery('#payment').val(TotalAmt);
+            }
+            Query('#chgPackage').prev('span').html('');
+            if (jQuery('input[name = CheckRadio]').val() != 'pass') {
+                jQuery('#chgPackage').prev('span').html('Select Regional Package and Payment Option Here');
+                jQuery('#chgPackage').focus();
+                return false;
+            }
+        });
+        function GoToStep4() {
+            jQuery('#MemberCost').val(jQuery('#TotalAmmount').text());
+        }
+        function AdditionCost() {
+            jQuery('#addcost').text('');
+            var selectElement = document.getElementById("AdditionalCost");
+            var selectedValue = selectElement.value;
+
+            var pkg = jQuery('#MemberCost').val();
+            var addcost = parseInt(selectedValue) + parseInt(pkg);
+            jQuery('#addcost').text(addcost);
+            jQuery('#Additionalcost').val(selectedValue);
+
+        }
+
+        function AcceptPay() {
+            jQuery('#chgPackage').prev('span').html('');
+            if (jQuery('input[name = CheckRadio]').val() != 'pass') {
+                jQuery('#chgPackage').prev('span').html('You need to select a valid plan');
+                jQuery('#chgPackage').focus();
+                return false;
+            }
+            var company = jQuery('input[name = Company]').val();
+            if (company == undefined || company == '' || company == null) {
+                alert('Please enter company.');
+                return false;
+            }
+            var mAdd = jQuery('input[name = MailAddress]').val();
+            if (mAdd == undefined || mAdd == '' || mAdd == null) {
+                alert('Please enter address.');
+                return false;
+            }
+            var mCity = jQuery('input[name = MailCity]').val();
+            if (mCity == undefined || mCity == '' || mCity == null) {
+                alert('Please enter City.');
+                return false;
+            }
+            var mZip = jQuery('input[name = MailZip]').val();
+            if (mZip == undefined || mZip == '' || mZip == null) {
+                alert('Please enter zip code.');
+                return false;
+            }
+
+            var lName = jQuery('input[name = FirstName]').val();
+            if (lName == undefined || lName == '' || lName == null) {
+                alert('Please enter first name.');
+                return false;
+            }
+            var conPhone = jQuery('input[name = ContactPhone]').val();
+            if (conPhone == undefined || conPhone == '' || conPhone == null) {
+                alert('Please enter contact phone number');
+                return false;
+            }
+            //var isUniqueEmail = checkUniqueEmail();
+            //if (isUniqueEmail == false)
+            //    return false;
+            var isValidPassword = ValidateCompleaxPassword();
+            if (isValidPassword == false) {
+                alert('Password must contain the following: A Lowerecase letter, A Capital (uppercase) letter,A number,Minimum 8 characters');
+                return false;
+            }
+            var passData = jQuery('input[name = hdnPass]').val();
+            var ConfirmPassData = jQuery('input[name = hdnPassConfirm]').val();
+            var MailState = jQuery('select[name=MailStateId] option').filter(':selected').val();
+            var BillState = jQuery('select[name=BillState] option').filter(':selected').val();
+            if (MailState == '0') {
+                alert('Please select a valid mail state');
+                return false;
+            }
+            if (BillState == '0') {
+                alert('Please select a valid bill state');
+                return false;
+            }
+            if (passData && ConfirmPassData) {
+                if (passData.length < 3) {
+                    alert('Password lenghth should be greater than 3');
+                    return false;
+                }
+                else if (passData != ConfirmPassData) {
+                    alert('Password and confirm password should be matching');
+                    return false;
+                }
+
+
+            }
+            else {
+
+                if (passData) {
+                    alert('You need to confirm your password');
+                    return false;
+                }
+                else if (ConfirmPassData) {
+                    alert('Password value required');
+                    return false;
+                }
+                else {
+                    alert('Password value required');
+                    return false;
+                }
+            }
+            //if (jQuery('input[name = CheckRadio]').val() != 'pass') {
+            //    alert('You need to select a valid plan');
+            //    return false;
+            //}
+            var bAdd = jQuery('input[name = BillAddress]').val();
+            if (bAdd == undefined || bAdd == '' || bAdd == null) {
+                alert('Please enter billing address.');
+                return false;
+            }
+            var bCity = jQuery('input[name = BillCity]').val();
+            if (bCity == undefined || bCity == '' || bCity == null) {
+                alert('Please enter billing city.');
+                return false;
+            }
+            var bState = jQuery('select[name=BillState] option').filter(':selected').val();
+            if (bState == undefined || bState == '' || bState == null) {
+                alert('Please enter billing state.');
+                return false;
+            }
+            var bZip = jQuery('input[name = BillZip]').val();
+            if (bZip == undefined || bZip == '' || bZip == null) {
+                alert('Please enter billing zip.');
+                return false;
+            }
+            var BillEmail = jQuery('input[name = BillEmail]').val();
+            if (BillEmail == undefined || BillEmail == '' || BillEmail == null) {
+                alert('Please enter billing email.');
+                return false;
+            }
+            var CompanyPhone = jQuery('input[name = CompanyPhone]').val();
+            jQuery('input[name = CompanyPhone]').val(CompanyPhone);
+            var model = {};
+            //model.ID = $('#hdID').val();
+            model.Company = jQuery('#Company').val();
+            model.DBA = jQuery('#Dba').val();
+            model.MailAddress = jQuery('#MailAddress').val();
+            model.MailCity = jQuery('#MailCity').val();
+            model.MailState = jQuery('#MailStateId').val();
+            model.MailZip = jQuery('#MailZip').val();
+            model.BillAddress = jQuery('#BillAddress').val();
+            model.BillCity = jQuery('#BillCity').val();
+            model.BillState = jQuery('#BillState').val();
+            model.BillZip = jQuery('#BillZip').val();
+            model.CompanyPhone = jQuery('#CompanyPhone').val();
+            model.Fax = jQuery('#Fax').val();
+            model.FirstName = jQuery('#FirstName').val();
+            model.LastName = jQuery('#LastName').val();
+            model.ContactPhone = jQuery('#ContactPhone').val();
+            model.ContactEmail = jQuery('#ContactEmail').val();
+            model.ContactPassword = jQuery('#ContactPassword').val();
+            model.BillEmail = jQuery('#BillEmail').val();
+            jQuery.ajax({
+                type: "POST",
+                dataType: 'json',
+                url: '/MemberShip/SaveInCompleteSignUp/',
+                data: { 'model': model },
+                async: false,
+                success: function (response) {
+                    if (response.success) {
+                        console.log(response);
+                        jQuery("#ToDelete").val(response.data);
+                    }
+                },
+                error: function (response) {
+                    alert(response.responseText);
+                },
+                failure: function (response) {
+                    alert(response.responseText);
+                }
+            });
+        }
+
+
+        jQuery(document).ready(function () {
+            jQuery('#NavMember').attr('disabled', 'disabled').attr('onclick', '');
+            var isFromFree = jQuery('input[name = isFromFree]').val()
+            if (isFromFree == "True") {
+                jQuery('input[name = CheckRadio]').val('pass');
+                jQuery('input[name = MemberCost]').val('0');
+                jQuery('input[name = CheckRadioValue]').val('Free');
+            }
+            jQuery(".CPBox").click(function () {
+                jQuery(".CPBox").toggleClass("isActive");
+                jQuery(".paymentPhone").toggleClass("dis-pay");
+                jQuery(".paymentInfo").toggleClass("dis-pay");
+            });
+            jQuery('#ContactPassword').on('change', function () {
+                jQuery('#hdnPass').val(jQuery('#ContactPassword').val());
+            });
+            jQuery('#ContactPasswordCofirmation').on('change', function () {
+                jQuery('#hdnPassConfirm').val(jQuery('#ContactPasswordCofirmation').val());
+            });
+            jQuery('#Certification').on('change', function () {
+                var strManipulated = jQuery('#MinorityStatus').val();
+                jQuery('#MinorityStatus').val(strManipulated + ' # ' + jQuery('#Certification').val());
+                console.log(jQuery('#MinorityStatus').val());
+            });
+            jQuery('#ContactEmail').on('change', function () {
+                checkUniqueEmail();
+            });
+        });
+
+        function checkUniqueEmail() {
+            var success = true;
+            var uniqueName = jQuery('#ContactEmail').val();
+            var data = { "uniqueName": uniqueName };
+            jQuery.ajax({
+                type: "POST",
+                url: '@Url.Action("UniqueEmail")',
+                data: { "uniqueName": uniqueName },
+                dataType: "json",
+                async: false,
+                //contentType: "application/json; charset=utf-8",
+                success: function (response) {
+                    if (response.success) {
+                        success = false;
+                        alert(response.statusMessage);
+                    }
+                },
+                error: function (jqXHR, textStatus, errorThrown) {
+                    console.log(jqXHR.responseText);
+                    console.log(textStatus);
+                    console.log(errorThrown);
+                }
+            });
+            return success;
+        }
+
+        function changeMinority(id) {
+            //alert(id);
+            var strManipulated = '';
+            var strMinorityStatus = jQuery('#MinorityStatus').val();
+            var chkValue = '';
+            if (jQuery('#' + id).is(':checked')) {
+                chkValue = jQuery('#' + id).val();
+                //console.log(chkValue);
+            }
+            var isExists = 'N';
+            if (strMinorityStatus != '') {
+                var myArray = strMinorityStatus.split(",");
+                let strValue = "";
+                for (let x in myArray) {
+                    strValue = myArray[x];
+                    if (strValue != "") {
+                        let result = strValue.substring(0, 3);
+                        if (result != ' # ') {
+                            if (strValue == chkValue)
+                                isExists = 'Y';
+                            else
+                                strManipulated += strValue + ",";
+                        }
+                        else
+                            strManipulated += strValue + ",";
+                    }
+                }
+            }
+            if (isExists == 'N')
+                strManipulated += chkValue + ",";
+            jQuery('#MinorityStatus').val(strManipulated);
+            console.log(jQuery('#MinorityStatus').val());
+        }
+
+        function chnageStep(preStep, nextStep) {
+            if (nextStep == 1) {
+                var rdVal = jQuery('input[name = CheckRadioValue]').val();
+                var rdExVal = jQuery('input[name = RadioExValue]').val();
+                //    jQuery('input[type="radio"][value=' + rdVal + ']').attr('checked', true);
+                if (rdVal) {
+                    jQuery('.card input[type = radio]').each(function (i) {
+                        if (this.value == rdVal) {
+                            jQuery(this).attr('checked', true);
+                        } else {
+                            jQuery(this).attr('checked', false);
+                        }
+                    });
+                    //jQuery("#customRadio4").attr('checked', true);
+                }
+                if (rdExVal) {
+                    jQuery('input[name = example]').each(function (i) {
+                        if (this.value == rdExVal) {
+                            jQuery(this).attr('checked', true);
+                        } else {
+                            jQuery(this).attr('checked', false);
+                        }
+                    });
+                    //jQuery("#customRadio4").attr('checked', true);
+                }
+                jQuery('input[name = hdnPass]').val('');
+                jQuery('input[name = hdnPassConfirm]').val('');
+                jQuery("ul.cusTab").children('li').siblings().removeClass('active');
+                jQuery("ul.cusTab").children('li').siblings().children('a').removeClass('active').removeAttr("data-toggle");
+                jQuery("div.tab-content").children('div').siblings().removeClass('in').removeClass('active');
+                jQuery("div#contact").addClass('in').addClass('active');
+                jQuery("li#MemDet").addClass('active');
+                jQuery("a#MemDet").addClass('active').attr("data-toggle", "tab");
+            }
+            else if (nextStep == 2) {
+                var rdExVal = jQuery('input[name = CheckRadioExValue]').val();
+                if (rdExVal == 'ok') {
+                    jQuery('input[name = secCustom]').attr('checked', true);
+                    //jQuery("#customRadio4").attr('checked', true);
+                }
+                var rdVal = jQuery('input[name = CheckRadioValue]').value
+                if (rdVal) {
+                    jQuery('.card input[type = radio]').each(function (i) {
+                        if (this.value == rdVal) {
+                            jQuery(this).attr('checked', true);
+                        } else {
+                            jQuery(this).attr('checked', false);
+                        }
+                    });
+                }
+                var rdValEx = jQuery('input[name = RadioExValue]').val();
+                jQuery('input[name = example]').each(function (i) {
+                    if (this.value == rdValEx) {
+                        jQuery(this).attr('checked', true);
+                    } else {
+                        jQuery(this).attr('checked', false);
+                    }
+                });
+
+                if (jQuery('input[name = CheckRadio]').val() == 'pass') {
+                    jQuery("ul.cusTab").children('li').siblings().removeClass('active');
+                    jQuery("ul.cusTab").children('li').siblings().children('a').removeClass('active').removeAttr("data-toggle");
+                    jQuery("div.tab-content").children('div').siblings().removeClass('in').removeClass('active');
+                    jQuery("div#preview").addClass('in').addClass('active');
+                    jQuery("li#MemRev").addClass('active');
+                    jQuery("a#MemRev").addClass('active').attr("data-toggle", "tab");
+                }
+                else {
+                    alert('You need to select a valid plan');
+                }
+            }
+            else if (nextStep == 3) {
+                if (jQuery('input[name = CheckRadioEx]').val() == 'Term') {
+                    jQuery("ul.cusTab").children('li').siblings().removeClass('active');
+                    jQuery("ul.cusTab").children('li').siblings().children('a').removeClass('active').removeAttr("data-toggle");
+                    jQuery("div.tab-content").children('div').siblings().removeClass('in').removeClass('active');
+                    jQuery("div#payment").addClass('in').addClass('active');
+                    jQuery("li#MemPay").addClass('active').attr("data-toggle", "tab");
+                    jQuery("a#MemPay").addClass('active').attr("data-toggle", "tab");
+                }
+                else {
+                    alert('You need to agree to terms and condition');
+                }
+            }
+            else if (nextStep == 4) {
+                jQuery("ul.cusTab").children('li').siblings().removeClass('active');
+                jQuery("ul.cusTab").children('li').siblings().children('a').removeClass('active').removeAttr("data-toggle");
+                jQuery("div.tab-content").children('div').siblings().removeClass('in').removeClass('active');
+                jQuery("div#finish").addClass('in').addClass('active');
+                jQuery("li#MemFinish").addClass('active');
+                jQuery("a#MemFinish").addClass('active').attr("data-toggle", "tab");
+            }
+        }
+
+        jQuery(document).ready(function () {
+            var nextStep = parseFloat(jQuery('#hdnnextStep').val());
+            var prevStep = parseFloat(jQuery('#hdnpreStep').val());
+            var currStep = parseFloat(jQuery('#hdncurrentStep').val());
+            var data = jQuery('input[name = example]:checked').val();
+            var dataPacific = jQuery('input[name = cardPacific]:checked').val();
+            var dataOreg = jQuery('input[name = cardOreg]:checked').val();
+            var dataWash = jQuery('input[name = cardWash]:checked').val();
+            var dataFree = jQuery('input[name = cardFree]:checked').val();
+            jQuery('input[id = hdnTerm]').val(data);
+            chnageStep(prevStep, currStep);
+        });
+
+        // Payment card selection value changer
+        jQuery(document).ready(function () {
+            jQuery('input[name = secCustom]').change(function () {
+                jQuery('input[name = CheckRadioEx]').val('Term');
+                if (jQuery('input[name = secCustom]').is(':checked')) {
+                    jQuery('input[name = CheckRadioExValue]').val('ok');
+                }
+                else {
+                    jQuery('input[name = CheckRadioExValue]').val('');
+                }
+            });
+            jQuery('input[name = chkSame]').change(function () {
+
+                var mailAdd = jQuery('input[name = MailAddress]').val();
+
+                var mailcity = jQuery('input[name = MailCity]').val();
+                var mailState = jQuery('select[name=MailStateId] option').filter(':selected').val();
+                var mailzip = jQuery('input[name = MailZip]').val();
+
+                if (jQuery('input[name = chkSame]').is(':checked')) {
+                    jQuery('input[name = BillAddress]').val(mailAdd);
+                    jQuery('input[name = BillCity]').val(mailcity);
+                    jQuery('input[name = BillZip]').val(mailzip);
+                    jQuery('input[name = BillAddress]').attr('readonly', 'readonly');
+                    jQuery('input[name = BillCity]').attr('readonly', 'readonly');
+                    jQuery('select[name=BillState]').attr('readonly', 'readonly');
+                    jQuery('input[name = BillZip]').attr('readonly', 'readonly');
+                    jQuery('select[name=BillState]').val(mailState);
+                    jQuery('input[name=BillState]').val(mailState);
+                    jQuery('input[name=BillAddress]').val(mailAdd);
+                    jQuery('input[name=BillZip]').val(mailzip);
+                    jQuery('input[name=BillCity]').val(mailcity);
+
+
+                }
+                else {
+                    jQuery('input[name = CheckRadioExValue]').val('');
+                    jQuery('input[name = BillAddress]').removeAttr('readonly', 'true');
+                    jQuery('input[name = BillCity]').removeAttr('readonly', 'true');
+                    jQuery('select[name=BillState]').removeAttr('readonly', 'true');
+                    jQuery('input[name = BillZip]').removeAttr('readonly', 'true');
+                    jQuery('input[name = BillAddress]').val('');
+                    jQuery('input[name = BillCity]').val('');
+                    jQuery('select[name=BillState]').val('');
+                    jQuery('input[name = BillZip]').val('');
+                }
+            });
+
+            jQuery('#onchangevalue').on('input', function () {
+                var mailAddress = ("" + jQuery("#MailAddress").val());
+                var mailCity = ("" + jQuery("#MailCity").val());
+                var mailState = jQuery('select[name=MailStateId] option').filter(':selected').val();
+                var mailZip = ("" + jQuery("#MailZip").val());
+                if (jQuery('input[name = chkSame]').is(':checked')) {
+                    jQuery('input[name = BillAddress]').val(mailAddress);
+                    jQuery('input[name = BillCity]').val(mailCity);
+                    jQuery('select[name=BillState]').val(mailState);
+                    //jQuery('input[name = BillZip]').val(mailZip);
+                }
+
+            });
+
+
+
+        })
+        if (jQuery("#MSPChk").val() == 'N')
+            ShowPayment();
+    </script>
+ }
+@section google{
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+}
+
+@section CustomCSS{
+    <link href="~/css/member-register.css" rel="stylesheet" />
+     <style>
+        .lblHidden{
+            display: none;
+        }
+    </style>
+}
+@*<div class="top-heading">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <h3>New Member Signup</h3>
+                </div>
+            </div>
+        </div>
+    </div>*@
+<div class="title-section">
+    <h3>New Member Signup</h3>
+</div>
+<div class="mainBox">
+    <div class="container">
+        <ul class="nav nav-tabs cusTab d-flex justify-content-between">
+            <li id="MemDet" class="active"><a id="MemDet" data-toggle="tab" href="#contact" class="active">1. Member Information</a></li>
+            <li id="MemRev"><a id="MemRev" href="#preview">2. Review</a></li>
+            <li id="MemPay"><a id="MemPay" href="#payment">3. Payment</a></li>
+            <li id="MemFinish"><a id="MemFinish" href="#finish">4. Finish</a></li>
+        </ul>
+        <form class="form" method="POST" id="myForm">
+            <input type="hidden" value="@Model.hdnpreStep" id="hdnpreStep" />
+            <input type="hidden" value="@Model.hdnnextStep" id="hdnnextStep" />
+            <input type="hidden" value="@Model.hdncurrentStep" id="hdncurrentStep" />
+            <input type="hidden" asp-for="@Model.isFromFree" />
+            <input type="hidden" asp-for="@Model.MemberCost" id="MemberCost" />
+            <input type="hidden" asp-for="Additionalcost" />
+            <input type="hidden" asp-for="@Model.CheckRadio" />
+            <input type="hidden" asp-for="@Model.CheckRadioValue" />
+            <input type="hidden" asp-for="@Model.RadioExValue" />
+            <input type="hidden" asp-for="@Model.CheckRadioEx" />
+            <input type="hidden" asp-for="@Model.CheckRadioExValue" />
+            <input type="hidden" asp-for="@Model.hdnPass" />
+            <input type="hidden" asp-for="@Model.hdnPassConfirm" />
+            <input type="hidden" asp-for="@Model.hdnTerm" />
+            <input type="hidden" asp-for="@Model.MinorityStatus" />
+            <input type="hidden" asp-for="@Model.MemberType" />
+            <input type="hidden" asp-for="@Model.MSPChk" />
+            <input type="hidden" asp-for="@Model.ToDelete" />
+            @*<input type="hidden" asp-for="@Model.BillState" />
+            <input type="hidden" asp-for="@Model.BillCity" />
+            <input type="hidden" asp-for="@Model.BillZip" />
+            <input type="hidden" asp-for="@Model.BillAddress" />*@
+            <div asp-validation-summary="All" class="text-danger"></div>
+            <div class="tab-content">
+                <div id="contact" class="tab-pane fade in active">
+                    <div class="contact-info-box formCls">
+                        <div id="onchangevalue">
+                            <div class="frm-title">
+                                <div class="row">
+                                    <div class="pkg-name">
+                                        <label class="lblHidden" id="pkgSelected">Package Selected:&nbsp; </label> <label id="pkgMem"> @Model.CheckRadioValue </label>
+                                        <label class="lblHidden" id="pkgRadio">, Paid: </label> &nbsp;<label id="Paid"> @Model.RadioExValue </label>
+                                        <label class="lblHidden" id="pkgCost">&nbsp; and MemberShip Cost: </label> <label id="PayPlan"> @Model.MemberCost </label>
+                                        <input type="hidden" id="payment" value="@Model.MemberCost" />
+                                    </div>
+                                    <div>
+                                        <span class="text-danger"></span> &nbsp;&nbsp;
+                                        <button type="button" id="chgPackage" onclick="UpdatePayment()" class="update-plan-btn">Change Package</button>
+
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="form-inner-section">
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="Company" class="col-xl-3 col-lg-3 col-form-label">Company<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input type="hidden" asp-for="ID" name="ID" />
+                                        <input type="hidden" asp-for="ConID" name="ConID" />
+                                        <input tabindex="1" type="text" id="Company" asp-for="Company" class="form-control form-control-solid form-control-lg" placeholder="Company" required="" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="Dba" class="col-xl-3 col-lg-3 col-form-label">DBA</label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="2" type="text" id="Dba" asp-for="Dba" class="form-control form-control-solid form-control-lg" placeholder="DBA" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="MailAddress" class="col-xl-3 col-lg-3 col-form-label">Address <span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="3" type="text" id="MailAddress" asp-for="MailAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" required="" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <input tabindex="5" type="text" id="MailCity" asp-for="MailCity" class="form-control form-control-solid form-control-lg" placeholder="City" required="" />
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <select tabindex="6" class="form-control" id="MailStateId" asp-for="MailStateId" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" required=""></select>
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="7" type="text" class="form-control form-control-solid form-control-lg" placeholder="USA" required="" value="USA" disabled />
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="4" type="text" id="Mailzip" asp-for="MailZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" required="" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Company Phone<span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="8" type="text" asp-for="CompanyPhone" class="form-control form-control-solid form-control-lg" placeholder="(555) 555-5555" />
+                                    </div>
+                                </div>
+
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <div class="form-check">
+                                            <input tabindex="9" type="checkbox" class="form-check-input" id="chkSame" name="chkSame">
+                                            <label class="form-check-label" for="chkSame">Same as mailing address</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label asp-for="BillAddress" class="col-xl-3 col-lg-3 col-form-label" disabled="disabled">Billing Address <span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="10" type="text" id="BillAddress" asp-for="BillAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <input tabindex="12" type="text" id="BillCity" asp-for="BillCity" class="form-control form-control-solid form-control-lg" placeholder="City" />
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+
+                                        <select tabindex="13" id="BillState" class="form-control form-control-lg form-control-solid mb-2" asp-for="BillState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="14" type="text" class="form-control form-control-solid form-control-lg" placeholder="USA" required="" value="USA" disabled />
+                                    </div>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input tabindex="11" type="text" id="BillZip" asp-for="BillZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label asp-for="BillEmail" class="col-xl-3 col-lg-3 col-form-label" disabled="disabled">Billing Email <span class="text-danger">*</span></label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="15" type="email" id="BillEmail" asp-for="BillEmail" class="form-control form-control-solid form-control-lg" placeholder="Billing Email" />
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact<span class="text-danger">*</span></label>
+                                    <div class="col-lg-4 col-xl-4">
+                                        <input tabindex="16" type="text" id="FirstName" asp-for="FirstName" class="form-control form-control-solid form-control-lg" placeholder="FirstName" required />
+                                    </div>
+                                    <div class="col-lg-5 col-xl-5">
+                                        <input tabindex="17" type="text" id="LastName" asp-for="LastName" class="form-control form-control-solid form-control-lg" placeholder="LastName" required />
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact Phone</label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <div class="input-group input-group-solid input-group-lg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-phone"></i>
+                                                </span>
+                                            </div>
+                                            <input tabindex="18" type="text" id="ContactPhone" class="form-control form-control-solid form-control-lg number-only" asp-for="ContactPhone" maxlength="10" placeholder="Phone" required="">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!--end::Group-->
+                                <!--begin::Group-->
+                                <div class="form-group row">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Contact Email/Login Username<span class="text-danger">*</span></label>
+                                    <div class="col-lg-3 col-xl-3">
+                                        <div class="input-group input-group-solid input-group-lg">
+                                            <div class="input-group-prepend">
+                                                <span class="input-group-text">
+                                                    <i class="la la-at"></i>
+                                                </span>
+                                            </div>
+                                            <input tabindex="19" type="email" id="ContactEmail" class="form-control form-control-solid form-control-lg" asp-for="ContactEmail" placeholder="Email" required="">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-3 col-xl-3">
+                                    </div>
+                                </div>
+                                <div class="form-group row">
+                                    <label class="col-xl-6 col-lg-6 col-form-label">&nbsp;</label>
+                                    <ul id="error_message" class="col-xl-3 col-lg-3">
+                                        <li><b>Password must contain the following:</b></li>
+                                        <li id="letter" class="invalid">A <b>lowercase</b> letter</li>
+                                        <li id="capital" class="invalid">A <b>capital (uppercase)</b> letter</li>
+                                        <li id="number" class="invalid">A <b>number</b></li>
+                                        <li id="length" class="invalid">Minimum <b>8 characters</b></li>
+                                    </ul>
+                                </div>
+                                <!--end::Group-->
+                            </div>
+                        </div>
+                    </div>
+                    <div class="contact-info-box formCls d-none">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <h2>OTHER INFORMATION</h2>
+                            </div>
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-form-label col-xl-3 col-lg-3">Division</label>
+                                <div class="col-xl-9 col-lg-9">
+                                    <select class="form-control form-control-lg form-control-solid mb-2" asp-for="Div" asp-items="@(new SelectList(ViewBag.Divisions, "Value", "Text", "Selected"))">
+                                    </select>
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Scope of Work</label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input asp-for="Scope" class="form-control form-control-solid form-control-lg mb-2" type="text">
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-form-label col-xl-3 col-lg-3">Minority Status</label>
+                                <div class="col-xl-9 col-lg-9 col-form-label">
+                                    <div style="display: inline">
+                                        @for (int i = 0; i < @Model.MinorityStatusList.Count; i++)
+                                        {
+                                            <label class="minority" style="display: inline">
+                                                <input name="MinorityStatusList" type="checkbox" id="chk_@i" value="@Model.MinorityStatusList[i]" onclick="changeMinority(this.id)">
+                                                <span></span>@Model.MinorityStatusList[i]
+                                            </label>
+                                        }
+                                        <input asp-for="Certification" class="form-control form-control-solid form-control-lg w-auto" type="text" value="" placeholder="Certification #">
+                                    </div>
+                                </div>
+                            </div>
+                            <!--end::Group-->
+                        </div>
+                    </div>
+                    @if (!Model.isFromFree)
+                    {
+                        @*<div class="paymentCardBox">
+                    <div class="row">
+                    <div class="col-md-12">
+                    <h2 class="paymentCardBoxTitle">MEMBERSHIP OPTIONS</h2>
+                    </div>
+                    <div class="col-md-12">
+                    <div class="card-time">
+                    <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="customRadio1" name="example" value="Yearly" checked>
+                    <label class="custom-control-label" for="customRadio1">Yearly</label><br/>
+                    <span class="text-success">Best Value</span>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="customRadio2" name="example" value="Monthly">
+                    <label class="custom-control-label" for="customRadio2">Monthly</label>
+                    </div>
+                    <div class="custom-control custom-radio custom-control-inline">
+                    <input type="radio" class="custom-control-input" id="customRadio3" name="example" value="Quaterly">
+                    <label class="custom-control-label" for="customRadio3">Quarterly</label>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="col-md-3">
+                    <div class="card">
+                    <div class="card-body mainCard-body">
+                    <h2>Pacific Northwest Premium</h2>
+                    <p id="prcPremium" class="price-text">$1900/Year</p>
+                    <div id="main">
+                    <div class="accordion" id="faqq-1">
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead1">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio4" name="cardPacific" value="Pacific Northwest Premium">
+                    <label class="custom-control-label" for="customRadio4"></label>
+                    </div>
+                    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#faq7"
+                    aria-expanded="true" aria-controls="faq7">Pacific Northwest Premium</a>
+                    </div>
+                    <div id="faq7" class="collapse show" aria-labelledby="faqhead1">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Up to 10 users
+                    </li>
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>
+                    Oregon, Washington, Alaska, Idaho, Montana, Northern California and select projects from surrounding areas and Hawaii
+                    </p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="col-md-3">
+                    <div class="card">
+                    <div class="card-body mainCard-body" style="background: #0e5a4ad1">
+                    <h2>Oregon</h2>
+                    <p id="prcOregon" class="price-text">$1500/Year</p>
+                    <div id="main">
+                    <div class="accordion" id="faq">
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead4">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio5" name="cardOreg" value="Oregon Premium">
+                    <label class="custom-control-label" for="customRadio5"></label>
+                    </div>
+                    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#faq1"
+                    aria-expanded="true" aria-controls="faq1">Oregon Premium</a>
+                    </div>
+                    <div id="faq1" class="collapse show" aria-labelledby="faqhead4" data-parent="#faq">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Up to 3 users
+                    </li>
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>Oregon State and 16 WA counties: Benton, Clark, Cowlitz, Franklin, Grays Harbor, King, Kitsap, Klickitat, Lewis, Mason, Pacific, Pierce, Skamania, Thurston, Wahkiakum and Yakima</p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead5">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio6" name="cardOreg" value="Oregon Plus">
+                    <label class="custom-control-label" for="customRadio6"></label>
+                    </div>
+                    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#faq2"
+                    aria-expanded="true" aria-controls="faq2">Oregon Plus</a>
+                    </div>
+                    <div id="faq2" class="collapse" aria-labelledby="faqhead5" data-parent="#faq">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Up to 3 users
+                    </li>
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>
+                    Oregon State and 6 WA counties: Clark, Cowlitz, Klickitat, Pacific, Skamania and Wahkiakum
+                    </p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead6">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio7" name="cardOreg" value="Oregon Only">
+                    <label class="custom-control-label" for="customRadio7"></label>
+                    </div>
+                    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#faq3"
+                    aria-expanded="true" aria-controls="faq3">Oregon Only</a>
+                    </div>
+                    <div id="faq3" class="collapse" aria-labelledby="faqhead6" data-parent="#faq">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Up to 3 users
+                    </li>
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>Oregon Only</p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="col-md-3">
+                    <div class="card">
+                    <div class="card-body mainCard-body" style="background: #29415be0;">
+                    <h2>Washington</h2>
+                    <p id="prcWashington" class="price-text">$1500/Year</p>
+                    <div id="main">
+                    <div class="accordion" id="faqq">
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead7">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio8" name="cardWash" value="Washington Premium">
+                    <label class="custom-control-label" for="customRadio8"></label>
+                    </div>
+                    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#faq4"
+                    aria-expanded="true" aria-controls="faq4">Washington Premium</a>
+                    </div>
+                    <div id="faq4" class="collapse show" aria-labelledby="faqhead7" data-parent="#faqq">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Up to 3 users
+                    </li>
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>Washington State and 18 OR Counties: Benton, Clackamas, Clatsop, Columbia, Crook, Deschutes, Hood River, Jefferson, Lane, Lincoln, Linn, Marion, Multnomah, Polk, Tillamook, Wasco, Washington, Yamhill</p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead8">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio9" name="cardWash" value="Washington Plus">
+                    <label class="custom-control-label" for="customRadio9"></label>
+                    </div>
+                    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#faq5"
+                    aria-expanded="true" aria-controls="faq5">Washington Plus</a>
+                    </div>
+                    <div id="faq5" class="collapse" aria-labelledby="faqhead8" data-parent="#faqq">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Up to 3 users
+                    </li>
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>
+                    Washington State and 6 OR Counties: Clackamas, Clatsop, Columbia, Hood River, Multnomah, Washington
+                    </p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead9">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio10" name="cardWash" value="Washington Only">
+                    <label class="custom-control-label" for="customRadio10"></label>
+                    </div>
+                    <a href="#" class="btn-header-link collapsed" data-toggle="collapse" data-target="#faq6"
+                    aria-expanded="true" aria-controls="faq6">Washington Only</a>
+                    </div>
+                    <div id="faq6" class="collapse" aria-labelledby="faqhead9" data-parent="#faqq">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Up to 3 users
+                    </li>
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>Washington Only</p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    <div class="col-md-3">
+                    <div class="card">
+                    <div class="card-body mainCard-body" style="background: #575856;">
+                    <h2>Project Posting Only</h2>
+                    <p id="prcFree" class="price-text">FREE</p>
+                    <div id="main">
+                    <div class="accordion" id="faqqFree">
+                    <div class="card">
+                    <div class="card-header cuscard-header" id="faqhead7">
+                    <div class="custom-control custom-radio">
+                    <input type="radio" class="custom-control-input" id="customRadio11" name="cardFree" value="Free">
+                    <label class="custom-control-label" for="customRadio11"></label>
+                    </div>
+                    <a href="#" class="btn-header-link" data-toggle="collapse" data-target="#faq8"
+                    aria-expanded="true" aria-controls="faq8">Job Posting Only</a>
+                    </div>
+                    <div id="faq8" class="collapse show" aria-labelledby="faqhead8" data-parent="#faqqFree">
+                    <div class="card-body">
+                    <ul class="inerList">
+                    <li>
+                    <i class="fa fa-check-circle" aria-hidden="true"></i> Regions:
+                    <p>Oregon, Washington, Alaska, Idaho, Montana, Northern California and select projects from surrounding areas and Hawaii</p>
+                    </li>
+                    </ul>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>
+                    </div>*@
+                    }
+                    <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                        <div class="col-md-12 text-right">
+                            <button type="submit" asp-action="GoToStep2" asp-controller="Member" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptPay()">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 2-->
+                @if (Model == null)
+                {
+                    <div id="preview" class="tab-pane fade">No data preview available Please first fill the details</div>
+                }
+                else
+                {
+                    <div id="preview" class="tab-pane fade">
+                        <div class="contact-info-box formCls">
+                            <div class="frm-title">
+                                <h4 class="review-cost">Package Selected: @Model.CheckRadioValue, Paid: @Model.RadioExValue and MemberShip Cost: $@Model.MemberCost</h4>
+                                <h3>CONTACT INFORMATION</h3>
+                            </div>
+                            <div class="form-inner-section review-inner-sec">
+                                <div class="row">
+                                    <div class="col-md-3">
+                                        <input type="hidden" id="payment" value="@Model.MemberCost" />
+                                        <label>Company</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p style="display:none;">@Model.ID</p>
+                                        <p style="display:none;">@Model.ConID</p>
+                                        <p>@Model.Company</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>DBA</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>@Model.Dba</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Address</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <p>@Model.MailAddress @Model.MailCity @Model.MailStateId @Model.MailZip</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Billing Address</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <p>@Model.BillAddress @Model.BillCity @Model.BillState @Model.BillZip</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Fax</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <p>@Model.Fax</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Contact</label>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>@Model.ContactName</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>@Model.ContactPhone</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <p>@Model.ContactEmail</p>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <label>Billing Email</label>
+                                    </div>
+                                    <div class="col-md-9">
+                                        <p>@Model.BillEmail</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="contact-info-box formCls d-none">
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <h2>OTHER INFORMATION</h2>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Division</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <p>@Model.Div</p>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Scope of Work</label>
+                                </div>
+                                <div class="col-md-9">
+                                    @if (string.IsNullOrEmpty(Model.Scope))
+                                    {
+                                        <p>No scope of work mentioned</p>
+                                    }
+                                    else
+
+                                    {
+                                        <p>@Model.Scope</p>
+                                    }
+
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Minority Status</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <ul class="Mstatus">
+                                        @if (@Model.MinorityStatusList.Count == 0)
+                                        {
+                                            <li>Minorty Status is not selected</li>
+                                        }
+                                        else
+                                        {
+                                            @for (int i = 0; i < @Model.MinorityStatusList.Count; i++)
+                                            {
+                                                <li>@Model.MinorityStatusList[i]</li>
+                                            }
+                                        }
+                                    </ul>
+                                </div>
+                                <div class="col-md-3">
+                                    <label>Certification</label>
+                                </div>
+                                <div class="col-md-9">
+                                    <p>@Model.Certification</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                @if (@Model.CheckRadioValue == "Pacific Northwest Premium")
+                                {
+                                    <h4 class="addSeats">*The Regional Package selected includes 10 users</h4>
+                                }
+                                else
+                                {
+                                    <h4 class="addSeats">*The Regional Package selected includes 3 users</h4>
+                                }
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label>Additional Users :</label>
+                            </div>
+                            <div class="col-md-3">
+                                <select id="AdditionalCost" onchange="AdditionCost()">
+                                    <option value="0"> -- Select user -- </option>
+                                    <option value="100">1</option>
+                                    <option value="200">2</option>
+                                    <option value="300">3</option>
+                                    <option value="400">4</option>
+                                    <option value="500">5</option>
+                                    <option value="600">6</option>
+                                    <option value="700">7</option>
+                                    <option value="800">8</option>
+                                    <option value="900">9</option>
+                                    <option value="1000">10</option>
+                                </select>
+                            </div>
+                            <div class="col-md-2">
+                                <label>Additional Cost :</label>
+                            </div>
+                            <div class="col-md-4">
+                                <label>$</label><label id="addcost"></label>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <p>Access for the users on your account can be configured under your Profile settings after you login.</p>
+                            </div>
+                        </div>
+                        <div class="contact-info-box formCls">
+                            <div class="frm-title">
+                                <h3>TERMS</h3>
+                            </div>
+                            <div class="row">
+                                <div class="col-md-12">
+                                    <div class="form-inner-section">
+                                        <p>Membership is non-refundable and non-transferable. Annual membership payment plans will be invoiced 45 days prior to renew or can be set up on AutoPay. Monthly and Quarterly payment options will be required to be setup for AutoPay or subject to suspension or cancellation. Renewal payment not made by the renewal date will be subject to suspension or cancellation. Plan Center Northwest will not issue a notice of suspension or cancellation for memberships that are past due. Membership upgrades will be prorated to next annual renewal date.</p>
+                                        <p class="mb-0">The benefits and use of the Plan Center Northwest website is for the above named business. Members are prohibited from giving out their Login Credentials to anyone other than an employee doing business for the member company. It is the responsibility of the member to contact us if they believe their membership is or could be used by an unauthorized person. Any unauthorized access to Plan Center Northwest’s website by a non-member using a member’s access information could result in the termination of membership. Terminated memberships forfeit all time remaining and will not be eligible for a refund on membership dues.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card-time cus-card-time">
+                                    <div class="custom-control custom-radio custom-control-inline">
+                                        <input type="checkbox" class="custom-control-input" id="customRadio12" name="secCustom" value="customEx">
+                                        <label class="custom-control-label" for="customRadio12">I agree to the above terms</label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                            <div class="mr-2">
+                                <button type="submit" asp-action="GoToStep1" asp-controller="Member" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Previous</button>
+                            </div>
+                            <div>
+                                @if (Model.CheckRadioValue == "Free")
+                                {
+                                    <button id="btnFree" type="submit" asp-action="GoToStep4" asp-controller="MemberShip" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptTnC()">Next</button>
+                                }
+                                else
+                                {
+                                    <button id="btnPay" type="submit" asp-action="GoToStep3" asp-controller="Member" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn" onclick="return AcceptTnC()">Next</button>
+                                }
+                            </div>
+                        </div>
+                    </div>
+                }
+                <!--Step 3-->
+                <div id="payment" class="tab-pane fade">
+                    <div class="contact-info-box formCls">
+                        <div class="frm-title">
+                            <h4 class="review-cost">Package Selected: @Model.CheckRadioValue, Paid: @Model.RadioExValue and MemberShip Cost: $@Model.MemberCost</h4>
+                            <h3>Choose Payment Method Below</h3>
+                        </div>
+                        <div class="form-inner-section">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="CPBox isActive">
+                                        <i class="fa fa-credit-card" aria-hidden="true"></i>
+                                        <p>Pay with Credit Card</p>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="CPBox">
+                                        <i class="fa fa-phone" aria-hidden="true"></i>
+                                        <p>Pay with E-check or ACH</p>
+                                    </div>
+                                </div>
+                                <div class="paymentInfo">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="CardHolderName">CARDHOLDER NAME:</label>
+                                                <input type="text" class="form-control" id="CardHolderName">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="CardNumber">CARD INFORMATION:</label>
+                                                <input type="text" class="form-control" placeholder="Card Number" id="CardNumber">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mt-2">
+                                                <label for="ExpiryDate"></label>
+                                                <input type="text" class="form-control" placeholder="MM / YY" id="ExpiryDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="form-group mt-2">
+                                                <label for="CVC"></label>
+                                                <input type="text" class="form-control" placeholder="CVC" id="CVC">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group mt-2">
+                                                <label> Membership Packages Cost :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group mt-2">
+                                                <label>$</label><label>@Model.MemberCost.00</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group mt-2">
+                                                <label for="usr"> Additional User Cost :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group mt-2">
+                                                <label>$</label><label id="additionalCost">@Model.Additionalcost.00</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-7">
+                                            <div class="form-group mt-2">
+                                                <label for="usr"> Total Amount :</label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <div class="form-group mt-2">
+                                                <label>$</label><label id="TotalAmmount"></label>
+
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="paymentPhone dis-pay">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <h3>You will pay by phone!</h3>
+                                            <p>We will contact by phone number as you entered. Please wait!</p>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="d-flex justify-content-between border-top pt-10 mt-15">
+                        <div class="mr-2">
+                            <button type="submit" asp-action="GoToStep2" asp-controller="Member" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Previous</button>
+                        </div>
+                        <div>
+                            <button type="submit" asp-action="GoToStep4" asp-controller="Member" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Next</button>
+                        </div>
+                    </div>
+                </div>
+                <!--Step 4-->
+                <div id="finish" class="tab-pane fade">
+                    <div class="contact-info-box formCls">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="card-body text-center congo-text">
+                                    <h6>Congratulations on becoming the newest member of Plan Center Northwest!</h6>
+                                    <p>Please click here to log in and begin finding your next project, completing your company profile and setting up any additional users for your account</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+</div>

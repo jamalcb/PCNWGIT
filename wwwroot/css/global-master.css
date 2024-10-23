@@ -1,0 +1,91 @@
+﻿.btn-danger.icon-del {
+    border-radius: 5px !important;
+}
+.icon-del .fa-trash {
+    font-size: 16px !important;
+    line-height: revert !important;
+    padding: 1px;
+}
+.btn-primary.icon-edit {
+    border-radius: 5px !important;
+    padding: 10px;
+}
+.icon-edit .fa-pencil-alt {
+    font-size:16px !important;
+}
+.cus-input-btn {
+    border: none;
+    background: #ff9a27;
+    padding: 8px 20px;
+    border-radius: 5px;
+}
+.entity thead tr th {
+    font-size: 16px;
+    border: 1px solid #d4d4d4;
+}
+.entity tbody tr td {
+    font-size: 16px;
+} 
+.theme-black .navbar.cus-navbar {
+    background-color: #353c48;
+}
+.icon-nav .sidemenu-collapse i {
+    color: #fff;
+}
+.light  .icon-nav.nav li a {
+    color: #fff;
+}
+.cus-dropdown li a {
+    color:#333 !important;
+}
+.dropdown-card li {
+    display:flex;
+    /*justify-content:space-between;*/
+}
+.dropdown-card li div {
+   flex:0 28%;
+}
+.dropdown-card li span{
+        flex: 1 0 0%;
+}
+.dropdown-card li p {
+    width:30%;
+}
+.cus-date-tabs li {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.cus-date-tabs .width {
+    width: auto;
+}
+
+.cus-input-btn {
+    border: none;
+    background: #ff9a27;
+    padding: 8px 20px;
+    border-radius: 5px;
+}
+.dt-buttons .dt-button {
+    border-radius: 7px !important;
+    margin-right: 4px;
+    font-size: 16px;
+    margin-bottom: 10px;
+}
+
+ /*media query starts from here*/
+@media screen and  (max-width: 768px) {
+
+    .dataTables_filter {
+        float: none;
+    }
+    .cus-date-tabs .width {
+        width: auto;
+    }
+
+}
+@media screen and (max-width: 575px) {
+    .cus-date-tabs .width {
+        width: 100%;
+    }
+}

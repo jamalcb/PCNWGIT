@@ -1,0 +1,2238 @@
+﻿@model ProjectInformation
+@{
+    ViewData["Title"] = "ProjectInformation";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+@section google {
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Poppins:300,400,500,600,700">
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.css">
+}
+@section Scripts {
+    <script src="/js/ProjectInfo.js"></script>
+    <script src="/js/custom-validation.js"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/timepicker/1.3.5/jquery.timepicker.min.js"></script>
+}
+@section CustomCSS {
+    <style>
+        .project-info .col-md-8 {
+            margin-bottom: 1rem;
+        }
+
+        .add-new-btn button {
+            border: none;
+            background-color: transparent;
+            color: #7e8299;
+        }
+
+        .cus-border {
+            border: 1px solid #ced4da;
+            padding: 15px;
+            border-radius: 5px;
+        }
+
+        .cus-dropdown span {
+            padding: 6px 42px;
+            display: inline-block;
+            border-right: 1px solid #fff;
+        }
+
+        .cus-dropdown .dropdown-menu.show {
+            background-color: #e4e6ef;
+        }
+
+        .cus-minus {
+            background: #e3e3e3;
+            background: #e3e3e3;
+            border-radius: 2px;
+            padding: 3px;
+        }
+
+        .project-notice h2 {
+            margin-top: 30px;
+        }
+
+        .cus-refresh {
+            background: #1b2c4a;
+            padding: 10px;
+            border-radius: 10px;
+            color: #fff;
+        }
+
+
+        .table-border-cus {
+            border: 1px solid #5c8097;
+            border-radius: 4px;
+        }
+
+        .cus-label label {
+            font-size: 12px;
+        }
+
+        ul#ui-id-3, ul.ui-menu.ui-widget.ui-widget-content.ui-autocomplete.ui-front {
+            max-height: 200px;
+            overflow-x: hidden;
+            overflow-y: scroll;
+        }
+        /*css for fixed box and minimized project from*/
+        .fix-box {
+            position: sticky;
+            top: 103px;
+            width: 100%;
+            height: auto;
+            background-color: #dde3eb;
+            z-index: 999;
+            border: 1px solid #a9a9a9;
+            padding: 8px 10px 0;
+            /*  left: 0;
+                                    right: 0; */
+        }
+
+        .formCls .box-space .form-control {
+            height: 30px
+        }
+
+        .notice-info {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+            text-align: start;
+        }
+
+        .in-height .form-control {
+            height: 30px;
+            background: #f4f4f4;
+            border: 1px solid #706e6e;
+        }
+
+        .mt-note {
+            margin-top: 180px;
+        }
+
+        .tbl-adnda th,
+        .tbl-adnda tr td {
+            padding: 5px;
+        }
+
+        .edit-row label {
+            color: #666;
+        }
+
+        .fix-box .newPro-btn label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .formCls label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .mt-project {
+            /* margin-top: 135px; */
+        }
+
+        .form-control:focus {
+            border-color: #5c8097;
+            box-shadow: 0 0 2px #5c8097 inset, 0 0 2px #5c8097;
+            outline: #5c8097 solid 1px;
+        }
+
+        .cus-textarea:focus {
+            border-color: #5c8097;
+            box-shadow: 0 0 2px #5c8097 inset, 0 0 2px #5c8097;
+            outline: #5c8097 solid 1px;
+        }
+        /*css for fixed box and minimized project from*/
+
+        :root {
+            --inactive: black;
+            --active: #2b662e;
+        }
+
+        #time_wrapper {
+            width: fit-content;
+            margin: 0 auto;
+            position: relative;
+            top: 150px;
+            transform: scale(1.5);
+        }
+
+        #time_input {
+            border: 2px solid #706e6e;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            border-radius: 0px !important;
+        }
+
+            #time_input input {
+                width: 50px;
+                height: auto;
+                border: none;
+                box-sizing: border-box;
+                padding: 2px;
+                text-align: center;
+                color: #132c14;
+                background: #f4f4f4;
+            }
+
+            #time_input label {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                position: relative;
+                margin-bottom: 0px;
+            }
+
+        .label {
+            font-size: 0.55rem;
+            position: absolute;
+            top: 4.5px;
+        }
+
+            .label.lbl-hrs {
+                left: 20px;
+            }
+
+            .label.lbl-min {
+                left: 14px;
+            }
+
+            .label.lbl-sec {
+                left: 13px;
+            }
+
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        #time_input,
+        input {
+            border-radius: 8px;
+            /*font-size: 1.5rem;*/
+        }
+
+            #time_input input:focus {
+                outline: 3px solid #5c8097;
+                border-radius: 0;
+            }
+
+            input:focus + .label {
+                color: var(--active);
+            }
+
+            input.invalid:focus {
+                outline: 3px solid red;
+            }
+
+                input.invalid:focus + .label {
+                    color: red;
+                }
+
+        #error {
+            width: 280px;
+            position: relative;
+            top: 170px;
+            margin: 0 auto;
+            color: red;
+            visibility: hidden;
+        }
+
+        .ui-autocomplete.show-all .ui-menu-item {
+            display: list-item !important;
+        }
+
+        .timer {
+            width: 45px;
+        }
+
+        .main-content {
+            padding: 5px 0;
+        }
+    </style>
+}
+<div class="container-fluid">
+    <form class="form" method="POST" id="EditForm">
+        <div class="box-space fix-box">
+            <div class="row in-height formCls">
+                <div class="col-lg-12">
+                    <div class="row newEditDesign">
+                        <div class="col-lg-3">
+                            <label>Project Number</label>
+                            <input type="text" asp-for="ProjNumber" tabindex="10" class="form-control" placeholder="" aria-label="Username" readonly>
+                        </div>
+                        <div class="col-lg-3">
+                            <label for="">Arrival Date</label>
+                            <input type="text" asp-for="ArrivalDt" tabindex="14" class="form-control datepicker-custom-Ar" placeholder="" value="@(Model.ArrivalDt != null ? Convert.ToDateTime(Model.ArrivalDt).ToString("MM/dd/yyyy") : "")" />
+                            <input type="hidden" id="hdnArrivalDt" value="@(Model.ArrivalDt != null ? Convert.ToDateTime(Model.ArrivalDt).ToString("MM/dd/yyyy") : "")" />
+                        </div>
+                        <div class="">
+                            <div class="form-group form-check">
+                                <input type="checkbox" asp-for="SpcChk" class="mx-1 align-middle" tabindex="15" />
+                                <label style="color: #666;margin: 0;">Specs Available</label>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="form-group form-check">
+                                <input type="checkbox" asp-for="SpecsOnPlans" class="mx-1 align-middle" tabindex="17" />
+                                <label style="color: #666;" class="form-check-label" for="exampleCheck1">Plans Available</label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-12">
+                    <div class="row">
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <label>Project Title <span class="text-danger">*</span></label>
+                                <textarea style="width: 100%;height:auto;" asp-for="Title" class="cus-textarea form-control" rows="2" autocomplete="off" placeholder="Project Title" tabindex="18" required autofocus></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group mb-0">
+                                <label for="exampleFormControlTextarea1">Project Notice</label>
+                                @* <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"></textarea> *@
+                                <textarea class="cus-textarea form-control" style="width: 100%;height:auto;" rows="2" asp-for="ProjNote" autocomplete="off" tabindex="19"></textarea>
+                                <p class="notice-info">Information entered here will trigger a notification to members. Use with care.</p>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1">Project Notes : For Internal Use Only</label>
+                                <textarea style="width:100%; height:auto;" tabindex="20" class="cus-textarea form-control" rows="2" autocomplete="off" asp-for="InternalNote"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-1" style="margin: auto 0;">
+                            @if (Model.ProjId == 0)
+                            {
+                                <div class=" newPro-btn">
+                                    @*<button onclick="return validate()" class="mt btn btn-sm newProbtn px-15" tabindex="30" asp-controller="Project" asp-action="SaveProjectInfoNew">Save & New</button>*@
+                                    <div class="dropdown">
+                                        <button tabindex="22" style="padding: 10px 15px;" class="newProbtn dropdown-toggle mb-2" type="button" data-toggle="dropdown" aria-expanded="false">
+                                            Save & New
+                                        </button>
+                                        <div class="dropdown-menu saveDrop ">
+                                            <button tabindex="24" accesskey="S" asp-controller="project" asp-action="SaveProjectInfoEdit" class="dropdown-item" onclick="RemoveSubmit()">Save</button>
+                                            <button tabindex="26" accesskey="X" asp-controller="project" asp-action="SaveProjectInfoClose" class="dropdown-item">Save  & Close</button>
+                                            <button tabindex="28" accesskey="N" asp-controller="project" asp-action="SaveProjectInfoNew" class="dropdown-item">Save & New</button>
+                                            <button tabindex="30" accesskey="Y" asp-controller="project" asp-action="SaveProjectInfoCopy" class="dropdown-item">Save & Copy</button>
+                                            <a onclick="funClose()" tabindex="31" class="dropdown-item" style="cursor:pointer">Close</a>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            }
+                            else
+                            {
+                                <div class=" newPro-btn">
+                                    @*<button onclick="return validate()" class="mt btn btn-sm newProbtn px-15" tabindex="30" asp-controller="Project" asp-action="SaveProjectInfoNew">Save & New</button>*@
+                                    <div class="dropdown">
+                                        <button tabindex="22" style="padding: 10px 15px;" class="newProbtn dropdown-toggle mb-2" type="button" data-toggle="dropdown" aria-expanded="false">
+                                            Save
+                                        </button>
+                                        <div class="dropdown-menu saveDrop">
+                                            <button tabindex="24" accesskey="S" asp-controller="project" asp-action="UpdateProjectInfoEdit" class="dropdown-item" onclick="RemoveSubmit()">Save</button>
+                                            <button tabindex="26" accesskey="X" asp-controller="project" asp-action="UpdateProjectInfoClose" class="dropdown-item">Save  & Close</button>
+                                            <button tabindex="28" accesskey="N" asp-controller="project" asp-action="UpdateProjectInfoNew" class="dropdown-item">Save & New</button>
+                                            <button tabindex="30" accesskey="Y" asp-controller="project" asp-action="UpdateProjectInfoCopy" class="dropdown-item">Save & Copy</button>
+                                            <a onclick="funClose()" tabindex="31" class="dropdown-item" style="cursor:pointer">Close</a>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </div>
+                </div>
+                @* <div class="col-md-7">
+                    <div class="row mb-2 formCls">
+                        <div class="col-md-2">
+                            <label>Project Number</label>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="input-group mb-2">
+                                <input type="text" asp-for="ProjNumber" tabindex="10" class="form-control" placeholder="" aria-label="Username" readonly>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <label for="">Arrival Date</label>
+                        </div>
+                        <div class="col-md-2">
+                            <input type="text" asp-for="ArrivalDt" tabindex="14" class="form-control datepicker-custom-Ar" placeholder="" value="@(Model.ArrivalDt != null ? Convert.ToDateTime(Model.ArrivalDt).ToString("MM/dd/yyyy") : "")" />
+                            <input type="hidden" id="hdnArrivalDt" value="@(Model.ArrivalDt != null ? Convert.ToDateTime(Model.ArrivalDt).ToString("MM/dd/yyyy") : "")" />
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-check m-0 p-0">
+                                <input type="checkbox" asp-for="SpcChk" class="mx-1 align-middle" tabindex="15" />
+                                <label style="color: #666;">Specs Available</label>
+                            </div>
+                        </div>
+                        <div class="col-md-2">
+                            <div class="form-group form-check m-0 p-0">
+                                <input type="checkbox" asp-for="SpecsOnPlans" class="mx-1" tabindex="17" />
+                                <label style="color: #666;" class="form-check-label" for="exampleCheck1">Plans Available</label>
+                            </div>
+                        </div>
+
+                    </div>
+                    <div class="row edit-row"> 
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label>Project Title <span class="text-danger">*</span></label>
+                                <textarea style="width: 100%;height:auto;" asp-for="Title" class="cus-textarea form-control" rows="2" autocomplete="off" placeholder="Project Title" tabindex="18" required autofocus></textarea>
+                            </div>
+                        </div>
+                        <div class="col-lg-6">
+                            <div class="form-group">
+                                <label for="exampleFormControlTextarea1">Project Notice</label>
+                                <textarea class="cus-textarea form-control" style="width: 100%;height:auto;" rows="2" asp-for="ProjNote" autocomplete="off" tabindex="19"></textarea>
+                                <p class="notice-info">Information entered here will trigger a notification to members. Use with care.</p>
+                            </div>
+                        </div>
+
+                    </div>
+                </div> *@
+                @* <div class="col-md-5 row align-items-center">
+                    <div class="form-group col-lg-8">
+                        <label for="exampleFormControlTextarea1">Project Notes : For Internal Use Only</label>
+                        <textarea style="width:100%; height:auto;" tabindex="20" class="cus-textarea" rows="2" autocomplete="off" asp-for="InternalNote"></textarea>
+                    </div>
+
+
+                    @if (Model.ProjId == 0)
+                    {
+                        <div class="col-12 col-sm-6 col-md-12 col-lg-4 newPro-btn">
+                            <div class="dropdown">
+                                <button tabindex="22" style="padding: 10px 15px;" class="newProbtn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                    Save & New
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button tabindex="24" accesskey="S" asp-controller="project" asp-action="SaveProjectInfoEdit" class="dropdown-item" onclick="RemoveSubmit()">Save</button>
+                                    <button tabindex="26" accesskey="X" asp-controller="project" asp-action="SaveProjectInfoClose" class="dropdown-item">Save  & Close</button>
+                                    <button tabindex="28" accesskey="N" asp-controller="project" asp-action="SaveProjectInfoNew" class="dropdown-item">Save & New</button>
+                                    <button tabindex="30" accesskey="Y" asp-controller="project" asp-action="SaveProjectInfoCopy" class="dropdown-item">Save & Copy</button>
+                                    <a onclick="funClose()" tabindex="31" class="dropdown-item" style="cursor:pointer">Close</a>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                    else
+                    {
+                        <div class="col-12 col-sm-6 col-md-2 col-lg-4 newPro-btn">
+                            <div class="dropdown">
+                                <button tabindex="22" style="padding: 10px 15px;" class="newProbtn dropdown-toggle" type="button" data-toggle="dropdown" aria-expanded="false">
+                                    Save
+                                </button>
+                                <div class="dropdown-menu">
+                                    <button tabindex="24" accesskey="S" asp-controller="project" asp-action="UpdateProjectInfoEdit" class="dropdown-item" onclick="RemoveSubmit()">Save</button>
+                                    <button tabindex="26" accesskey="X" asp-controller="project" asp-action="UpdateProjectInfoClose" class="dropdown-item">Save  & Close</button>
+                                    <button tabindex="28" accesskey="N" asp-controller="project" asp-action="UpdateProjectInfoNew" class="dropdown-item">Save & New</button>
+                                    <button tabindex="30" accesskey="Y" asp-controller="project" asp-action="UpdateProjectInfoCopy" class="dropdown-item">Save & Copy</button>
+                                    <a onclick="funClose()" tabindex="31" class="dropdown-item" style="cursor:pointer">Close</a>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div> *@
+            </div>
+        </div>
+        <div class="dashboard-box mt-project">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-heading">
+                        <h2 class="toggle-option edit-Info"><i class="fa fa-chevron-right mx-1" aria-hidden="true"></i> Project Information</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="formPage formCls">
+                <input type="hidden" value="@ViewBag.ErrorMessage" id="tmpHiddenMsg" />
+                <input type="hidden" value="@ViewBag.SuccessMessage" id="hdnSuccessMsg" />
+                <input type="hidden" asp-for="@Model.ProjScope" />
+                <input type="hidden" asp-for="@Model.IssuingOffice" />
+                <input type="hidden" asp-for="@Model.ProjId" />
+                <input type="hidden" asp-for="@Model.strAddenda" />
+                <div class="cst-optional pro-info">
+                    <div class="box-space">
+                        <div class="row">
+                            <div class="col-12 col-md-7">
+                                <div class="border-right">
+                                    <div class="row mb-1">
+                                        <div class="col-lg-2 cstCol-lbl"><label> Address <span class="text-danger">*</span></label></div>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+                                                <div class="col-lg-10 mb-2">
+                                                    <input type="text" asp-for="LocAddr1" class="form-control" placeholder="Address" tabindex="40" />
+                                                    <input type="hidden" asp-for="Longitude">
+                                                    <input type="hidden" asp-for="Latitude">
+                                                </div>
+                                                <div class="col-lg-2 mb-2">
+                                                    <input type="text" asp-for="LocZip" class="form-control number-only" placeholder="zip code" tabindex="50" maxlength="5" />
+                                                </div>
+                                                <div class="col-lg-3 mb-2">
+                                                    <input type="text" asp-for="LocCity" class="form-control" placeholder="city" tabindex="60" />
+
+                                                </div>
+                                                <div class="col-lg-2 mb-2">
+                                                    <input type="text" asp-for="LocState" class="form-control" tabindex="65" placeholder="state">
+                                                </div>
+                                                <div class="col-lg-3 mb-2">
+                                                    <input type="text" class="form-control" asp-for="LocAddr2" placeholder="county" tabindex="70" />
+                                                    <input type="hidden" class="form-control" asp-for="CountyId" />
+                                                    <a href="" data-toggle="modal" class="popClassDel" data-target="#multi-county" tabindex="75"> + Add Multiple Counties</a>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="modal m-modal fade" id="multi-county" tabindex="-1" aria-labelledby="countyModalLabel" aria-hidden="true">
+                                            <div class="modal-dialog modal-xl">
+                                                <div class="modal-content">
+                                                    <div class="modal-header blu-header">
+                                                        <h5 class="modal-title" id="countyModalLabel">Add Multiple Counties</h5>
+                                                        <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="AssignMultipleCounties()">
+                                                            <span aria-hidden="true">&times;</span>
+                                                        </button>
+                                                    </div>
+                                                    <div class="modal-body">
+                                                        <!-- Checkboxes row start from here -->
+                                                        <div class="d-flex justify-content-center">
+                                                            @{
+                                                                Model.BoolAllOr = Model.BoolAllOr == null ? false : Model.BoolAllOr;
+                                                                Model.BoolAllWa = Model.BoolAllWa == null ? false : Model.BoolAllWa;
+                                                            }
+                                                            <div class="form-check px-4">
+                                                                <input class="form-check-input classOcounties" type="checkbox" value="-1" id="AllOr" onchange="BlockCounties(this.id)" checked="@Model.BoolAllOr">
+                                                                <label class="form-check-label" for="allor">
+                                                                    <b>All OR Counties</b>
+                                                                </label>
+                                                            </div>
+                                                            <div class="form-check">
+                                                                <input class="form-check-input classWcounties" type="checkbox" value="-2" id="AllWa" onchange="BlockCounties(this.id, this)" checked="@Model.BoolAllWa">
+                                                                <label class="form-check-label" for="allwa">
+                                                                    <strong>All WA Counties</strong>
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="row pt-3 classCounty mx-0">
+                                                            <div class="WAClass">
+                                                                <p><b>WA</b></p>
+                                                            </div>
+                                                            <div class="ORClass">
+                                                                <p><b>WA</b></p>
+                                                            </div>
+                                                        </div>
+                                                        <div class="float-right newPro-btn">
+                                                            <span class="newProbtn" style="cursor:pointer" data-dismiss="modal" onclick="AssignMultipleCounties()">OK</span>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <input type="hidden" asp-for="Counties" />
+                                        @if (string.IsNullOrEmpty(Model.Counties))
+                                        {
+                                            <div class="col-12 col-sm-2 col-md-2 col-lg-2" id="divCounty" style="display:none"><label>Counties</label></div>
+                                            <div class="col-12 col-sm-10 col-md-10 col-lg-10" id="divsCounty" style="display:none"></div>
+                                        }
+                                        else
+                                        {
+                                            <div class="col-12 col-sm-2 col-md-2 col-lg-2" id="divCounty"><label>Counties</label></div>
+                                            <div class="col-12 col-sm-10 col-md-10 col-lg-10" id="divsCounty">@Model.strCounties</div>
+                                        }
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col-lg-2 cstCol-lbl"><label> Project Type</label></div>
+                                        <div class="col-lg-2">
+                                            <input type="text" asp-for="ProjTypeIdString" class="form-control" placeholder="" tabindex="80" /><input type="hidden" asp-for="ProjTypeId" />
+                                        </div>
+                                        <div class="col-lg-2 cstCol-lbl">Project Subtype</div>
+                                        <div class="col-lg-2">
+                                            <input type="text" class="form-control" asp-for="ProjSubTypeIdString" tabindex="90" onkeydown="" onkeyup="" /><input type="hidden" asp-for="ProjSubTypeId" />
+                                        </div>
+                                        <div class="col-6 col-md-3 col-lg-3">
+                                            <input type="checkbox" asp-for="PrevailingWage" class="mx-1 align-middle" tabindex="91" />
+                                            @* <input type="checkbox" class="mx-1 align-middle" tabindex="310" data-val="true" data-val-required="The PrevailingWage field is required." id="PrevailingWage" name="PrevailingWage" value="true"> *@
+                                            <label> Prevailing Wage</label>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col-lg-2 cstCol-lbl"><label> Project Type</label></div>
+                                        <div class="col-lg-10">
+                                            <div class="d-flex  align-items-center">
+                                                <div class="form-check-inline">
+                                                    @if (Model.ProjScopeList != null)
+                                                    {
+                                                        for (int i = 0; i < Model.ProjScopeList.Count; i++)
+                                                        {
+                                                            int Tidx = 91 + i;
+                                                            <div class="form-check-inline">
+                                                                <input class="mx-1" name="ProjectScopeList" type="checkbox" id="chk_@i" value="@Model.ProjScopeList[i]" onclick="changeScope(this.id)" tabindex="@Tidx">
+                                                                <label class="mb-0">@Model.ProjScopeList[i]</label>
+                                                            </div>
+                                                        }
+                                                    }
+                                                </div>
+                                                <div class="form-check-inline ml-2">
+                                                    <input id="futr-ckh" type="checkbox" asp-for="FutureWork" class="mx-1" placeholder="" tabindex="100" />
+                                                    <label class="mb-0" for="futr-ckh-test">Future Work</label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="row mb-1">
+                                        <div class="col-lg-2 cstCol-lbl"><label>Bid Date/Time <span class="text-danger">*</span></label></div>
+                                        <div class="col-lg-10">
+                                            <div class="row">
+
+                                                @if (Model.BoolUndecided != true)
+                                                {
+                                                    string tComponent = "00";
+                                                    string hComponent = "00";
+                                                    string mValue = "AM";
+                                                    if (!string.IsNullOrEmpty(Model.strBidDt5))
+                                                    {
+                                                        string[] arrTime = Model.strBidDt5.Split(":");
+                                                        int tComp;
+                                                        int hComp;
+                                                        int.TryParse(arrTime[0], out tComp);
+                                                        int.TryParse(arrTime[1], out hComp);
+                                                        if (tComp == 00)
+                                                        {
+                                                            int tempComp = 12;
+                                                            tComponent = tempComp.ToString();
+                                                            mValue = "AM";
+                                                        }
+                                                        if (tComp > 0)
+                                                        {
+                                                            if (tComp > 12)
+                                                            {
+                                                                int tempComp = tComp - 12;
+                                                                if (tempComp < 10)
+                                                                {
+                                                                    tComponent = "0" + tempComp.ToString();
+                                                                }
+                                                                else
+                                                                {
+                                                                    tComponent = tempComp.ToString();
+                                                                }
+                                                                mValue = "PM";
+                                                            }
+                                                            else
+                                                            {
+                                                                if (tComp < 10)
+                                                                {
+                                                                    tComponent = "0" + tComp.ToString();
+                                                                    mValue = "AM";
+                                                                }
+                                                                else if (tComp == 12)
+                                                                {
+                                                                    tComponent = tComp.ToString();
+                                                                    mValue = "PM";
+                                                                }
+                                                                else
+                                                                {
+                                                                    tComponent = tComp.ToString();
+                                                                    mValue = "AM";
+                                                                }
+
+                                                            }
+                                                        }
+                                                        if (hComp > 00)
+                                                        {
+                                                            if (hComp > 60)
+                                                            {
+                                                                hComponent = "00";
+                                                            }
+                                                            else
+                                                            {
+                                                                hComponent = hComp.ToString();
+
+                                                            }
+                                                            if (hComp < 10)
+                                                            {
+                                                                hComponent = "0" + hComp.ToString();
+                                                            }
+                                                        }
+                                                    }
+                                                    <div class="col-sm-12 col-md-12 col-lg-12 " id="divBids">
+
+                                                        <div class="row align-items-center pt-2" id="bid_Date">
+
+                                                            <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                                                <div class="row mx-0">
+
+                                                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                        <input class="form-control datepicker-custom" placeholder="Select Date" tabindex="120" type="text" asp-for="BidDt" value="@(Model.BidDt!=null?Convert.ToDateTime(Model.BidDt).ToString("MM/dd/yyyy"):"")" onchange="ChangeBidDt(this.id)" />
+
+                                                                        @*<input class="form-control" placeholder="Select Date" tabindex="120" type="text" asp-for="BidDt" value="@(Model.BidDt!=null?Convert.ToDateTime(Model.BidDt).ToString("MM/dd/yyyy"):"")" onchange="ChangeBidDt(this.id)" onblur="scheduleChangeBidDt(this.id)" />*@
+                                                                        <input type="hidden" asp-for="HiddenBidDt" value="@(Model.BidDt!=null?Convert.ToDateTime(Model.BidDt).ToString("MM/dd/yyyy"):"")" />
+                                                                    </div>
+                                                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                        <div id="time_input">
+                                                                            <label for="hours">
+                                                                                <input type="number" asp-for="tComp" tabindex="125" value="@tComponent">
+
+                                                                            </label>
+                                                                            <span>:</span>
+                                                                            <label for="minutes">
+                                                                                <input type="number" asp-for="hComp" value="00" tabindex="126" value="@hComponent">
+                                                                            </label>
+                                                                            <span>:</span>
+                                                                            <label for="seconds">
+                                                                                <input type="Text" asp-for="mValue" tabindex="127" value="@mValue">
+                                                                            </label>
+                                                                        </div>
+
+
+                                                                        <input class="form-control time-input" style="width:80%; display:none;" placeholder="Select Date" type="time" asp-for="strBidDt5" value="@(!string.IsNullOrEmpty(Model.strBidDt5)?Model.strBidDt5:"")" />
+                                                                        <input type="hidden" id="hdnLastBidDt" value="@(!string.IsNullOrEmpty(Model.strBidDt5)?Model.strBidDt5:"")" />
+                                                                        @*<input type="time" class="time-pickable">*@
+                                                                    </div>
+                                                                    <div class="col-8 col-sm-2 col-md-2 col-lg-2">
+                                                                        <input type="text" asp-for="strBidDt3"  tabindex="128" class="form-control BidCount" value="PT" readonly />
+                                                                        <input type="hidden" id="hdnstrBidDt3" value="@(!string.IsNullOrEmpty(Model.strBidDt3)?Model.strBidDt3:"")" />
+                                                                    </div>
+                                                                    <div class="col-8 col-sm-2 col-md-2 col-lg-2">
+                                                                        <div class="form-check form-check-inline">
+                                                                            <input type="checkbox" class="mr-1" checked="@Model.BoolUndecided" onchange="Undecided1(this)" tabindex="132" />
+                                                                            <input type="hidden" asp-for="Undecided"/>
+                                                                            <input type="hidden" asp-for="Publish" />
+                                                                            <label class="form-check-label font-weight-bold" for="chkBoxTBDBid">T B D</label>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="bidDate-input" class=""></div>
+                                                    </div>
+                                                }
+                                                else
+                                                {
+                                                    <div class="col-sm-12 col-md-12 col-lg-12" id="divBids">
+
+                                                        <div class="row align-items-center pt-2" id="bid_Date">
+
+                                                            <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                                                <div class="row mx-0">
+                                                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                        <input class="form-control datepicker-custom" placeholder="Select Date" tabindex="120" type="text" asp-for="BidDt" value="" onblur="ChangeBidDt(this.id)" disabled />
+                                                                        <input type="hidden" asp-for="HiddenBidDt" value="@(Model.BidDt!=null?Convert.ToDateTime(Model.BidDt).ToString("MM/dd/yyyy"):"")" />
+                                                                    </div>
+                                                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                        <div id="time_input">
+                                                                            <label for="hours">
+                                                                                <input type="number" asp-for="tComp" tabindex="125" disabled>
+
+                                                                            </label>
+                                                                            <span>:</span>
+                                                                            <label for="minutes">
+                                                                                <input type="number" asp-for="hComp" tabindex="128" disabled>
+                                                                                <div id="suggestionDropdown"></div>
+                                                                            </label>
+                                                                            <span>:</span>
+                                                                            <label for="seconds">
+                                                                                <input type="Text" asp-for="mValue" tabindex="130" disabled>
+                                                                            </label>
+                                                                        </div>
+                                                                        <input class="form-control time-input" style="width:80%; display:none;" placeholder="Select Date" type="time" asp-for="strBidDt5" value="" disabled />
+                                                                        <input type="hidden" id="hdnLastBidDt" value="@(!string.IsNullOrEmpty(Model.strBidDt5)?Model.strBidDt5:"")" />
+                                                                    </div>
+                                                                    <div class="col-8 col-sm-2 col-md-2 col-lg-2">
+                                                                        <input type="text" asp-for="strBidDt3" class="form-control BidCount" value="PT" readonly />
+                                                                        <input type="hidden" id="hdnstrBidDt3" value="@(!string.IsNullOrEmpty(Model.strBidDt3)?Model.strBidDt3:"")" />
+                                                                    </div>
+                                                                    <div class="col-8 col-sm-2 col-md-2 col-lg-2">
+                                                                        <div class="form-check form-check-inline">
+                                                                            <input type="checkbox" class="mr-1" checked="@Model.BoolUndecided" onchange="Undecided1(this)" tabindex="132" />
+                                                                            <input type="hidden" asp-for="Undecided" />
+                                                                            <input type="hidden" asp-for="Publish" />
+                                                                            <label class="form-check-label font-weight-bold" for="chkBoxTBDBid">T B D</label>
+                                                                        </div>
+                                                                    </div>
+                                                                    @* <div class="remove_prebid_row"><span id="del-biddateRow"><i class="fa fa-trash"></i></span></div>*@
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="bidDate-input" class=""></div>
+                                                        @*<div class="col-md-12 my-1 add-new-btn ">
+                                                    <span class="action-add" id="bidDate-add"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                                    </div>*@
+
+                                                    </div>
+                                                }
+
+                                                <div class="col-12">
+                                                    @if (Model.MBDCheck == "Y")
+                                                    {
+                                                        <span class="text-danger float-right font-weight-bold px-2">Note: Primes requests bids at various dates and times</span>
+                                                    }
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                    <div class="row m-0">
+                                        @if (Model.Publish)
+                                        {
+                                            if (Model.BidDt2 != null)
+                                            {
+                                                string tComponent = "00";
+                                                string hComponent = "00";
+                                                string mValue = "AM";
+                                                if (!string.IsNullOrEmpty(Model.strBidDt4) && Model.strBidDt4.Contains(":"))
+                                                {
+                                                    string[] arrTime = Model.strBidDt4.Split(":");
+                                                    int tComp = 00;
+                                                    int hComp = 00;
+                                                    int.TryParse(arrTime[0], out tComp);
+                                                    int.TryParse(arrTime[1], out hComp);
+                                                    if (tComp == 00)
+                                                    {
+                                                        int tempComp = 12;
+                                                        tComponent = tempComp.ToString();
+                                                        mValue = "AM";
+                                                    }
+                                                    if (tComp == 12)
+                                                    {
+                                                        int tempComp = tComp;
+                                                        tComponent = tempComp.ToString();
+                                                        mValue = "PM";
+                                                    }
+                                                    if (tComp > 0)
+                                                    {
+                                                        if (tComp > 12)
+                                                        {
+                                                            int tempComp = tComp - 12;
+                                                            if (tempComp < 10)
+                                                            {
+                                                                tComponent = "0" + tempComp.ToString();
+                                                            }
+                                                            else
+                                                            {
+                                                                tComponent = tempComp.ToString();
+                                                            }
+                                                            mValue = "PM";
+                                                        }
+                                                        else
+                                                        {
+                                                            if (tComp < 10)
+                                                            {
+                                                                tComponent = "0" + tComp.ToString();
+                                                                mValue = "AM";
+                                                            }
+                                                            else
+                                                            {
+                                                                tComponent = tComp.ToString();
+                                                                mValue = "PM";
+                                                            }
+
+                                                        }
+                                                    }
+                                                    if (hComp > 00)
+                                                    {
+                                                        if (hComp > 60)
+                                                        {
+                                                            hComponent = "00";
+                                                        }
+                                                        else
+                                                        {
+                                                            hComponent = hComp.ToString();
+
+                                                        }
+                                                        if (hComp < 10)
+                                                        {
+                                                            hComponent = "0" + hComp.ToString();
+                                                        }
+                                                    }
+                                                }
+                                                <div class="col-sm-12 col-md-12 col-lg-12">
+                                                    <div class="row align-items-center pt-2">
+                                                        <div class="col-md-2 col-lg-2 col-2">
+                                                            <label>Previous Bid Date</label>
+                                                        </div>
+                                                        <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                                            <div class="row mx-0">
+                                                                <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                    <input type="text" asp-for="BidDt2" class="form-control" placeholder="Select Date" value="@(Model.BidDt2!=null?Convert.ToDateTime(Model.BidDt2).ToString("MM/dd/yyyy"):"")" readonly />
+                                                                    <span class="validate"></span>
+                                                                </div>
+                                                                <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                    <div id="time_input">
+                                                                        <label for="hours">
+                                                                            <input type="number" asp-for="lastTComp" value="@tComponent" readonly>
+
+                                                                        </label>
+                                                                        <span>:</span>
+                                                                        <label for="minutes">
+                                                                            <input type="number" asp-for="lastHComp" value="@hComponent" readonly>
+                                                                        </label>
+                                                                        <span>:</span>
+                                                                        <label for="seconds">
+                                                                            <input type="Text" asp-for="lastMValue" value="AM" readonly>
+                                                                        </label>
+                                                                    </div>
+                                                                    <input autocomplete="off" type="time" asp-for="strBidDt4" class="form-control time-input" placeholder="select bid date time" style="width:80%;display:none;" interval="15" />
+                                                                    <span class="validate"></span>
+                                                                </div>
+                                                                <div class="col-8  col-sm-2 col-md-2 col-lg-2">
+                                                                    <input type="text" asp-for="strBidDt2" class="form-control" oninput="convertToUppercase(this)" value="PT" readonly />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="col-md-3 col-lg-3 col-sm-3 col-4 remove_prebid_row text-right">
+                                                        </div>
+                                                        <div id="bidDate-input" class="col-md-12 col-lg-12 col-sm-12 col-12"></div>
+
+                                                    </div>
+                                                </div>
+                                            }
+                                            else
+                                            {
+                                                <div class="col-sm-12 col-md-12 col-lg-12" id="divPrevBD" style="display:none">
+                                                    <div class="row align-items-center pt-2">
+                                                        <div class="col-md-2 col-lg-2 col-2">
+                                                            <label>Previous Bid Date</label>
+                                                        </div>
+                                                        <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                                            <div class="row mx-0">
+                                                                <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                    <input type="text" asp-for="BidDt2" class="form-control" placeholder="Select Date" readonly value="@(Model.BidDt2!=null?Convert.ToDateTime(Model.BidDt2).ToString("MM/dd/yyyy"):"")" />
+                                                                    <span class="validate"></span>
+                                                                </div>
+                                                                <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                                    <div id="time_input">
+                                                                        <label for="hours">
+                                                                            <input type="number" asp-for="lastTComp" value="00" readonly>
+
+                                                                        </label>
+                                                                        <span>:</span>
+                                                                        <label for="minutes">
+                                                                            <input type="number" asp-for="lastHComp" value="00" readonly>
+                                                                        </label>
+                                                                        <span>:</span>
+                                                                        <label for="seconds">
+                                                                            <input type="Text" asp-for="lastMValue" value="AM" readonly>
+                                                                        </label>
+                                                                    </div>
+                                                                    <input autocomplete="off" type="time" asp-for="strBidDt4" class="form-control time-input" placeholder="select bid date time" tabindex="" readonly style="width:80%; display:none;" />
+                                                                    <span class="validate"></span>
+                                                                </div>
+                                                                <div class="col-8  col-sm-2 col-md-2 col-lg-2">
+                                                                    <input type="text" asp-for="strBidDt2" class="form-control" oninput="convertToUppercase(this)" value="PT" readonly />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div id="bidDate-input" class="col-md-12 col-lg-12 col-sm-12 col-12"></div>
+                                                    </div>
+                                                </div>
+                                            }
+                                        }
+                                        <div class="row align-items-center mx-0 mt-2">
+                                            <div class=" col-12 col-sm-12 col-md-12 col-lg-12">
+                                                <div class="cus-border date-index">
+                                                    @* <div class="row">
+                                                    <div class="col-2 col-sm-2 col-md-2 col-lg-2"><label>PreBid Info</label></div>
+                                                    <div class="col-6 col-sm-10 col-md-10 col-lg-10 pl-0">
+                                                    <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" tabindex="150" onchange="UndecidedPre(this)">
+                                                    <label class="form-check-label font-weight-bold" for="inlineCheckbox1">T B D</label>
+                                                    </div>
+                                                    </div>
+                                                    </div> *@
+                                                    <div class="row">
+                                                <div class="col-6 col-sm-2 col-md-2 col-lg-2"><label>Prebid Info</label></div>
+                                            </div>
+                                                    <div id="divPreBids">
+                                                        <div class="row">
+                                                            <div class="col-12 col-sm-2 col-md-2 mb-lg-0 mb-2">
+                                                                <label>Prebid Note</label>
+                                                            </div>
+                                                            <div class="col-12 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0 pl-420">
+                                                                <input tabindex="210" class="form-control mb-2" type="text" placeholder="Enter Prebid Note" asp-for="PrebidNote" />
+                                                            </div>
+                                                        </div>
+                                                        @{
+                                                            int tabbing = 220;
+            //150 index reserved for preBid
+                                                        }
+                                                        @if (Model.preBidInfos != null && Model.preBidInfos.Count > 0)
+                                                        {
+                                                            for (int i = 0; i < Model.preBidInfos.Count; i++)
+                                                            {
+                                                                int idx = i + 1;
+                                                                string PreBid = Model.preBidInfos[i].PreBidDate == null ? "" : Convert.ToDateTime(Model.preBidInfos[i].PreBidDate).ToString("MM/dd/yyyy");
+                                                                string tComponent = "00";
+                                                                string hComponent = "00";
+                                                                string mValue = "AM";
+                                                                if (!string.IsNullOrEmpty(Model.preBidInfos[i].PreBidTime))
+                                                                {
+                                                                    string[] arrTime = Model.preBidInfos[i].PreBidTime.Split(":");
+                                                                    int tComp = 00;
+                                                                    int hComp = 00;
+                                                                    int.TryParse(arrTime[0], out tComp);
+                                                                    int.TryParse(arrTime[1], out hComp);
+                                                                    if (tComp == 00)
+                                                                    {
+                                                                        int tempComp = 12;
+                                                                        tComponent = tempComp.ToString();
+                                                                        mValue = "AM";
+                                                                    }
+                                                                    if (tComp == 12)
+                                                                    {
+                                                                        int tempComp = tComp;
+                                                                        tComponent = tempComp.ToString();
+                                                                        mValue = "PM";
+                                                                    }
+                                                                    if (tComp > 0)
+                                                                    {
+                                                                        if (tComp > 12)
+                                                                        {
+                                                                            int tempComp = tComp - 12;
+                                                                            if (tempComp < 10)
+                                                                            {
+                                                                                tComponent = "0" + tempComp.ToString();
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                tComponent = tempComp.ToString();
+                                                                            }
+                                                                            mValue = "PM";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            if (tComp < 10)
+                                                                            {
+                                                                                tComponent = "0" + tComp.ToString();
+                                                                                mValue = "AM";
+                                                                            }
+                                                                            else
+                                                                            {
+                                                                                tComponent = tComp.ToString();
+                                                                                mValue = "PM";
+                                                                            }
+
+                                                                        }
+                                                                    }
+                                                                    if (hComp > 00)
+                                                                    {
+                                                                        if (hComp > 60)
+                                                                        {
+                                                                            hComponent = "00";
+                                                                        }
+                                                                        else
+                                                                        {
+                                                                            hComponent = hComp.ToString();
+
+                                                                        }
+                                                                        if (hComp < 10)
+                                                                        {
+                                                                            hComponent = "0" + hComp.ToString();
+                                                                        }
+                                                                    }
+                                                                }
+                                                                <div class="row border-bottom pb-2 prebidconveniancecount" id="prebid-info-row">
+                                                                    <div class="col-2 col-sm-2 col-md-2 mb-lg-0 mb-2 Pre-Text">
+                                                                         <label>Meeting @idx</label>
+                                                                    </div>
+                                                                    <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                                                        <div class="row">
+                                                                            <div class="col-lg-2 col-md-2">
+                                                                                @{
+                                                                                    tabbing = tabbing++;
+                                                                                }
+                                                                                <input type="hidden" asp-for="preBidInfos[i].Id" />
+                                                                                <input type="text" asp-for="preBidInfos[i].PreBidDate" class="form-control chkBidDup datepicker-custom" placeholder="Select Date" tabindex="@tabbing" onchange="getPreDateIndex((this).id,event)" value="@PreBid" />
+                                                                                <input type="hidden" asp-for="preBidInfos[i].IsDeleted" class="Pre-Del">
+                                                                            </div>
+                                                                            @{
+                                                                                tabbing = tabbing++;
+                                                                            }
+                                                                            <div class="col-10 col-lg-3 col-md-3">
+                                                                                <div id="time_input">
+                                                                                    <label for="hours">
+                                                                                        <input type="number" asp-for="preBidInfos[i].tComp" value="@tComponent" tabindex="@tabbing">
+                                                                                    </label>
+                                                                                    <span>:</span>
+                                                                                    @{
+                                                                                        tabbing = tabbing++;
+                                                                                    }
+                                                                                    @**@
+                                                                                    <label for="minutes">
+                                                                                        <input type="number" asp-for="preBidInfos[i].hComp" value="@hComponent" tabindex="@tabbing">
+                                                                                    </label>
+                                                                                    <span>:</span>
+                                                                                    @{
+                                                                                        tabbing = tabbing++;
+                                                                                    }
+
+                                                                                    <label for="seconds">
+                                                                                        <input type="Text" asp-for="preBidInfos[i].mValue" value="@mValue" tabindex="@tabbing">
+                                                                                    </label>
+                                                                                </div>
+                                                                                <input asp-for="preBidInfos[i].PreBidTime" class="form-control time-input" type="time" style="display:none;" placeholder="Time">
+                                                                            </div>
+                                                                            <div class="col-2 col-lg-1 col-md-2 col-sm-2 pr-0">
+                                                                                <input class="form-control" type="text" asp-for="preBidInfos[i].PST" value="PT" readonly>
+                                                                            </div>
+                                                                            @{
+                                                                                int locTab = tabbing++;
+                                                                                tabbing = locTab;
+                                                                                tabbing++;
+                                                                                var andcheck = false;
+                                                                                var mancheck = false;
+                                                                                if (Model != null)
+                                                                                {
+                                                                                    andcheck = Model.preBidInfos[i].PreBidAnd;
+                                                                                    mancheck = Model.preBidInfos[i].Mandatory;
+                                                                                }
+                                                                            }
+                                                                            @* <div class="col-2 col-lg-1 col-md-1 col-sm-2 ">
+                                                                    <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="checkbox" @((andcheck) ? "checked" : "") onchange="ChangeAnd(this)" tabindex="@tabbing">
+                                                                    <label class="form-check-label" for="and">and</label>
+                                                                    <input type="hidden" asp-for="preBidInfos[i].PreBidAnd">
+                                                                    </div>
+                                                                    </div> *@
+                                                                            @{
+                                                                                tabbing++;
+                                                                            }
+                                                                            <div class="col-2 col-lg-2 col-md-2 text-right">
+                                                                                <div class="form-check form-check-inline">
+                                                                                    <input class="form-check-input" type="checkbox" @((mancheck) ? "checked" : "") id="" value="option1" tabindex="@tabbing" onchange="ChangeMandatory(this)">
+                                                                                    <label class="form-check-label" for="and">Mandatory</label>
+                                                                                    <input type="hidden" asp-for="preBidInfos[i].Mandatory">
+                                                                                </div>
+                                                                            </div>
+
+                                                                            @{
+                                                                                tabbing++;
+                                                                            }
+                                                                            <div class="col-2 col-lg-1 col-md-1 col-sm-1">
+                                                                                <div class="remove_prebid_row"><span style="cursor:pointer" class="popClassDel" id="delPrebid-row" ><i class="fa fa-trash"></i></span></div>
+                                                                            </div>
+                                                                            @{
+                                                                                tabbing++;
+                                                                            }
+
+                                                                            <div class="col-9 col-lg-8 col-md-8 col-sm-9 mt-2">
+                                                                                <input tabindex="@tabbing" class="form-control" type="text" asp-for="preBidInfos[i].Location" placeholder="Location">
+                                                                            </div>
+                                                                            @{
+                                                                                tabbing++;
+                                                                                var precheck=Model.preBidInfos[i].UndecidedPreBid!=null?(bool)Model.preBidInfos[i].UndecidedPreBid:false;
+                                                                            }
+                                                                            <div class="col-lg-2 mt-auto">
+                                                                                <div class="form-check form-check-inline">
+                                                                                    <input type="hidden" asp-for="preBidInfos[i].UndecidedPreBid" />
+                                                                                    <input class="form-check-input tbdcheck" type="checkbox" id="inlineCheckbox1" @((precheck) ? "checked" : "") tabindex="@tabbing" onchange="UndecidedPre(this)">
+                                                                                    <label class="form-check-label font-weight-bold" for="inlineCheckbox1">T B D</label>
+                                                                                </div>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            }
+                                                        }
+                                                        else
+                                                        {
+                                                            <div class="row border-bottom pb-2 prebidconveniancecount" id="prebid-info-row">
+                                                                @{
+                                                                    Model.preBidInfos = null;
+                                                                }
+                                                                <div class="col-2 col-sm-2 col-md-2 mb-lg-0 mb-2 Pre-Text">
+                                                                    <label>Meeting 1</label>
+                                                                </div>
+                                                                <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                                                    <div class="row">
+
+                                                                        <div class="col-lg-2 col-md-3">
+                                                                            @{
+                                                                                tabbing = tabbing++;
+                                                                            }
+                                                                            <input type="text" asp-for="preBidInfos[0].PreBidDate" class="form-control chkBidDup datepicker-custom" placeholder="Select Date" tabindex="@tabbing" onchange="getPreDateIndex((this).id,event)" />
+                                                                            <input type="hidden" asp-for="preBidInfos[0].IsDeleted" class="Pre-Del">
+                                                                        </div>
+                                                                        @{
+                                                                            tabbing = tabbing++;
+                                                                        }
+                                                                        <div class="col-10 col-lg-3 col-md-3  ">
+                                                                            <div id="time_input">
+                                                                                <label for="hours">
+                                                                                    <input type="number" tabindex="@tabbing" asp-for="preBidInfos[0].tComp" value="00">
+                                                                                </label>
+                                                                                <span>:</span>
+                                                                                @{
+                                                                                    tabbing = tabbing++;
+                                                                                }
+
+                                                                                <label for="minutes">
+                                                                                    <input type="number" tabindex="@tabbing" asp-for="preBidInfos[0].hComp" value="00">
+                                                                                </label>
+                                                                                <span>:</span>
+                                                                                @{
+                                                                                    tabbing = tabbing++;
+                                                                                }
+                                                                                <label for="seconds">
+                                                                                    <input type="Text" tabindex="@tabbing" asp-for="preBidInfos[0].mValue" value="AM">
+                                                                                </label>
+                                                                            </div>
+                                                                            <input asp-for="preBidInfos[0].PreBidTime" class="form-control time-input" type="time" style="display:none;" placeholder="Time">
+                                                                        </div>
+                                                                        <div class="col-2 col-lg-1 col-md-2 col-sm-2 pr-0">
+                                                                            <input class="form-control" type="text" asp-for="preBidInfos[0].PST" value="PT" readonly>
+                                                                        </div>
+                                                                        @{
+                                                                            int locTab = tabbing++;
+                                                                            tabbing = locTab;
+                                                                            tabbing++;
+                                                                        }
+                                                                       @* <div class="col-2 col-lg-1 col-md-1 col-sm-1">
+                                                                            <div class="form-check form-check-inline">
+                                                                                <input class="form-check-input" type="checkbox" tabindex="@tabbing" onchange="ChangeAnd(this)">
+                                                                                <label class="form-check-label" for="and">and</label>
+                                                                                <input type="hidden" asp-for="preBidInfos[0].PreBidAnd">
+                                                                            </div>
+                                                                        </div>*@
+                                                                        @{
+                                                                            tabbing++;
+                                                                        }
+                                                                        <div class="col-2 col-lg-2 col-md-2 text-right">
+                                                                            <div class="form-check form-check-inline">
+                                                                                <input class="form-check-input" type="checkbox" id="" value="option1" tabindex="@tabbing" onchange="ChangeMandatory(this)">
+                                                                                <label class="form-check-label" for="and">Mandatory</label>
+                                                                                <input type="hidden" asp-for="preBidInfos[0].Mandatory">
+                                                                            </div>
+                                                                        </div>
+                                                                        @{
+                                                                            tabbing++;
+                                                                        }
+                                                                        <div class="col-2 col-lg-1 col-md-1 col-sm-1">
+                                                                            <div class="remove_prebid_row"><span style="cursor:pointer" id="delPrebid-row" class="popClassDel" tabindex="@tabbing"><i class="fa fa-trash"></i></span></div>
+                                                                        </div>
+                                                                        @{
+                                                                            tabbing++;
+                                                                        }
+                                                                        <div class="col-9 col-lg-8 col-md-8 col-sm-9 mt-2">
+                                                                            <input tabindex="@tabbing" class="form-control" type="text" asp-for="preBidInfos[0].Location" placeholder="Location">
+                                                                        </div>
+                                                                         @{
+                                                                            tabbing++;
+                                                                        }
+                                                                        <div class="col-lg-2 mt-auto">
+                                                                            <div class="form-check form-check-inline">
+                                                                                <input type="hidden" asp-for="preBidInfos[0].UndecidedPreBid" value="false"/>
+                                                                                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" tabindex="@tabbing" onchange="UndecidedPre(this)">
+                                                                                    <label class="form-check-label font-weight-bold" for="inlineCheckbox1">T B D</label>
+                                                                            </div>
+                                                                        </div>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                        }
+                                                        @{
+                                                            tabbing++;
+                                                        }
+                                                        <div id="bidInfo-input"></div>
+                                                        <div class="col-md-12 mt-2 add-new-btn pl-0" readonly>
+                                                            <span class="action-add" id="bidInfo-row-add" tabindex="@tabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                                        </div>
+                                                    </div>
+
+
+
+
+
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-12 col-md-12 col-lg-12">
+                                            @{
+                                                int EntTabbing = 510;
+                                                //Reserve 200 For Entity section
+                                            }
+                                            <div class="cus-border mt-0">
+                                                <div class="col-12 col-md-12 col-lg-12 px-0">
+                                                    <label>Project Team</label>
+                                                    <label class="float-right px-3">Issuing Office</label>
+                                                </div>
+                                                @if (Model.Entities != null && Model.Entities.Count > 0)
+                                                {
+                                                    @for (int i = 0; i < Model.Entities.Count; i++)
+                                                    {
+                                                        <div class="row align-items-center" id="project-team-row">
+                                                            @{
+                                                                EntTabbing++;
+                                                            }
+                                                            <div class="col-12  col-md-5 col-lg-5">
+                                                                <input type="hidden" asp-for="Entities[i].EntityID">
+                                                                <input type="hidden" asp-for="Entities[i].IsActive" class="Del-Ent">
+                                                                <input tabindex="@EntTabbing" placeholder="Entity Type" autocomplete="off" type="text" class="form-control mb-3" type="text" asp-for="Entities[i].EntityTypeString" placeholder="Entity Type">
+                                                                <input type="hidden" asp-for="Entities[i].EntityType">
+                                                            </div>
+                                                            @{
+                                                                EntTabbing++;
+                                                            }
+                                                            <div class="col-12  col-md-5 col-lg-5">
+                                                                <input tabindex="@EntTabbing" type="text" class="form-control pr-0 EntityNameClass mb-3" placeholder="Entity Name" asp-for="Entities[i].EntityName">
+                                                                <input type="hidden" asp-for="Entities[i].NameId">
+                                                                <input type="hidden" asp-for="Entities[i].CompType">
+                                                            </div>
+                                                            @{
+                                                                EntTabbing++;
+                                                            }
+                                                            <div class="col-1 col-md-2 col-lg-2 col-xl-1">
+                                                                <input type="hidden" asp-for="Entities[i].chkIssue" class="chk-Issue">
+                                                                <input type="checkbox" tabindex="@EntTabbing" class="mx-1 align-middle" checked="@Model.Entities[i].chkIssue" id="chkBoxIssue" onchange="AssignIssue(this)">
+                                                            </div>
+                                                            @{
+                                                                EntTabbing++;
+                                                            }
+                                                            <div class="col-1 col-md-2 col-lg-2 col-xl-1">
+                                                                <div class="remove_prebid_row"><span id="DeleteRow" class="p-0 popClassDel" tabindex="@EntTabbing"><i class="fa fa-trash"></i></span></div>
+                                                            </div>
+                                                        </div>
+                                                    }
+                                                }
+                                                else
+                                                {
+
+
+                                                    <div class="row align-items-center" id="project-team-row">
+                                                        @{
+                                                            Model.Entities = null;
+                                                        }
+                                                        @{
+                                                            EntTabbing++;
+                                                        }
+                                                        <div class="col-12  col-md-5 col-lg-5">
+                                                            <input type="hidden" asp-for="Entities[0].EntityID">
+                                                            <input type="hidden" asp-for="Entities[0].IsActive" class="Del-Ent">
+                                                            <input tabindex="@EntTabbing" placeholder="Entity Type" autocomplete="off" type="text" class="form-control mb-3" type="text" asp-for="Entities[0].EntityTypeString" placeholder="Entity Type">
+                                                            <input type="hidden" asp-for="Entities[0].EntityType">
+                                                        </div>
+                                                        @{
+                                                            EntTabbing++;
+                                                        }
+                                                        <div class="col-12  col-md-5 col-lg-5">
+                                                            <input tabindex="@EntTabbing" type="text" class="form-control pr-0 EntityNameClass mb-3" placeholder="Entity Name" asp-for="Entities[0].EntityName" value="">
+                                                            <input type="hidden" asp-for="Entities[0].NameId" value="">
+                                                            <input type="hidden" asp-for="Entities[0].CompType">
+                                                        </div>
+                                                        @{
+                                                            EntTabbing++;
+                                                        }
+                                                        <div class="col-1 col-md-2 col-lg-2 col-xl-1">
+                                                            <input type="hidden" asp-for="Entities[0].chkIssue" class="chk-Issue" value="">
+                                                            <input type="checkbox" class="mx-1 align-middle" id="chkBoxIssue" onchange="AssignIssue(this)" tabindex="@EntTabbing">
+                                                        </div>
+                                                        @{
+                                                            EntTabbing++;
+                                                        }
+                                                        <div class="col-1 col-md-2 col-lg-2 col-xl-1">
+                                                            <div class="remove_prebid_row"><span id="DeleteRow" class="p-0 popClassDel" tabindex="@EntTabbing"><i class="fa fa-trash"></i></span></div>
+                                                        </div>
+                                                        @{
+                                                            EntTabbing++;
+                                                        }
+                                                    </div>
+                                                }
+                                                <div id="newinput" class=""></div>
+                                                <div class="col-md-12 mt-3 add-new-btn ">
+                                                    <span class="action-add" id="project-row-adder" tabindex="@EntTabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        @*  <div class="row  align-items-center mx-0" style="width:100%">
+                                        <div class="col-12 col-sm-2 col-md-2 col-lg-2"><label>Bid Bond</label></div>
+                                        <div class="col-12 col-sm-10 col-md-10 col-lg-10 ">
+                                        <div class="row align-items-center">
+                                        <div class="col-6 col-md-6 col-lg-6">
+                                        <input type="text" asp-for="BidBond" class="form-control" placeholder="Bid Bond" tabindex="301" />
+                                        </div>
+                                        <div class="col-6 col-md-6 col-lg-6">
+                                        <input type="checkbox" asp-for="PrevailingWage" class="mx-1 align-middle" tabindex="310" />
+                                        <label> Prevailing Wage</label>
+                                        </div>
+                                        </div>
+                                        </div>
+                                        </div>
+
+                                        <div class="row align-items-center mx-0" style="width:100%">
+                                        <div class="col-12 col-sm-2 col-md-2 col-lg-2"><label>Est. Completion</label></div>
+                                        <div class="col-12 col-sm-10 col-md-10 col-lg-10 mt-2">
+                                        <input type="text" asp-for="CompleteDt" class="form-control" placeholder="Estimated Completion" tabindex="320" />
+
+                                        </div>
+                                        </div>
+                                        <div class="row align-items-center mx-0" style="width:100%">
+                                        <div class="col-12 col-sm-2 col-md-2 col-lg-2">
+                                        <label>Sub. Approval</label>
+                                        </div>
+                                        <div class="col-12 col-sm-10 col-md-10 col-lg-10 mt-2">
+                                        <input type="text" asp-for="SubApprov" tabindex="330" class="form-control" placeholder="Substitution Approval" />
+                                        </div>
+                                        </div>
+                                        @{
+                                        //165 tab index reserve for Est. Cost section
+                                        int costTabbing = 335;
+                                        }
+                                        @if (Model.EstCostDetails != null && Model.EstCostDetails.Count > 0)
+                                        {
+                                        @for (int i = 0; i < Model.EstCostDetails.Count; i++)
+                                        {
+                                        int idx = i + 1;
+                                        <div class="row align-items-center mx-0 mt-2 costconveniancecount" style="width:100%" id="remove-cost">
+                                        <div class="col-12 col-sm-2 col-md-2 col-lg-2 Cost-Text"><label>Estimated Cost @idx</label></div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        <div class="col-md-2 col-lg-1">
+                                        <select class="form-control range-sign p-0" asp-for="EstCostDetails[i].RangeSign"  data-index="@i">
+                                        <option selected value="0">No</option>
+                                        <option selected="@(Model.EstCostDetails[i].RangeSign!=null&&Model.EstCostDetails[i].RangeSign=="1")" value="1">&lt;</option>
+                                        <option selected="@(Model.EstCostDetails[i].RangeSign!=null&&Model.EstCostDetails[i].RangeSign=="2")"value="2">&gt;</option>
+                                        </select>
+                                        </div>
+                                        <div class="col-md-5 col-lg-2 mt-575">
+                                        <input type="hidden" asp-for="EstCostDetails[i].Removed" class="Del-CostClass">
+                                        <input type="text" asp-for="EstCostDetails[i].EstFrom" class="form-control pr-0 inpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" onload="formatNumberInput(this)" />
+                                        <input type="hidden" asp-for="EstCostDetails[i].Id" class="Del-CostIdClass">
+                                        </div>
+                                        <div class="col-md-2 col-lg-1"><label class="mb-0">TO</label></div>
+                                        <div class="col-md-5 col-lg-2">
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        <input type="text" asp-for="EstCostDetails[i].EstTo" class="form-control inpRem toinpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                        </div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        <div class="col-2 col-md-2 col-lg-3">
+                                        <input type="text" asp-for="EstCostDetails[i].Description" class="form-control" tabindex="@costTabbing" placeholder="Description" />
+                                        </div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        <div class="col-2 col-md-2 col-lg-1 added-icon">
+                                        <span class="action-del popClassDel" id="del-costRow" tabindex="@costTabbing"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                                        </div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        </div>
+                                        }
+
+                                        }
+                                        else
+                                        {
+                                        <div class="row align-items-center mx-0 mt-2 costconveniancecount" style="width:100%" id="remove-cost">
+                                        <div class="col-12 col-sm-2 col-md-2 col-lg-2 Cost-Text"><label>Estimated Cost 1</label></div>
+                                        @{
+                                        Model.EstCostDetails = null;
+                                        costTabbing++;
+                                        }
+                                        <div class="col-md-2 col-lg-1">
+                                        <select class="form-control range-sign p-0" asp-for="EstCostDetails[0].RangeSign"  data-index="0">
+                                        <option value="0" selected>No</option>
+                                        <option value="1" selected="@(Model.EstCostDetails!=null&&Model.EstCostDetails[0].RangeSign!=null&&Model.EstCostDetails[0].RangeSign == "1")">&lt;</option>
+                                        <option value="2" selected="@(Model.EstCostDetails!=null&&Model.EstCostDetails[0].RangeSign!=null&&Model.EstCostDetails[0].RangeSign == "2")">&gt;</option>
+                                        </select>
+                                        </div>
+                                        <div class="col-md-5 col-lg-2 mt-575">
+                                        <input type="hidden" asp-for="EstCostDetails[0].Removed" class="Del-CostClass">
+                                        <input type="text" asp-for="EstCostDetails[0].EstFrom" class="form-control pr-0 inpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                        <input type="hidden" asp-for="EstCostDetails[0].Id" class="Del-CostIdClass">
+                                        </div>
+                                        <div class="col-md-2 col-lg-1"><label class="mb-0">TO</label></div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        <div class="col-md-5 col-lg-2">
+                                        <input type="text" asp-for="EstCostDetails[0].EstTo" class="form-control inpRem toinpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                        </div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        <div class="col-2 col-md-2 col-lg-3 added-icon">
+                                        <input type="text" asp-for="EstCostDetails[0].Description" class="form-control" tabindex="@costTabbing" placeholder="Description" />
+                                        </div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        <div class="col-2 col-md-2 col-lg-1 added-icon">
+                                        <span class="action-del popClassDel" id="del-costRow" tabindex="@costTabbing"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                                        </div>
+                                        @{
+                                        costTabbing++;
+                                        }
+                                        </div>
+
+                                        }
+                                        <div id="costInput" class="mt-2 col-12">
+                                        </div>
+                                        <div class="col-md-12 add-new-btn">
+                                        <span class="action-add" id="cost-row-add" tabindex="@costTabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                        </div> *@
+
+
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Correct place-->
+                            <!-- Right section of project info -->
+                            <div class="col-12 col-md-5">
+                                <div class="row align-items-center right-sec">
+                                    <div class="col-12 col-md-12 col-lg-12"><label>Project Description</label></div>
+                                    <div class="col-12 col-md-12 col-lg-12 py-2">
+                                        <textarea asp-for="Story" class="cus-textarea" rows="5" autocomplete="off" tabindex="140"></textarea>
+                                    </div>
+
+                                    <div class="row  align-items-center mx-0 mb-2" style="width:100%">
+                                        <div class="col-lg-4">
+                                            <div class="">
+                                                <label>Bid Bond</label>
+                                                <input type="text" asp-for="BidBond" class="form-control" placeholder="Bid Bond" tabindex="145" />
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-4">
+                                            <label>Sub. Approval</label>
+                                            <input type="text" asp-for="SubApprov" tabindex="150" class="form-control" placeholder="Substitution Approval" />
+
+                                        </div>
+                                        @*  <div class="col-12 col-sm-12 col-md-12 col-lg-12"><label>Bid Bond 44</label></div>
+                                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 ">
+                                        <div class="row align-items-center">
+                                        <div class="col-6 col-md-6 col-lg-6">
+                                        <input type="text" asp-for="BidBond" class="form-control" placeholder="Bid Bond" tabindex="301" />
+                                        </div>
+                                        <div class="col-6 col-md-6 col-lg-6">
+                                        <input type="checkbox" asp-for="PrevailingWage" class="mx-1 align-middle" tabindex="310" />
+                                        <label> Prevailing Wage</label>
+                                        </div>
+                                        </div>
+                                        </div> *@
+                                    </div>
+
+                                    @*  <div class="row align-items-center mx-0" style="width:100%">
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                    <label>Sub. Approval</label>
+                                    </div>
+                                    <div class="col-12 col-sm-12 col-md-12 col-lg-12">
+                                    <input type="text" asp-for="SubApprov" tabindex="330" class="form-control" placeholder="Substitution Approval" />
+                                    </div>
+                                    </div> *@
+                                    @{
+                                        //165 tab index reserve for Est. Cost section
+                                        int costTabbing = 165;
+                                    }
+                                    @if (Model.EstCostDetails != null && Model.EstCostDetails.Count > 0)
+                                    {
+                                        @for (int i = 0; i < Model.EstCostDetails.Count; i++)
+                                        {
+                                            int idx = i + 1;
+                                            <div class="row align-items-center mx-0 mt-2 costconveniancecount" style="width:100%" id="remove-cost">
+                                                <div class="col-12 col-sm-12 col-md-12 col-lg-12 Cost-Text"><label>Estimated Cost @idx</label></div>
+                                                @{
+                                                    costTabbing++;
+                                                }
+                                                <div class="col-md-2 col-lg-2 pr-0" style="flex:0 0 9%;width:fit-content;">
+                                                    <select class="form-control range-sign p-0" tabindex="@costTabbing" asp-for="EstCostDetails[i].RangeSign" data-index="@i">
+                                                        <option selected value="0"> </option>
+                                                        <option selected="@(Model.EstCostDetails[i].RangeSign!=null&&Model.EstCostDetails[i].RangeSign=="1")" value="1">&lt;</option>
+                                                        <option selected="@(Model.EstCostDetails[i].RangeSign!=null&&Model.EstCostDetails[i].RangeSign=="2")" value="2">&gt;</option>
+                                                    </select>
+                                                </div>
+                                                 @{
+                                                    costTabbing++;
+                                                }
+                                                <div class="col-md-5 col-lg-3 mt-575">
+                                                    <input type="hidden" asp-for="EstCostDetails[i].Removed" class="Del-CostClass">
+                                                    <input type="text" asp-for="EstCostDetails[i].EstFrom" class="form-control pr-0 inpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" onload="formatNumberInput(this)" />
+                                                    <input type="hidden" asp-for="EstCostDetails[i].Id" class="Del-CostIdClass">
+                                                </div>
+                                                <div class=""><label class="mb-0">TO</label></div>
+                                                <div class="col-md-5 col-lg-3">
+                                                    @{
+                                                        costTabbing++;
+                                                    }
+                                                    <input type="text" asp-for="EstCostDetails[i].EstTo" class="form-control inpRem toinpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                                </div>
+                                                @{
+                                                    costTabbing++;
+                                                }
+                                                <div class="col-2 col-md-2 col-lg-3">
+                                                    <input type="text" asp-for="EstCostDetails[i].Description" class="form-control" tabindex="@costTabbing" placeholder="Description" />
+                                                </div>
+                                                @{
+                                                    costTabbing++;
+                                                }
+                                                <div class="col-2 col-md-2 col-lg-1 added-icon">
+                                                    <span class="action-del popClassDel" id="del-costRow" tabindex="@costTabbing"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                                                </div>
+                                                @{
+                                                    costTabbing++;
+                                                }
+                                            </div>
+                                        }
+
+                                    }
+                                    else
+                                    {
+                                        <div class="row align-items-center mx-0 mt-2 costconveniancecount" style="width:100%" id="remove-cost">
+                                            <div class="col-12 col-sm-12 col-md-12 col-lg-12 Cost-Text"><label>Estimated Cost 1</label></div>
+                                            @{
+                                                Model.EstCostDetails = null;
+                                                costTabbing++;
+                                            }
+                                            <div class="col-md-2 col-lg-2 pr-0" style="flex:0 0 9%;width:fit-content;">
+                                                <select class="form-control range-sign p-0" asp-for="EstCostDetails[0].RangeSign" tabindex="@costTabbing" data-index="0">
+                                                    <option value="0" selected> </option>
+                                                    <option value="1" selected="@(Model.EstCostDetails!=null&&Model.EstCostDetails[0].RangeSign!=null&&Model.EstCostDetails[0].RangeSign == "1")">&lt;</option>
+                                                    <option value="2" selected="@(Model.EstCostDetails!=null&&Model.EstCostDetails[0].RangeSign!=null&&Model.EstCostDetails[0].RangeSign == "2")">&gt;</option>
+                                                </select>
+                                            </div>
+                                            @{
+                                                costTabbing++;
+                                            }
+                                            <div class="col-md-5 col-lg-3 mt-575">
+                                                <input type="hidden" asp-for="EstCostDetails[0].Removed" class="Del-CostClass">
+                                                <input type="text" asp-for="EstCostDetails[0].EstFrom" class="form-control pr-0 inpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                                <input type="hidden" asp-for="EstCostDetails[0].Id" class="Del-CostIdClass">
+                                            </div>
+                                            <div class=""><label class="mb-0">TO</label></div>
+                                            @{
+                                                costTabbing++;
+                                            }
+                                            <div class="col-md-5 col-lg-3">
+                                                <input type="text" asp-for="EstCostDetails[0].EstTo" class="form-control inpRem toinpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                            </div>
+                                            @{
+                                                costTabbing++;
+                                            }
+                                            <div class="col-2 col-md-2 col-lg-3 added-icon">
+                                                <input type="text" asp-for="EstCostDetails[0].Description" class="form-control" tabindex="@costTabbing" placeholder="Description" />
+                                            </div>
+                                            @{
+                                                costTabbing++;
+                                            }
+                                            <div class="col-2 col-md-2 col-lg-1 added-icon">
+                                                <span class="action-del popClassDel" id="del-costRow" tabindex="@costTabbing"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                                            </div>
+                                            @{
+                                                costTabbing++;
+                                            }
+                                        </div>
+
+                                    }
+                                    <div id="costInput" class="mt-2 col-12">
+                                    </div>
+                                    <div class="col-md-12 add-new-btn">
+                                        <span class="action-add" id="cost-row-add" tabindex="@costTabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                    </div>
+
+                                    @* <div class="col-12 col-md-12 col-lg-12 mt-note"><label>Project Notes : For Internal Use Only</label></div>
+                                    <div class="col-12 col-md-12 col-lg-12">
+                                    <textarea tabindex="710" class="cus-textarea" rows="5" autocomplete="off" asp-for="InternalNote"></textarea>
+                                    </div> *@
+                                </div>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Addenda section  -->
+                <div class="row adndaSec">
+                    <div class="col-md-7 pr-0">
+                        <div class="main-heading">
+                            <h2 class="edit-Info toggle-addenda" style="padding: 5px 10px;"><i class="fa fa-chevron-right mx-1" aria-hidden="true"></i> Addenda</h2>
+                        </div>
+                        <div class="cst-optional addenda">
+                            <div class="box-space">
+                                <div class="row border-right">
+                                    <div class="col-md-12 col-lg-12 px-0">
+                                        <div class="row mx-0">
+                                            <label for="" class="col-md-2 col-lg-2">Addenda Note</label>
+                                            <div class="col-md-8 col-lg-8 mb-0">
+                                                <textarea tabindex="720" class="cus-textarea" rows="2" placeholder="Add Addenda Note" autocomplete="off" asp-for="AddendaNote"></textarea>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    @{
+                                        int AddTabbing = 780;
+                                        //Reserve 100 For Addenda section
+                                    }
+                                    @if (Model.AddendaS3Files != null)
+                                    {
+                                        if (Model.AddendaS3Files.Count != 0 && Model.AddendaS3Files.Count != null)
+                                        {
+                                            <table class="table table-borderless text-center tbl-adnda">
+                                                <thead class="border-bottom">
+                                                    <tr>
+                                                        <th>File</th>
+                                                        <th>New Bid Date ?</th>
+                                                    </tr>
+                                                </thead>
+                                                <tbody>
+                                                    @for (int i = 0; i < Model.AddendaS3Files.Count; i++)
+                                                    {
+                                                        string hrefPath = "https://contractor-aws.s3.amazonaws.com/" + Model.AddendaS3Files[i].PathInfo;
+                                                        if (hrefPath.IndexOf(" ") > -1)
+                                                            hrefPath = hrefPath.Replace(" ", "+");
+                                                        string OrderAll = hrefPath + "$" + Model.AddendaS3Files[i].FileInfo;
+
+                                                        <iframe id="my_iframe" style="display:none;"></iframe>
+                                                        bool isFile = false;
+                                                        bool.TryParse(Model.AddendaS3Files[i].IsFile.ToString(), out isFile);
+                                                        <tr>
+                                                            <td>@Model.AddendaS3Files[i].FileInfo</td>
+                                                            <td><input type="checkbox" class="form-check-input chkAddBox" id="chkAddBox" onchange="AssignBidDate(this)" tabindex="@AddTabbing" data-value="@Model.AddendaS3Files[i]"></td>
+                                                        </tr>
+                                                        AddTabbing++;
+                                                    }
+                                                </tbody>
+                                            </table>
+                                        }
+                                        else
+                                        {
+                                            <p class="p-3 mb-0"><b>No Addenda</b></p>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <p class="p-3 mb-0"><b>No Addenda</b></p>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-5 pl-0">
+                        <div class="main-heading">
+                            <h2 class="edit-Info toggle-addenda" style="padding:5px 10px;">Bid Results</h2>
+                        </div>
+                        <div class="cst-optional addenda">
+                            <div class="box-space border-0">
+                                <div class="row">
+                                    <div class="col-md-12 log-lg-12 mb-0">
+                                        @*<label for="">Bid Results</label>*@
+                                        <textarea tabindex="760" placeholder="Add Note" class="cus-textarea" rows="3" autocomplete="off" asp-for="BRNote"></textarea>
+                                        <span class="BrError" style="color: red;font-size:13px;"></span>
+                                    </div>
+                                    @*<div class="col-md-6 log-lg-6 d-flex align-items-end mt-767">
+                                    <div class="show btn-sec">
+                                    <button type="submit" class="searchBtn" id="dropdownMenuLink">
+                                    <span class="border-0" onclick="AddBrNote()">Save</span>
+                                    </button>
+
+                                    </div>
+                                    </div>*@
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <!-- plan holder bid results section   -->
+                <div class="main-heading">
+                    <h2 class="edit-Info toggle-holder"><i class="fa fa-chevron-right mx-1" aria-hidden="true"></i> Plan Holders List</h2>
+                </div>
+                <div class="cst-optional holder">
+                    <input type="hidden" value="Y" id="hdnPHLNote" />
+                    <div class="col-md-12 mt-3" id="IdPhl" style="display:none">
+                        <div class="row py-2">
+                            <div class="col-md-6 log-lg-6 mb-0">
+                                <input tabindex="830" type="text" class="form-control" autocomplete="off" id="txtPhl" name="InternalNote" placeholder="PHL Note" />
+                                <span class="valError" style="color: red;font-size:13px;"></span>
+
+                            </div>
+                            <div class="col-md-6 log-lg-6 d-flex align-items-end mt-767">
+                                <div class="show btn-sec">
+                                    <button type="submit" class="searchBtn" id="dropdownMenuLink">
+                                        <span class="border-0" onclick="AddPhlNote()">Save</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-7 col-lg-7 px-0">
+                        <div class="row mx-0 my-2">
+                            <label for="" class="col-md-2 col-lg-2">PHL General Note</label>
+                            <div class="col-md-8 col-lg-8 mb-0">
+                                <textarea tabindex="830" class="form-control" rows="2" placeholder="Add Info" autocomplete="off" asp-for="PHLnote"></textarea>
+                            </div>
+                        </div>
+                    </div>
+                    @{
+                        int PhlTabbing = 831;
+                        int addTab = 0;
+                        //Reserve 100 For Addenda section
+                    }
+                    @if (Model.phlInfo != null && Model.phlInfo.Count > 0)
+                    {
+                        for (int i = 0; i < Model.phlInfo.Count; i++)
+                        {
+
+
+                            <div class="box-space planPHLecount p-1" id="PHL-row">
+                                <div class="border p-2">
+                                    <div class="row align-items-center">
+                                        <div class="col-lg-8 d-flex flex-wrap">
+                                            <div class="col-lg-3 mb-2">
+                                                <input type="hidden" asp-for="phlInfo[i].IsActive" class="Dec-Class" />
+                                                <select asp-for="@Model.phlInfo[i].PhlType" class="form-control p-1" tabindex="@PhlTabbing" asp-items="@(new SelectList(ViewBag.PHLType, "Value", "Text", "Selected"))">
+                                                </select>
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                @{
+                                                    PhlTabbing++;
+                                                }
+                                                <input class="form-control" asp-for="@Model.phlInfo[i].Company" type="text" tabindex="@PhlTabbing" placeholder="Contractor">
+                                                <input type="hidden" asp-for="@Model.phlInfo[i].MemId" />
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                @{
+                                                    PhlTabbing++;
+                                                }
+                                                <input type="hidden" asp-for="@Model.phlInfo[i].CompType">
+                                                <input type="hidden" asp-for="@Model.phlInfo[i].Id">
+                                                <input class="form-control valContact" asp-for="@Model.phlInfo[i].StrContact" type="text" tabindex="@PhlTabbing" placeholder="Contact">
+                                                <input type="hidden" asp-for="@Model.phlInfo[i].ConId" />
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                @{
+                                                    PhlTabbing++;
+                                                }
+                                                <input class="form-control" asp-for="@Model.phlInfo[i].contactPhone" type="text" tabindex="@PhlTabbing" placeholder="Phone">
+                                            </div>
+                                            <div class="col-lg-9 mb-2">
+                                                @{
+                                                    PhlTabbing++;
+                                                    int noteTab = PhlTabbing + 1;
+                                                }
+                                                <input class="form-control" type="text" asp-for="@Model.phlInfo[i].Note" placeholder="Note">
+                                            </div>
+                                            <div class="col-lg-3 mb-2">
+                                                <input class="form-control" asp-for="@Model.phlInfo[i].contactEmail" type="text" placeholder="Email" tabindex="@PhlTabbing">
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2" style="border-left: 3px solid #5b7576;">
+                                            <div class="col-12 date-img px-2">
+                                                <div>
+                                                    @{
+                                                        PhlTabbing++;
+                                                        addTab = PhlTabbing;
+                                                        PhlTabbing++;
+                                                    }
+                                                    <input class="form-control px-2" type="text" asp-for="phlInfo[i].BidDate" placeholder="Select Date" value="@(Model.phlInfo[i].BidDate==null?"":Convert.ToDateTime(Model.phlInfo[i].BidDate).ToString("MM/dd/yyyy"))" />
+                                                    <div class="d-flex">
+                                                        @{
+                                                            PhlTabbing++;
+                                                        }
+                                                        <div id="time_input" class="my-1">
+                                                            <label for="hours">
+                                                                <input type="number" style="width:45px" asp-for="phlInfo[i].tComp" >
+                                                            </label>
+                                                            <span>:</span>
+                                                            @{
+                                                                PhlTabbing++;
+                                                            }
+                                                            <label for="minutes">
+                                                                <input type="number" style="width:45px" asp-for="phlInfo[i].hComp">
+                                                            </label>
+                                                            @{
+                                                                PhlTabbing++;
+                                                            }
+                                                            <span>:</span>
+                                                            <label for="seconds">
+                                                                <input type="Text" style="width:45px" asp-for="phlInfo[i].mValue" >
+                                                            </label>
+                                                        </div>
+                                                        <input class="form-control text-center my-1 ml-1" type="text" asp-for="phlInfo[i].PST" value="PT" readonly>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-lg-2 col-lg-2 d-flex align-items-center" style="border-left: 3px solid #5b7576;min-height: 65px;">
+                                            @*<input type="text" class="form-control px-2 " value="Bid Status" />*@
+                                            <select asp-for="@Model.phlInfo[i].BidStatus" class="form-control p-1 col-10" tabindex="@PhlTabbing" asp-items="@(new SelectList(ViewBag.BidOption, "Value", "Text", "Selected"))">
+                                            </select>
+                                            @{
+                                                PhlTabbing++;
+                                            }
+                                            <span id="remove-PHL" class="action-del popClassDel col-2 count-class-0" tabindex="@PhlTabbing"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+
+                    }
+                    else
+                    {
+                        <div class="box-space planPHLecount p-1" id="PHL-row">
+                            <div class="border p-2">
+                                <div class="row align-items-center">
+                                    <div class="col-lg-8 d-flex flex-wrap">
+                                        @{
+
+                                            Model.phlInfo = null;
+                                        }
+                                        <div class="col-lg-3 mb-2">
+                                            <input type="hidden" asp-for="phlInfo[0].IsActive" class="Dec-Class" />
+                                            <select asp-for="@Model.phlInfo[0].PhlType" class="form-control p-1" tabindex="@PhlTabbing" asp-items="@(new SelectList(ViewBag.PHLType, "Value", "Text", "Selected"))">
+                                            </select>
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            @{
+                                                PhlTabbing++;
+                                            }
+                                            <input class="form-control" asp-for="@Model.phlInfo[0].Company" type="text" tabindex="@PhlTabbing" placeholder="Contractor">
+                                            <input type="hidden" asp-for="@Model.phlInfo[0].MemId" />
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            @{
+                                                PhlTabbing++;
+                                            }
+                                            <input class="form-control valContact" asp-for="@Model.phlInfo[0].StrContact" type="text" tabindex="@PhlTabbing" placeholder="Contact">
+                                            <input type="hidden" asp-for="@Model.phlInfo[0].ConId" />
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            @{
+                                                PhlTabbing++;
+                                            }
+                                            <input class="form-control" asp-for="@Model.phlInfo[0].contactPhone" type="text" tabindex="@PhlTabbing" placeholder="Phone">
+                                        </div>
+                                        <div class="col-lg-9 mb-2">
+                                            @{
+                                                PhlTabbing++;
+                                                int noteTab = PhlTabbing + 1;
+                                            }
+                                            <input class="form-control" type="text" asp-for="@Model.phlInfo[0].Note" placeholder="Note">
+                                        </div>
+                                        <div class="col-lg-3 mb-2">
+                                            <input class="form-control" asp-for="@Model.phlInfo[0].contactEmail" type="text" placeholder="Email" tabindex="@PhlTabbing">
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2" style="border-left: 3px solid #5b7576;">
+                                        <div class="col-12 date-img px-2">
+                                            <div>
+                                                @{
+                                                    PhlTabbing++;
+                                                    addTab = PhlTabbing;
+                                                    PhlTabbing++;
+                                                }
+                                                <input class="form-control px-2" type="text" asp-for="phlInfo[0].BidDate" placeholder="Select Date" />
+                                                <div class="d-flex">
+                                                    @{
+                                                        PhlTabbing++;
+                                                    }
+                                                    <div id="time_input" class="my-1">
+                                                        <label for="hours">
+                                                            <input type="number" style="width:45px" asp-for="phlInfo[0].tComp"  value="00">
+                                                        </label>
+                                                        <span>:</span>
+                                                        @{
+                                                            PhlTabbing++;
+                                                        }
+                                                        <label for="minutes">
+                                                            <input type="number" style="width:45px" asp-for="phlInfo[0].hComp"  value="00">
+                                                        </label>
+                                                        @{
+                                                            PhlTabbing++;
+                                                        }
+                                                        <span>:</span>
+                                                        <label for="seconds">
+                                                            <input type="Text" style="width:45px" asp-for="phlInfo[0].mValue" value="AM">
+                                                        </label>
+                                                    </div>
+                                                    <input class="form-control text-center my-1 ml-1" type="text" asp-for="phlInfo[0].PST" value="PT" readonly>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="col-lg-2 col-lg-2 d-flex align-items-center" style="border-left: 3px solid #5b7576;min-height: 65px;">
+                                        @*<input type="text" class="form-control px-2 " value="Bid Status" />*@
+                                        <select asp-for="@Model.phlInfo[0].BidStatus" class="form-control p-1 col-10" tabindex="@PhlTabbing" asp-items="@(new SelectList(ViewBag.BidOption, "Value", "Text", "Selected"))">
+                                        </select>
+                                        @{
+                                            PhlTabbing++;
+                                        }
+                                        <span id="remove-PHL" class="action-del popClassDel col-2 count-class-0" tabindex="@PhlTabbing"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    }
+                    @{
+                                            PhlTabbing+=50;
+                                        }
+                    <div id="planholder-input" class="mt-2 in-height"></div>
+                    <div class="col-md-12 my-2 add-new-btn">
+                        <span class="action-add" id="planHolder-add" tabindex="@PhlTabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New </span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
+
+    </form>
+    <div class="modal fade mem-modal" id="Modal-one" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header blu-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Member</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Company</label>
+                            <div class="col-sm-10">
+                                <input type="hidden" id="refEntId" />
+                                <input type="text" placeholder="Company Name" class="form-control" id="EntityCompany" tabindex="50000">
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Company Address</label>
+                            <div class="col-sm-10">
+                                <div class="form-group row">
+                                    <div class="col-md-12 mb-2">
+                                        <input type="text" class="form-control" id="EntityAddr" tabindex="50001" placeholder="Address">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" id="EntityCity" tabindex="50020" placeholder="City">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" id="EntityState" tabindex="50030" placeholder="State">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" id="EntityCounty" tabindex="50040" placeholder="County">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control number-only" id="EntityZip" tabindex="50010" placeholder="Zip Code" maxlength="5">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Contact</label>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="First Name" class="form-control" tabindex="50050" id="FirstName" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Last Name" class="form-control" tabindex="50060" id="Lastname" />
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Contact Phone</label>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Phone Number" class="form-control" tabindex="50070" id="EntityPhone" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" placeholder="EXT" class="form-control number-only" id="EntityExt" tabindex="50080" maxlength="4">
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Email</label>
+                            <div class="col-sm-10">
+                                <input type="text" placeholder="Email" class="form-control" tabindex="50090" id="EntityEmail" onblur="validateEntityEmailInput(this)" />
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="float-right newPro-btn">
+                            <span class="newProbtn popClass" style="cursor:pointer" tabindex="50100" onclick="SaveNewEntity()">Register</span>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade ent-modal" id="Modal-one" tabindex="-1" aria-labelledby="exampleModalLabel2" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header blu-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add Entity Type</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="frmPrintForm3" action="" class="col-md-12 order-form text-left" autocomplete="on" onsubmit="return false;">
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Entity Type</label>
+                            <div class="col-sm-10">
+                                <input type="hidden" id="refEntTypeId" />
+                                <input type="text" placeholder="Entity Type" class="form-control" id="EntityType" tabindex="90000">
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="float-right newPro-btn">
+                            <span class="newProbtn popClass" style="cursor:pointer" tabindex="90100" onclick="SaveNewEntityType()">Save</span>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade mem-modal1" id="Modal-two" tabindex="-1" aria-labelledby="exampleModalLabel1" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header blu-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Add Contractor</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="frmPrintForm1" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Company</label>
+                            <div class="col-sm-10">
+                                <input type="hidden" id="refPhlId" />
+                                <input type="text" placeholder="Company Name" class="form-control" id="PhlCompany" tabindex="50000">
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Company Address</label>
+                            <div class="col-sm-10">
+                                <div class="form-group row">
+                                    <div class="col-md-12 mb-2">
+                                        <input type="text" class="form-control" id="PhlAddr" tabindex="50001" placeholder="Address">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" id="PhlCity" tabindex="50020" placeholder="City">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" id="PhlState" tabindex="50030" placeholder="State">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control" id="PhlCounty" tabindex="50040" placeholder="County">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <input type="text" class="form-control number-only" id="PhlZip" tabindex="50010" placeholder="Zip Code" maxlength="5">
+                                        <span class="text-danger"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Contact</label>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="First Name" class="form-control" tabindex="50050" id="PhlFirstName" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Last Name" class="form-control" tabindex="50060" id="PhlLastname" />
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Contact Phone</label>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Phone Number" class="form-control" tabindex="50070" id="PhlPhone" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" placeholder="EXT" class="form-control number-only" id="PhlExt" tabindex="50080" maxlength="4">
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Email</label>
+                            <div class="col-sm-10">
+                                <input type="text" placeholder="Email" class="form-control" tabindex="50090" id="PhlEmail" onblur="validateEmailInput(this)" />
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="float-right newPro-btn">
+                            <span class="newProbtn popClass" style="cursor:pointer" tabindex="50100" onclick="SaveNewPhl()">Register</span>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade con-modal" id="Modal-two" tabindex="-1" aria-labelledby="exampleModalLabel3" aria-hidden="true">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header blu-header">
+                    <h5 class="modal-title" id="exampleModalLabel1">Add Contact</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <form id="frmPrintForm5" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                        <div class="form-group row">
+                            <input type="hidden" id="refConId" />
+                            <input type="hidden" id="refComId" />
+                            <label class="col-sm-2 col-form-label">Contact</label>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="First Name" class="form-control" tabindex="80050" id="ConFirstName" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Last Name" class="form-control" tabindex="80060" id="ConLastname" />
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Contact Phone</label>
+                            <div class="col-sm-5">
+                                <input type="text" placeholder="Phone Number" class="form-control" tabindex="80070" id="ConPhone" />
+                                <span class="text-danger"></span>
+                            </div>
+                            <div class="col-sm-2">
+                                <input type="text" placeholder="EXT" class="form-control number-only" id="ConExt" tabindex="80080" maxlength="4">
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-sm-2 col-form-label">Email</label>
+                            <div class="col-sm-10">
+                                <input type="text" placeholder="Email" class="form-control" tabindex="80090" id="ConEmail" onblur="validateConEmailInput(this)" />
+                                <span class="text-danger"></span>
+                            </div>
+                        </div>
+                        <div class="float-right newPro-btn">
+                            <span class="newProbtn popClass" style="cursor:pointer" tabindex="80100" onclick="SaveNewCon()">Save</span>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

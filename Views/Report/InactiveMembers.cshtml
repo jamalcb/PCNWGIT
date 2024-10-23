@@ -1,0 +1,82 @@
+﻿@model IEnumerable<InactiveMemberViewModel>
+@{
+    ViewData["Title"] = "InactiveMembers";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Inactive Member</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Marketing Reports</li>
+                        <li class="breadcrumb-item active">Inactive Member</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Inactive Member Report</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Email</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Speciality</th>
+                                        <th>Expiration Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        string status = "";
+                                        bool inactive = item.Inactive != null ? (bool)item.Inactive : false;
+                                        if (item.Inactive == true)
+                                        {
+                                            status = "Inactive";
+                                        }
+                                        else
+                                        {
+                                            status = "Active";
+                                        }
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Company)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.MailCity)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.MailState)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Discipline)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.RenewalDate)</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+
+

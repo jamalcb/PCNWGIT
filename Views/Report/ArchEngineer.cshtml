@@ -1,0 +1,61 @@
+﻿@model IEnumerable<ArchEngineerViewModel>
+@{
+    ViewData["Title"] = "ArchEngineer";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Architect/Engineers</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Company DataBase</li>
+                        <li class="breadcrumb-item active">Architect/Engineers</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Email</th>
+                                        <th>Type</th>
+                                        <th>State</th>
+                                        <th>Phone</th>
+                                    </tr>
+                                </thead>
+                                @foreach (var item in Model)
+                                {
+                                    <tr>
+                                        <td>@Html.DisplayFor(modelItem => item.Name)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Type1)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.State)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Phone)</td>
+                                    </tr>
+                                }
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

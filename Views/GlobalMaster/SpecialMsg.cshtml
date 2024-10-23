@@ -1,0 +1,322 @@
+﻿@model IEnumerable<TblSpecialMsg>
+@{
+    ViewData["Title"] = "Special Message";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts
+{
+    <script src="~/js/special-msg.js"></script>
+}
+@section jQueryUICss {
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https:/resources/demos/style.css">
+}
+@section CustomCSS
+{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+        #time_wrapper {
+            width: fit-content;
+            margin: 0 auto;
+            position: relative;
+            top: 150px;
+            transform: scale(1.5);
+        }
+
+        #time_input {
+            border: 2px solid #706e6e;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            border-radius: 0px !important;
+        }
+
+            #time_input input {
+                width: 50px;
+                height: auto;
+                border: none;
+                box-sizing: border-box;
+                padding: 2px;
+                text-align: center;
+                color: #132c14;
+                background: #f4f4f4;
+            }
+
+            #time_input label {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                position: relative;
+                margin-bottom: 0px;
+            }
+
+        .label {
+            font-size: 0.55rem;
+            position: absolute;
+            top: 4.5px;
+        }
+
+            .label.lbl-hrs {
+                left: 20px;
+            }
+
+            .label.lbl-min {
+                left: 14px;
+            }
+
+            .label.lbl-sec {
+                left: 13px;
+            }
+
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        #time_input,
+        input {
+            border-radius: 8px;
+            /*font-size: 1.5rem;*/
+        }
+
+            #time_input input:focus {
+                outline: 3px solid #5c8097;
+                border-radius: 0;
+            }
+
+            input:focus + .label {
+                color: var(--active);
+            }
+
+            input.invalid:focus {
+                outline: 3px solid red;
+            }
+
+                input.invalid:focus + .label {
+                    color: red;
+                }
+            .ui-widget.ui-widget-content{
+                z-index:1080;
+            }
+            #ui-id-3, #ui-id-4{
+                    overflow-y: scroll;
+                height: 350px;
+                overflow-x: hidden;
+            }
+            #time_input input{
+                margin-bottom: 0;
+            }
+
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 10000;
+        }
+
+        .popup-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /*background-color: black;*/
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+    </style>
+}
+<section class="content">    
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Special Message</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Other</li>
+                        <li class="breadcrumb-item active">SpecialMsg</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header text-right ">
+                        <a href="#" class="btn cus-pro-type" onclick="OpenPrintModel()">
+                            <i class=" fa fa-plus mx-1"></i>
+                            Add Special Message
+                        </a>
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                                <!-- Modal content-->
+                                <div class="modal-content modl-time">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Save / Update Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div id="loader-overlay" style="display:none;">
+                                        <div id="loader" class="popup-loader">
+                                            <img src="/assets/images/LoaderPCNW.gif" style="max-width: 25%;min-width:25%" />
+                                        </div>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+
+                                                 <div class="form-group row mb-3">
+                                                       <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Message Type<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-sm-5 col-lg-4 col-xl-4">
+                                                    <select class="form-control" name="Type" id="ddlType">
+                                                        <option value="" hidden>-Select Type-</option>
+                                                            <option value="Maintenance">Maintenance</option>
+                                                            <option value="Marketing">Marketing</option>
+                                                        </select>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                    </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Start Date<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-4 col-xl-4">
+                                                        <input type="hidden" id="Id" name="Id" value="0" />
+                                                        <input tabindex="10" onchange="return datevalidate();" class="form-control form-control-solid datepicker" type="text" id="StartDate" name="StartDate" placeholder="Please choose start date...">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                    <div class="col-12  col-sm-5 col-md-5 col-lg-5 mt-420">
+                                                        <div id="time_input">
+                                                            <label for="hours">
+                                                                <input type="number" tabindex="20" value="00" id="tComp" autocomplete="off">
+                                                            </label>
+                                                            <span>:</span>
+                                                            <label for="minutes">
+                                                                <input type="number" value="00" tabindex="30" id="hComp" autocomplete="off">
+                                                            </label>
+                                                            <span>:</span>
+                                                            <label for="seconds">
+                                                                <input type="text" tabindex="40" value="AM" class="mValue" id="mValue" class="ui-autocomplete-input" autocomplete="off">
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-sm-2 col-xl-3 col-lg-3 col-form-label">
+                                                        End Date<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-sm-5 col-lg-4 col-xl-4">
+                                                        <input tabindex="50" onchange="return enddatevalidate();" class="form-control form-control-solid datepicker" type="text" id="EndDate" name="EndDate" placeholder="Please choose end date...">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                    <div class="col-8  col-sm-5 col-md-5 col-lg-5 mt-420">
+                                                        <div id="time_input">
+                                                            <label for="hours">
+                                                                <input type="number" tabindex="60"  value="00" id="tCompend" autocomplete="off">
+                                                            </label>
+                                                            <span>:</span>
+                                                            <label for="minutes">
+                                                                <input type="number" value="00" tabindex="70" id="hCompend" autocomplete="off">
+                                                            </label>
+                                                            <span>:</span>
+                                                            <label for="seconds">
+                                                                <input type="text" tabindex="80" value="AM" class="mValue" id="mValueend" class="ui-autocomplete-input" autocomplete="off">
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Message<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input tabindex="90" class="form-control form-control-solid " type="text" value="" placeholder="Enter Message" id="SpMessage" name="SpMessage" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input tabindex="100" style="opacity:1" type="checkbox" id="IsActive" name="IsActive" /><label for="IsActive">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group my-3 text-right">
+                                                    <button tabindex="110" type="button" id="next-btn" class="newProbtn modl-btn save" onclick="return SaveSpecialMsg()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Type</th>
+                                        <th class="text-left">StartDate</th>
+                                        <th class="w-10">EndDate</th>
+                                        <th class="w-10">SpMessage</th>
+                                        <th class="w-10">Status</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblSpecialMsg" class="active-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

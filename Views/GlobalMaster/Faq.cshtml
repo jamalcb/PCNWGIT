@@ -1,0 +1,148 @@
+﻿@{
+    ViewData["Title"] = "Faq";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts{
+    <script src="~/js/faq-master.js"></script>
+}
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+    </style>
+}
+
+@section ckEditor{
+    <script src="~/lib/jquery/dist/jquery.js"></script>
+    <script src="~/js/ckeditor/ckeditor.js"></script>
+    <script>
+        $(document).ready(function () {
+            CKEDITOR.replace('#Answer'); 
+        });
+    </script>
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title"> FAQ</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Other</li>
+                        <li class="breadcrumb-item active">Faq</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header text-right ">
+                        <a href="#" class="btn cus-pro-type" onclick="OpenPrintModel()">
+                            <i class=" fa fa-plus mx-1"></i>
+                            Add Faq
+                        </a>
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog modal-lg">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Save / Update Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="off">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3 ml-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Question<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9 pr-0">
+                                                        <input type="hidden" id="Id" name="Id" value="0" />
+                                                        <input type="text" class="form-control" placeholder=" Enter Your Question" required="" id="Question" name="Question" autocomplete="off">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3 ml-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Answer<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9 pr-0">
+                                                        <textarea rows="5" cols="50" type="text" class="form-control ckeditor" placeholder=" Enter your answer" required="" 
+                                                        id="Answer" name="Answer" autocomplete="off"></textarea>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                     <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActive" name="IsActive" /><label for="IsActive">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                               
+                                                <div class="form-group my-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return SaveFaq()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column width-per-100 eTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Question</th>
+                                        <th class="text-left">Answer</th>
+                                        <th class="w-10">Status</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblFaq" class="active-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

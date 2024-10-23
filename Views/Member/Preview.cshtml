@@ -1,0 +1,1881 @@
+﻿@using System.Text.RegularExpressions
+@model ProjectInformation;
+@{
+    ViewData["Title"] = "Preview";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+}
+@section CustomCSS {
+    <style>
+        .ui-menu {
+            z-index: 1100 !important;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+        /* #next-btn:hover {
+                                                                                                                                                                                            cursor: pointer;
+                                                                                                                                                                                        }*/
+        .formCls .form-control {
+            margin-bottom: 5px;
+        }
+
+        .cpy-cntr-form .form-group .form-control {
+            height: 32px;
+        }
+
+        #prc-total, #prc-price, #prc-size {
+            text-align: right;
+        }
+
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            /*background-color: black;*/
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        a.fa.fa-search {
+            padding: 8px 12px;
+        }
+
+        .color-select {
+            display: none;
+        }
+
+        .tbl-chevron {
+            transition: transform 0.2s ease-in;
+        }
+
+            .tbl-chevron.rotated {
+                transform: rotate(90deg);
+                transition: transform 0.2s ease-in-out;
+            }
+
+        .multi-collapse td {
+            /* background: #ff992e5c; */
+        }
+
+        .main-content {
+            padding: 10px 0;
+        }
+    </style>
+}
+@section Scripts
+{
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://kit.fontawesome.com/bde2bd25f3.js" crossorigin="anonymous"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.3/jspdf.min.js"></script>
+    <script src="~/js/member-preview.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+}
+<div class="container-fluid">
+    <div class="dashboard-box m-3">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-heading">
+                    @{
+                        var trackvalue = (Model.MemberTrack == null) ? false : (bool)Model.MemberTrack;
+                        var dashtext = trackvalue ? "Remove from" : "Add to";
+                        var change = trackvalue ? false : true;
+                    }
+                    <h2 class="preview-H-btn newPro-btn p-2">
+                        <span>Title: @Model.Title</span>
+                        <button class="newProbtn" onclick="AddDashboard(@change.ToString().ToLower(), @Model.ProjId)">@dashtext Dashboard</button>
+                        <div class="">
+                            <input type="hidden" id="LoadChk" value="@ViewBag.LoadValChk" />
+                            <h6 class="m-0">Project : @Model.ProjNumber | Arrival Date : @(Model.ArrivalDt != null ? Convert.ToDateTime(@Model.ArrivalDt).ToString("MM/dd/yyyy") : "") @*Preview Member Management*@</h6>
+                        </div>
+                    </h2>
+                </div>
+            </div>
+            <div id="loader-overlay" style="display:none;">
+                <div id="loader" class="popup-loader">
+                    <img src="/assets/images/loading-gif.gif" style="max-width: 10%;min-width:10%" />
+                </div>
+            </div>
+            <div class="col-md-12">
+                <input type="hidden">
+                <div class="row px-0 mx-0">
+                    <div class="col-lg-6 my-3">
+                        @* <div class="box-header p-0">
+                        <input type="hidden" id="LoadChk" value="@ViewBag.LoadValChk" />
+                        <h6>Project : @Model.ProjNumber | Arrival Date : @(Model.ArrivalDt != null ? Convert.ToDateTime(@Model.ArrivalDt).ToString("MM/dd/yyyy") : "") @*Preview Member Management</h6>
+                        </div> *@
+                        <div class="col-12 p-3" style="background: antiquewhite;">
+                            <div class="row">
+                                @*  <div class="col-12">
+                                <input type="hidden" id="LoadChk" value="@ViewBag.LoadValChk" />
+                                <h6 class="font-14">Project : @Model.ProjNumber | Arrival Date : @(Model.ArrivalDt != null ? Convert.ToDateTime(@Model.ArrivalDt).ToString("MM/dd/yyyy") : "")</h6>
+                                </div> *@
+                                @*creating table*@
+                                <div class="col-lg-6 map-btn">
+                                    <input type="hidden" id="LoadChk" value="@ViewBag.LoadValChk" />
+                                    @* <div class="">
+                                    <h6 class="font-14">Project : @Model.ProjNumber | Arrival Date : @(Model.ArrivalDt != null ? Convert.ToDateTime(@Model.ArrivalDt).ToString("MM/dd/yyyy") : "") @*Preview Member Management</h6>
+                                    </div> *@
+                                    <h5>
+                                        Project Location
+                                        @*<a href="#"><i class="fa fa-map-marker"></i> View Map</a>*@
+                                    </h5>
+                                    @{
+                                        string ConsBillAddress = "";
+                                        ConsBillAddress = string.IsNullOrEmpty(@Model.LocAddr1) ? "" : @Model.LocAddr1;
+                                        ConsBillAddress = string.IsNullOrEmpty(Model.LocCity) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? Model.LocCity : ConsBillAddress + ", " + Model.LocCity);
+                                        ConsBillAddress = string.IsNullOrEmpty(Model.LocState) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? Model.LocState : ConsBillAddress + ", " + Model.LocState);
+                                        ConsBillAddress = string.IsNullOrEmpty(Model.LocAddr2) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? Model.LocAddr2 : ConsBillAddress + ", " + Model.LocAddr2);
+                                        ConsBillAddress = string.IsNullOrEmpty(Model.LocZip) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? Model.LocZip : ConsBillAddress + ", " + Model.LocZip);
+                                        <p data-bs-toggle="tooltip" data-bs-placement="top" title="Click to open address" onclick="GOTOMap('@ConsBillAddress');" class="map-addr"><i class="fa fa-map-marker" aria-hidden="true"></i> @ConsBillAddress</p>
+                                    }
+                                </div>
+                                <div class="col-lg-6">
+                                    <h5>Bid Date</h5>
+                                    @if (Model.Undecided != "TBD" && Model.BidDt != null)
+                                    {
+                                        string PreBidTime1 = "";
+                                        if (!string.IsNullOrEmpty(Model.strBidDt5))
+                                        {
+                                            if (Model.strBidDt5.Contains(':'))
+                                            {
+                                                string[] timeArr = Model.strBidDt5.Split(':');
+                                                int hComp = 0;
+                                                string mVal = "AM";
+                                                int.TryParse(timeArr[0], out hComp);
+                                                if (hComp == 0)
+                                                {
+                                                    hComp = 12;
+                                                }
+                                                else if (hComp > 12)
+                                                {
+                                                    hComp = hComp - 12;
+                                                    mVal = "PM";
+                                                }
+                                                PreBidTime1 = hComp.ToString() + ":" + timeArr[1] + " " + mVal;
+
+                                            }
+
+                                        }
+                                        @*    string PreBidTime2 = "";
+                                    if (!string.IsNullOrEmpty(Model.strBidDt4))
+                                    {
+                                    if (Model.strBidDt4.Contains(':'))
+                                    {
+                                    string[] timeArr = Model.strBidDt4.Split(':');
+                                    int hComp = 0;
+                                    string mVal = "AM";
+                                    int.TryParse(timeArr[0], out hComp);
+                                    if (hComp == 0)
+                                    {
+                                    hComp = 12;
+                                    }
+                                    else if (hComp > 12)
+                                    {
+                                    hComp = hComp - 12;
+                                    mVal = "PM";
+                                    }
+                                    PreBidTime2 = hComp.ToString() + ":" + timeArr[1] + " " + mVal;
+
+                                    }
+
+                                    }
+                                    else
+                                    {
+                                    PreBidTime1 = "COB";
+                                    } *@
+                                        <h6 class="extraBid">
+                                            @{
+                                                string formattedDate = "";
+                                                if (Model.BidDt != null)
+                                                {
+                                                    string inputDate = Convert.ToDateTime(Model.BidDt).ToString("MM/dd/yyyy");
+                                                    DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                                    if (PreBidTime1 != null && PreBidTime1 != "")
+                                                    {
+                                                        formattedDate = date.ToString("MMM dd") + " - " + @PreBidTime1;
+                                                    }
+                                                    else
+                                                    {
+                                                        formattedDate = date.ToString("MMM dd");
+                                                    }
+
+                                                }
+                                                else
+                                                {
+                                                    formattedDate = "T B D";
+                                                }
+                                            }
+                                            @formattedDate<br>
+                                            @if (Model.MBDCheck == "Y")
+                                            {
+                                                <span class="text-danger font-14 fw-bold">Note: Primes request bids at various dates and times.</span>
+                                            }
+                                        </h6>
+                                        @* <h6 class="extraBid">
+                                    @{
+                                    string formattedDate1 = "";
+                                    if (Model.BidDt2 != null)
+                                    {
+                                    string inputDate = Convert.ToDateTime(Model.BidDt2).ToString("MM/dd/yyyy");
+                                    DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                    formattedDate1 = date.ToString("MMM dd") + " - " + PreBidTime2;
+                                    }
+                                    else
+                                    {
+                                    formattedDate1 = "T B D";
+                                    }
+                                    }
+                                    @formattedDate1
+                                    </h6> *@
+                                    }
+                                    else
+                                    {
+                                        <h6 class="extraBid">
+                                            T B D
+                                            @if (Model.MBDCheck == "Y")
+                                            {
+                                                <span class="text-danger float-right  text-nowrap">Note: Primes request bids at various dates and times.</span>
+                                            }
+                                        </h6>
+                                    }
+                                </div>
+                                @* <div class="col-lg-3">
+                                <h5>PreBid Date</h5>
+                                @if (Model.preBidInfos != null && Model.preBidInfos.Any())
+                                {
+                                DateTime? maxDate = Model.preBidInfos.Max(info => info?.PreBidDate);
+                                string PreBidTime1 = Model.preBidInfos.FirstOrDefault(m => m?.PreBidDate == maxDate).PreBidTime;
+                                if (!string.IsNullOrEmpty(PreBidTime1))
+                                {
+                                if (PreBidTime1.Contains(':'))
+                                {
+                                string[] timeArr = PreBidTime1.Split(':');
+                                int hComp = 0;
+                                string mVal = "AM";
+                                int.TryParse(timeArr[0], out hComp);
+                                if (hComp == 0)
+                                {
+                                hComp = 12;
+                                }
+                                else if (hComp > 12)
+                                {
+                                hComp = hComp - 12;
+                                mVal = "PM";
+                                }
+                                PreBidTime1 = hComp.ToString() + ":" + timeArr[1] + " " + mVal;
+
+                                }
+
+                                }
+                                <h6 class="extraBid">
+                                @{
+                                string formattedDate = "";
+                                if (maxDate != null)
+                                {
+                                string inputDate = Convert.ToDateTime(maxDate).ToString("MM/dd/yyyy");
+                                DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                if (PreBidTime1 != null && PreBidTime1 != "")
+                                {
+                                formattedDate = date.ToString("MMM dd") + " - " + @PreBidTime1;
+                                }
+                                else
+                                {
+                                formattedDate = date.ToString("MMM dd");
+                                }
+
+                                }
+                                else
+                                {
+                                formattedDate = "T B D";
+                                }
+                                }
+                                @formattedDate<br>
+                                </h6>
+                                }
+                                else
+                                {
+                                <h6 class="extraBid">
+                                T B D
+                                </h6>
+                                }
+                                </div> *@
+                                <div class="col-md-12">
+                                    <h5>Project Description</h5>
+                                    <p style="text-align:justify;margin: 0px;">@Model.Story</p>
+                                </div>
+                            </div>
+                        </div>
+                        @if (!string.IsNullOrEmpty(Model.PrebidNote))
+                        {
+                            <div class="prebidNote-new">
+                                <span>@Model.PrebidNote</span>
+                            </div>
+                        }
+                        @if (Model.preBidInfos != null && Model.preBidInfos.Count > 0)
+                        {
+                            <div class="col-12 px-0 table-responsive">
+                                <table class=" table table-bordered less-space">
+                                    <thead class="table-active">
+                                        <tr>
+                                            <th>PreBid Meeting</th>
+                                            <th>Location</th>
+                                            @* <th>Requirements</th>
+                                        <th>Mandatory</th> *@
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var item in Model.preBidInfos)
+                                        {
+                                            string PreBidTime = "";
+                                            if (!string.IsNullOrEmpty(item.PreBidTime))
+                                            {
+                                                if (item.PreBidTime.Contains(':'))
+                                                {
+                                                    string[] timeArr = item.PreBidTime.Split(':');
+                                                    int hComp = 0;
+                                                    string mVal = "AM";
+                                                    int.TryParse(timeArr[0], out hComp);
+                                                    if (hComp == 0)
+                                                    {
+                                                        hComp = 12;
+                                                    }
+                                                    else if (hComp > 12)
+                                                    {
+                                                        hComp = hComp - 12;
+                                                        mVal = "PM";
+                                                    }
+                                                    if (hComp == 12 && mVal == "AM")
+                                                    {
+                                                        hComp = 0;
+                                                        PreBidTime = hComp.ToString("D2") + ":" + timeArr[1] + " " + mVal;
+                                                    }
+                                                    else
+                                                    {
+                                                        PreBidTime = hComp.ToString("D2") + ":" + timeArr[1] + " " + mVal;
+                                                    }
+                                                }
+
+                                            }
+                                            else
+                                            {
+                                                PreBidTime = "COB";
+                                            }
+                                            string formateprebiddatetime = "";
+                                            string preBid = item.PreBidDate != null ? Convert.ToDateTime(item.PreBidDate).ToString("MM/dd/yyyy") : "";
+                                            if (!string.IsNullOrEmpty(preBid))
+                                            {
+                                                DateTime predate = DateTime.ParseExact(preBid, "MM/dd/yyyy", null);
+                                                formateprebiddatetime = predate.ToString("MMM dd") + " - " + PreBidTime + " PT";
+                                            }
+                                            else
+                                            {
+                                                formateprebiddatetime = "TBD";
+                                            }
+                                            bool AndOr = item.PreBidAnd == null ? false : item.PreBidAnd;
+                                            string status = AndOr ? "Required" : "Optional";
+                                            bool Mand = item.Mandatory == null ? false : item.Mandatory;
+                                            string strMand = Mand ? "Yes" : "No";
+                                            string location;
+
+                                            if (item.UndecidedPreBid.HasValue && item.UndecidedPreBid.Value)
+                                            {
+                                                location = "TBD";
+                                            }
+                                            else
+                                            {
+                                                location = string.IsNullOrEmpty(item.Location) ? "" : item.Location;
+                                            }
+
+                                            <tr>
+                                                <td>
+                                                    @formateprebiddatetime @if (Mand)
+                                                    {
+                                                        <span class="">MANDATORY</span>
+                                                    }
+                                                </td>
+                                                <td>@location</td>
+                                                @* <td>@status</td> *@
+                                                @* <td>@strMand</td> *@
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        <div class="col-12 mt-1 project-type-card">
+                            <div class="row flex-wrap">
+                                @if (!string.IsNullOrEmpty(@Model.ProjTypeIdString))
+                                {
+                                    <div class="col-12 col-md-6 project-type m-0">
+                                        <h6>
+                                            <span>Project Type:</span>
+                                            <span>@Model.ProjTypeIdString</span>
+                                        </h6>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(@Model.ProjSubTypeIdString))
+                                {
+                                    <div class="col-12 col-md-6 project-subtype m-0">
+                                        <h6>
+                                            <span>Project Sub Type:</span>
+                                            <span>@Model.ProjSubTypeIdString</span>
+                                        </h6>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(@Model.ProjScope))
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <h6>
+                                            <span>Project Scope:</span>
+                                            <span>@Model.ProjScope</span>
+                                        </h6>
+                                    </div>
+                                }
+                                @if (Model.PrevailingWage)
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <h6>
+                                            <span>Prevailing Wages:</span>
+                                            <span>@(Model.PrevailingWage == true ? "Yes" : "No")</span>
+                                        </h6>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(@Model.CompleteDt))
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <h6>
+                                            <span>Est. Completion:</span>
+                                            <span>@Model.CompleteDt</span>
+                                        </h6>
+                                    </div>
+                                }
+                                @if (!string.IsNullOrEmpty(@Model.BidBond))
+                                {
+                                    <div class="col-12 col-md-6">
+                                        <h6>
+                                            <span>Bid Bond:</span>
+                                            <span>@Model.BidBond</span>
+                                        </h6>
+                                    </div>
+                                }
+                            </div>
+                        </div>
+
+                        @if (Model.EstCostDetails != null && Model.EstCostDetails.Count > 0)
+                                {
+                        <div class="col-12 mt-1 est-cost-card">
+                            <div class="row flex-wrap project-div">
+                                @* <span class="col-12 project-type">
+                                <h5>
+                                Estimated Costs
+                                </h5>
+                                </span> *@
+                                
+                                    @for (int i = 0; i < Model.EstCostDetails.Count; i++)
+                                    {
+                                        int idx = i + 1;
+                                        <div class="col-12 col-md-6 project-type">
+                                            <h6>
+                                                @{
+                                                    var des = (!string.IsNullOrEmpty(Model.EstCostDetails[i].Description)) ? Model.EstCostDetails[i].Description : "Estimated Cost";
+                                                }
+                                                @*<span style="font-weight:700">Estimated Cost @idx</span>*@
+                                                <span style="font-weight:700">@des:</span>
+                                                @if (!String.IsNullOrEmpty(Model.EstCostDetails[i].EstTo))
+                                                {
+                                                    @*<span>@Model.EstCostDetails[i].Description&nbsp;&nbsp; </span>*@
+                                                    <span>$@Model.EstCostDetails[i].EstFrom-$@Model.EstCostDetails[i].EstTo</span>
+                                                }
+                                                else
+                                                {
+                                                    var sign = Model.EstCostDetails[i].RangeSign switch
+                                                    {
+                                                        "1" => "<",
+                                                        "2" => ">",
+                                                        _ => ""
+                                                    };
+                                                    @*<span>@Model.EstCostDetails[i].Description&nbsp;&nbsp; </span>*@
+                                                    <span>@sign</span>
+
+                                                    <span>$@Model.EstCostDetails[i].EstFrom</span>
+                                                }
+                                            </h6>
+                                        </div>
+                                    }
+                                
+                            </div>
+                        </div>
+                                }
+                        @if (Model.Entities != null)
+                        {
+                            @if (Model.Entities.Count > 0)
+                            {
+                                <div class="col-12 mt-2 px-0 table-responsive less-space">
+                                    <h5>Project Team</h5>
+                                    <table class="table table-bordered ">
+                                        <thead class="font-weight-bold table-active">
+                                            <tr>
+                                                <th>Entity Type</th>
+                                                <th class="text-nowrap">Firm Name</th>
+                                                <th>Contact Person</th>
+                                                <th>Address</th>
+                                                <th>Phone Number</th>
+                                                <th>Email</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="fw-6">
+                                            @foreach (var item in Model.Entities)
+                                            {
+                                                string num = item.EntPhone;
+                                                string formattedNumber = "";
+                                                if (num == null)
+                                                {
+                                                    formattedNumber = "";
+                                                }
+                                                else
+                                                {
+                                                    string numericOnly = Regex.Replace(num, @"\D", "");
+                                                    int length = Math.Min(10, numericOnly.Length);
+                                                    string snippedNumber = numericOnly.Substring(0, length);
+                                                    string pattern = @"(\d{1,3})(\d{0,3})(\d{0,4})";
+                                                    string replacement = "$1$2$3";
+                                                    int[] conditions = { 1, 4, 7 };
+                                                    int index = Array.FindLastIndex(conditions, c => length >= c);
+                                                    replacement = index >= 0 ? (index == 2 ? "($1) $2-$3" : "($1) $2$3") : replacement;
+                                                    formattedNumber = Regex.Replace(snippedNumber, pattern, replacement);
+
+                                                }
+                                                <tr>
+                                                    <td>@item.EntityType</td>
+                                                    <td>@item.EntityName</td>
+                                                    <td>@item.EntContact</td>
+                                                    <td class="text-nowrap">@item.EntAddr<br />@item.EntAddr2</td>
+                                                    <td class="text-nowrap">@formattedNumber</td>
+                                                    <td class="text-nowrap">@item.EntMail</td>
+                                                </tr>
+                                            }
+                                        </tbody>
+                                    </table>
+                                </div>
+                            }
+
+                        }
+
+                    </div>
+                    @* <div id="loader-overlay" class="OrderAllCopies">
+                    <div id="loader" class="popup-loader">
+                    <img src="/assets/images/loading-gif.gif" style="max-width: 20%;min-width:20%" />
+                    </div>
+                    </div>*@
+                    <div class="col-lg-6 my-3" style="background: #eff2f8;">
+                        <div class="box-header">
+                            @if (!string.IsNullOrEmpty(Model.BRNote) || (Model.BidResultsFiles != null && Model.BidResultsFiles.Count > 0))
+                            {
+                                <div class="col-12">
+                                    <h6>
+                                        Bid Results
+                                        @if (Model.BidResultsFiles.Count > 0)
+                                        {
+                                            <a class="preview-download" href="@Url.Action("ViewBidRes", "Member", new {Id = Model.ProjId})" target="_blank">View/Download</a>
+                                        }
+                                    </h6>
+                                    <p class="mb-0">@Model.BRNote</p>
+                                </div>
+                            }
+                            @if (!string.IsNullOrEmpty(Model.PHLnote))
+                            {
+                                <div class="col-12 table-responsive">
+                                    <div class="down-single">
+                                        <h6>Plan Holders </h6>
+                                        <span class="preview-download" style="cursor:pointer;" onclick="ShowPHL(this.event)">View/Download</span>
+                                    </div>
+                                    <table class="table table-bordered less-space">
+                                        <thead class="font-weight-bold table-active">
+                                            <tr>
+                                                <th>Type</th>
+                                                <th>Contractor</th>
+                                                <th>Bidding ?</th>
+                                                <th>Contact Info</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="table-icons">
+                                            @if (Model.phlInfo != null)
+                                            {
+                                                @if (Model.phlInfo.Count > 0)
+                                                {
+                                                    for (int i = 0; i < Model.phlInfo.Count; i++)
+                                                    {
+                                                        string formattedNumber = "";
+                                                        string email = "";
+                                                        string strContact = Model.phlInfo[i].StrContact;
+                                                        string[] values = strContact.Split(',');
+
+                                                        if (values.Length > 1)
+                                                        {
+                                                            // Extract the value after the comma (trim any leading or trailing spaces)
+                                                            email = values[0];
+                                                            string phone = "1";
+                                                            string numericOnly = Regex.Replace(values[1], @"\D", "");
+                                                            int length = Math.Min(10, numericOnly.Length);
+                                                            string snippedNumber = numericOnly.Substring(0, length);
+
+                                                            string pattern = @"(\d{1,3})(\d{0,3})(\d{0,4})";
+                                                            string replacement = "$1$2$3";
+
+                                                            int[] conditions = { 1, 4, 7 };
+                                                            int index = Array.FindLastIndex(conditions, c => length >= c);
+                                                            replacement = index >= 0 ? (index == 2 ? "($1) $2-$3" : "($1) $2$3") : replacement;
+
+                                                            formattedNumber = Regex.Replace(snippedNumber, pattern, replacement);
+                                                        }
+
+                                                        <tr>
+                                                            <td>@Model.phlInfo[i].PHLTypeString</td>
+                                                            <td><a class="pdf ph-name" onclick="ShowCard(@Model.phlInfo[i].MemId, @Model.phlInfo[i].ConId)" style="cursor:pointer;">@Model.phlInfo[i].Company</a></td>
+                                                            <td>@Model.phlInfo[i].BidStatusString</td>
+                                                            <td>@email, @formattedNumber</td>
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+                                        </tbody>
+                                    </table>
+
+                                </div>
+                            }
+                            @*Show Card*@
+                            <div class="modal fade li-modal" id="memb-dir" role="dialog">
+                                <div class="modal-dialog modal-m">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header cusModal-Header">
+                                            <h4 class="modal-title card-label font-weight-bolder">Plan Holder Information</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body" style="background: #f2f5f8;">
+                                            <span id="message"></span>
+                                            <form method="POST" id="frmPrintFormMem" class="col-md-12 text-left formCls">
+
+                                                <div class="row">
+                                                    <div class="col-lg-10 pl-0">
+                                                        <div class="form-group row mb-3">
+                                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                <b>Company:</b>
+                                                            </div>
+                                                            <div class="dropdown col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                                <label class="col-form-label" id="lblCompany">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                <b>Contact:</b>
+                                                            </div>
+                                                            <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                                <label class="col-form-label" id="lblContact">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+
+                                                        <div class="form-group row mb-3">
+                                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                <b>Email:</b>
+                                                            </div>
+                                                            <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                                <label class="col-form-label" id="lblMail">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-3">
+                                                            <div class="dropdown col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                                <b>Phone:</b>
+                                                            </div>
+                                                            <div class="col-lg-8 col-xl-8  mb-lg-0 mb-2" id="lblPhone">
+                                                                <label class="col-form-label">
+                                                                </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+
+                                    </div>
+                                </div>
+                            </div>
+                            @*Download PHL*@
+                            <div class="modal fade m-model" id="viewOrder-Modal2" role="dialog">
+                                <div class="modal-dialog modal-lg">
+
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header cusModal-Header">
+                                            <h4 class="modal-title card-label font-weight-bold">Plan Holder Preview</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div id="pdf1">
+                                            <div class="d-flex justify-content-between mb-3 border-bottom" style="background: #1b2c4a;">
+                                                <div>
+                                                    <img class="img-fluid" src="/assets/images/Logo Master Horiz Clear White.png" alt="" style="width:270px; border-radius:3px;">
+                                                </div>
+                                                <div class=" mr-2" style="color: aliceblue;">
+                                                    <p class="mb-0">5468 SE International Drive, Milwaukie, OR 97222</p>
+                                                    <h4 style="float: right;">Plan Center North West</h4>
+                                                </div>
+                                            </div>
+                                            <div class="modal-body">
+
+                                                <div>
+                                                    <div>
+                                                        <ol style="display: inline-block;">
+                                                            @if (Model.Entities != null && Model.Entities.Count > 0)
+                                                            {
+                                                                foreach (var item in Model.Entities)
+                                                                {
+                                                                    string Detail = string.IsNullOrEmpty(@item.EntityName) ? "" : @item.EntityName;
+                                                                    Detail = string.IsNullOrEmpty(@item.EntAddr) ? Detail : Detail + ", " + @item.EntAddr;
+                                                                    Detail = string.IsNullOrEmpty(@item.EntPhone) ? Detail : Detail + ", " + @item.EntPhone;
+                                                                    Detail = string.IsNullOrEmpty(@item.EntFax) ? Detail : Detail + ", " + @item.EntFax;
+                                                                    <li><b>@item.EntityType</b>: @Detail</li>
+                                                                }
+                                                            }
+                                                        </ol>
+                                                    </div>
+                                                    @if (Model.pInfo != null && Model.pInfo.Count > 0)
+                                                    {
+                                                        <table class="table table-Modal table-bordered ">
+                                                            <thead>
+                                                                <tr>
+                                                                    <th>Type</th>
+                                                                    <th>Contractor</th>
+                                                                    <th>Bidding</th>
+                                                                    <th>Contact Information</th>
+                                                                </tr>
+                                                            </thead>
+                                                            <tbody>
+                                                                @foreach (var item in Model.pInfo)
+                                                                {
+                                                                    string Bid = "Yes";
+                                                                    Bid = item.bidding == null ? "No" : (Convert.ToBoolean(item.bidding) ? "Yes" : "No");
+                                                                    <tr>
+                                                                        <td>@item.PHLTypeString</td>
+                                                                        <td>@item.Company</td>
+                                                                        <td>@Bid</td>
+                                                                        <td>@item.Contact</td>
+                                                                    </tr>
+                                                                }
+                                                            </tbody>
+                                                        </table>
+                                                    }
+                                                </div>
+
+                                            </div>
+                                            <div class="modal-footer newPro-btn">
+                                                <button type="button" id="printPHL" class="modl-btn newProbtn">Print</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                        <hr />
+
+                        @* <div class="col-12">
+                        <div class="project-docs-new">
+                        <div class="col-lg-8">
+                        <h5 class="mb-0 mr-2">Project Documents</h5>
+                        <a style="cursor:pointer" class="preview-download down-all m-1" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="">Download All<i class="fa fa-download mx-1"></i></a>
+                        </div>
+                        <div class="col-lg-4 text-right">
+                        <span href="#" onclick="OpenPrintModelAll()" style="cursor:pointer" class="m-1 preview-download">Order Copies<i class="fa fa-cart-arrow-down mx-1"></i></span>
+                        </div>
+                        </div>
+                        </div> *@
+                        <div class="col-12 table-responsive">
+                            @* <div class="row">
+                            <div class="col-lg-6">
+                            <div class="down-single">
+                            <h6>Plans</h6>
+                            @if (Model.PlansFiles != null)
+                            {
+                            @if (Model.PlansFiles.Count > 0)
+                            {
+                            <a style="cursor:pointer" class="preview-download down-all" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="Plans">Download All Plans<i class="fa fa-download mx-1" aria-hidden="true"></i></a>
+                            }
+                            }
+                            </div>
+                            </div>
+                            <div class="col-lg-6 text-right down-single">
+                            <a href="javascript:;" class="preview-download mx-2" onclick="OpenPrintModel1('Plan')">Order Copies<i class="fa fa-cart-arrow-down mx-1"></i></a>
+                            onclick="OpenPrintModel1('@Model.PlansFiles[i].FileInfo','@hrefPath')
+                            </div>
+                            </div> *@
+
+                            <table class="table table-bordered less-space mb-0">
+                                <thead class="font-weight-bold table-active">
+                                    <tr class="projDoc-tr">
+                                        <th>
+                                            <h5 class="projDoc">Project Documents</h5>
+                                            <a style="cursor:pointer" class="preview-download down-all m-1" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="">Download All<i class="fa fa-download mx-1"></i></a>
+                                        </th>
+                                        <th></th>
+                                        <th colspan="2" class="text-right">
+                                            <span href="#" onclick="OpenPrintModelAll()" style="cursor:pointer" class="m-1 preview-download">Order Copies<i class="fa fa-cart-arrow-down mx-1"></i></span>
+
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>
+                                            <div class="down-single my-1">
+                                                <h6>Plans</h6>
+                                                @if (Model.PlansFiles != null)
+                                                {
+                                                    @if (Model.PlansFiles.Count > 0)
+                                                    {
+                                                        <a style="cursor:pointer" class="preview-download down-all" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="Plans">Download All Plans<i class="fa fa-download mx-1" aria-hidden="true"></i></a>
+                                                    }
+                                                }
+                                            </div>
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                        <th>
+                                            <div class="form-group form-check mb-0">
+                                                <input type="checkbox" class="form-check-input chkAllPlans" id="chkAllPlans">
+                                                <label class="form-check-label" for="chkAllPlans">Select All</label>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th class="preview-w text-center">View</th>
+                                        <th class="preview-w text-center">Download</th>
+                                        <th class="oc-tone">
+                                            <div class="form-group form-check mb-0 no-visible">
+                                                <input type="checkbox" class="form-check-input chkAllPlans" id="chkAllPlans">
+                                                <label class="form-check-label" for="chkAllPlans">Select All</label>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-icons">
+                                    @if (Model.PlansFiles != null)
+                                    {
+                                        @if (Model.PlansFiles.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.PlansFiles.Count; i++)
+                                            {
+                                                string hrefPath = Model.PlansFiles[i].PathInfo;
+                                                if (hrefPath.IndexOf(" ") > -1)
+                                                    hrefPath = hrefPath.Replace(" ", "+");
+                                                string OrderAll = Model.PlansFiles[i].PathInfo + "$" + Model.PlansFiles[i].FileInfo;
+                                                <input type="hidden" class="OrderAllClass" value="@OrderAll" />
+
+                                                <iframe id="my_iframe" style="display:none;"></iframe>
+                                                <tr>
+                                                    <td><a href="@Url.Action("DocPreview", "Project", new { filePath = Model.PlansFiles[i].PathInfo })" target="_blank" class="pdf file-name"><i class="fa fa-file-pdf mr-2"></i>@Model.PlansFiles[i].FileInfo</a></td>
+                                                    <td class="text-center"><a href="@Url.Action("DocPreview", "Project", new { filePath = Model.PlansFiles[i].PathInfo })" target="_blank" class="fa fa-search"></a></td>
+                                                    <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file=" @Model.PlansFiles[i].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-arrow-down"></i></a></td>
+                                                    <td class="oc-tone"><input type="hidden" class="OrderAllPlans" value="@OrderAll" /><input type="checkbox" class="chkPlan" /></td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 mt-2 table-responsive">
+                            <div class="row">
+                                @* <div class="col-lg-6">
+                                <div class="down-single">
+                                <h6>Specs</h6>
+                                @if (Model.SpecsFiles != null)
+                                {
+                                @if (Model.SpecsFiles.Count > 0)
+                                {
+                                <a style="cursor:pointer" class="preview-download down-all" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="Specs">Download All Specs<i class="fa fa-download mx-1" aria-hidden="true"></i></a>
+                                }
+
+                                }
+                                </div>
+                                </div> *@
+                                @* <div class="col-lg-6 text-right down-single">
+                                <a href="javascript:;" class="preview-download mx-2" onclick="OpenPrintModel1('Specs')">Order Copies<i class="fa fa-cart-arrow-down mx-1"></i></a>
+                                onclick="OpenPrintModel1('@Model.PlansFiles[i].FileInfo','@hrefPath')"
+                                </div> *@
+                            </div>
+                            <table class="table table-bordered less-space mb-0">
+                                <thead class="font-weight-bold table-active">
+                                    <tr>
+                                        <th>
+                                            <div class="down-single my-1">
+                                                <h6>Specs</h6>
+                                                @if (Model.SpecsFiles != null)
+                                                {
+                                                    @if (Model.SpecsFiles.Count > 0)
+                                                    {
+                                                        <a style="cursor:pointer" class="preview-download down-all" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="Specs">Download All Specs<i class="fa fa-download mx-1" aria-hidden="true"></i></a>
+                                                    }
+
+                                                }
+                                            </div>
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th class="preview-w text-center">View</th>
+                                        <th class="preview-w text-center">Download</th>
+                                        <th class="oc-tone">
+                                            <div class="form-group form-check mb-0 no-visible">
+                                                <input type="checkbox" class="form-check-input chkAllSpecs" id="chkAllSpecs">
+                                                <label class="form-check-label" for="chkAllSpecs">Select All</label>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-icons">
+                                    @if (Model.SpecsFiles != null)
+                                    {
+                                        @if (Model.SpecsFiles.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.SpecsFiles.Count; i++)
+                                            {
+                                                string hrefPath = Model.SpecsFiles[i].PathInfo;
+                                                if (hrefPath.IndexOf(" ") > -1)
+                                                    hrefPath = hrefPath.Replace(" ", "+");
+                                                string OrderAll = Model.SpecsFiles[i].PathInfo + "$" + Model.SpecsFiles[i].FileInfo;
+                                                <input type="hidden" class="OrderAllClass" value="@OrderAll" />
+                                                <tr>
+                                                    <td><a href="@Url.Action("DocPreview", "Project", new { filePath = Model.SpecsFiles[i].PathInfo })" target="_blank" class="pdf file-name"><i class="fa fa-file-pdf mr-2"></i> @Model.SpecsFiles[i].FileInfo</a></td>
+                                                    <td class="text-center"><a href="@Url.Action("DocPreview", "Project", new { filePath = Model.SpecsFiles[i].PathInfo })" target="_blank" class="fa fa-search"></a></td>
+                                                    <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file=" @Model.SpecsFiles[i].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-arrow-down"></i></a></td>
+                                                    <td class="oc-tone"><input type="hidden" class="OrderAllPlans" value="@OrderAll" /><input type="checkbox" class="chkPlan" /></td>
+                                                </tr>
+                                            }
+                                        }
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                        <div class="col-12 mt-2 table-responsive">
+                            <div class="row">
+                                @* <div class="col-lg-6">
+                                <div class="down-single">
+                                <h6>Addenda</h6>
+                                @if (Model.AddendaS3Files != null)
+                                {
+                                @if (Model.AddendaS3Files.Count > 0)
+                                {
+                                <a class="preview-download down-all" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="Addenda">Download All Addenda<i class="fa fa-download mx-1" aria-hidden="true"></i></a>
+                                }
+
+                                }
+                                @if(!string.IsNullOrEmpty(Model.AddendaNote))
+                                {
+                                <p class="text-bold" style="color:red"><b>@Model.AddendaNote</b></p>
+
+                                }
+                                </div>
+                                </div> *@
+                                @* <div class="col-lg-6 text-right down-single">
+                                <a href="javascript:;" class="preview-download mx-2" onclick="OpenPrintModel1('Addenda')">Order Copies<i class="fa fa-cart-arrow-down mx-1"></i></a>
+                                onclick="OpenPrintModel1('@Model.PlansFiles[i].FileInfo','@hrefPath')"
+                                </div> *@
+                            </div>
+                            <table class="table table-bordered table-docs less-space">
+                                <thead class="font-weight-bold table-active">
+                                    <tr>
+                                        <th>
+                                            <div class="down-single my-1">
+                                                <h6>Addenda</h6>
+                                                @if (Model.AddendaS3Files != null)
+                                                {
+                                                    @if (Model.AddendaS3Files.Count > 0)
+                                                    {
+                                                        <a class="preview-download down-all" asp-action="DownLoadAllZip" asp-controller="Project" asp-route-Zip="@Model.ProjNumber" asp-route-type="Addenda">Download All Addenda<i class="fa fa-download mx-1" aria-hidden="true"></i></a>
+                                                    }
+
+                                                }
+                                                @if (!string.IsNullOrEmpty(Model.AddendaNote))
+                                                {
+                                                    <p class="mb-0" style="color:red"><span>@Model.AddendaNote</span></p>
+
+                                                }
+                                            </div>
+                                        </th>
+                                        <th></th>
+                                        <th></th>
+                                        <th></th>
+                                    </tr>
+                                    <tr>
+                                        <th>File Name</th>
+                                        <th class="preview-w text-center">View</th>
+                                        <th class="preview-w text-center">Download</th>
+                                        <th class="oc-tone">
+                                            <div class="form-group form-check mb-0 no-visible">
+                                                <input type="checkbox" class="form-check-input chkAddendum" id="chkAddendum">
+                                                <label class="form-check-label" for="chkAddendum">Select All</label>
+                                            </div>
+                                        </th>
+                                    </tr>
+                                </thead>
+                                <tbody class="table-icons">
+                                    @if (Model.AddendaDIRInfos != null)
+                                    {
+                                        @if (Model.AddendaDIRInfos.Count > 0)
+                                        {
+                                            for (int i = 0; i < Model.AddendaDIRInfos.Count; i++)
+                                            {
+                                                string hrefPath1 = Model.AddendaDIRInfos[i].PathInfo;
+                                                if (hrefPath1.IndexOf(" ") > -1)
+                                                    hrefPath1 = hrefPath1.Replace(" ", "+");
+
+                                                string OrderAll1 = Model.AddendaDIRInfos[i].PathInfo + "$" + Model.AddendaDIRInfos[i].FileInfo;
+                                                <tr>
+                                                    <td>
+                                                        <i class="fa fa-chevron-right tbl-chevron" aria-hidden="true"></i>
+                                                        <a data-toggle="" href="#multiCollapseExample_@i" role="button" aria-expanded="false" aria-controls="multiCollapseExample1" target="_blank" class="pdf file-name toggle-row">
+                                                            @Model.AddendaDIRInfos[i].FileInfo
+                                                        </a>
+                                                    </td>
+                                                    <td></td>
+                                                    <td class="text-center"><a asp-action="DownLoadZip" asp-controller="Project" asp-route-file="@Model.AddendaDIRInfos[i].FileInfo" asp-route-filePath="@Model.AddendaDIRInfos[i].PathInfo"><i class="fa fa-arrow-down"></i></a></td>
+                                                    <td class="oc-tone"><input type="hidden" class="OrderAllPla" value="@OrderAll1" /><input type="checkbox" class="chkAddenda chk-td" href="#multiCollapseExample_@i" id="multiCollapseExample_@i" /></td>
+                                                </tr>
+                                                if (Model.AddendaDIRInfos[i].addendaFileInfos != null && Model.AddendaDIRInfos[i].addendaFileInfos.Count > 0)
+                                                {
+                                                    for (int j = 0; j < Model.AddendaDIRInfos[i].addendaFileInfos.Count; j++)
+                                                    {
+                                                        string hrefPath = Model.AddendaDIRInfos[i].addendaFileInfos[j].PathInfo;
+                                                        if (hrefPath.IndexOf(" ") > -1)
+                                                            hrefPath = hrefPath.Replace(" ", "+");
+
+                                                        string OrderAll = Model.AddendaDIRInfos[i].addendaFileInfos[j].PathInfo + "$" + Model.AddendaDIRInfos[i].addendaFileInfos[j].FileInfo;
+                                                        <tr class="collapse multi-collapse multiCollapseExample_@i" id="multiCollapseExample_@i">
+                                                            <input type="hidden" class="OrderAllClass" value="@OrderAll" />
+                                                            <td><a href="@Url.Action("DocPreview", "Project", new { filePath = Model.AddendaDIRInfos[i].addendaFileInfos[j].PathInfo })" target="_blank" class="pdf file-name"><i class="fa fa-file-pdf mr-2"></i> @Model.AddendaDIRInfos[i].addendaFileInfos[j].FileInfo</a></td>
+                                                            <td class="text-center"><a href= href="@Url.Action("DocPreview", "Project", new { filePath = Model.AddendaDIRInfos[i].addendaFileInfos[j].PathInfo })" target="_blank" class="fa fa-search"></a></td>
+                                                            <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file="@Model.AddendaDIRInfos[i].addendaFileInfos[j].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-arrow-down"></i></a></td>
+                                                            <td class="oc-tone"><input type="hidden" class="OrderAllPlans" value="@OrderAll" /><input type="checkbox" onclick="ChangeParentChkBox(this.checked,this.id)" class="chkAddenda_@i chkall chkPlan" id="checkboxid_@i" /></td>
+                                                        </tr>
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    <tr class="collapse multi-collapse multiCollapseExample_@i" id="multiCollapseExample_@i">
+                                                        <td colspan="4" class="text-center">No File Available</td>
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    }
+                                    @if (Model.AddendaS3Files != null)
+                                    {
+                                        @if (Model.AddendaS3Files.Count > 0)
+                                        {
+
+                                            for (int i = 0; i < Model.AddendaS3Files.Count; i++)
+                                            {
+                                                string hrefPath = Model.AddendaS3Files[i].PathInfo;
+                                                if (hrefPath.IndexOf(" ") > -1)
+                                                    hrefPath = hrefPath.Replace(" ", "+");
+                                                string OrderAll = Model.AddendaS3Files[i].PathInfo + "$" + Model.AddendaS3Files[i].FileInfo;
+
+                                                <iframe id="my_iframe" style="display:none;"></iframe>
+                                                bool isFile = false;
+                                                bool.TryParse(Model.AddendaS3Files[i].IsFile.ToString(), out isFile);
+                                                @* if (isFile)
+                                    {*@
+                                                <input type="hidden" class="OrderAllClass" value="@OrderAll" />
+                                                <tr>
+                                                    <td><a href="@Url.Action("DocPreview", "Project", new { filePath = Model.AddendaS3Files[i].PathInfo })" target="_blank" class="pdf file-name"><i class="fa fa-file-pdf mr-2"></i> @Model.AddendaS3Files[i].FileInfo</a></td>
+                                                    <td class="text-center"><a href="@Url.Action("DocPreview", "Project", new { filePath = Model.AddendaS3Files[i].PathInfo })" target="_blank" class="fa fa-search"></a></td>
+                                                    <td class="text-center"><a asp-action="DownLoadFile" asp-controller="Project" asp-route-file="@Model.AddendaS3Files[i].FileInfo" asp-route-filePath="@hrefPath"><i class="fa fa-arrow-down"></i></a></td>
+                                                    <td class="oc-tone"><input type="hidden" class="OrderAllPlans" value="@OrderAll" /><input type="checkbox" class="chkAddenda chkPlan" /></td>
+                                                </tr>
+                                                @*}
+                                    else
+                                    {*@
+
+
+                                                @*}*@
+                                            }
+                                        }
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+
+                        @*//Solr Search keyword results*@
+                      <div class="solrPDF">
+                        @if (Model.SolrSearchResult != null)
+                        {
+                          <div class="solrHeader">Keyword Search Results</div>
+                            @foreach (var pdfGroup in Model.SolrSearchResult)
+                            {
+                                var firstResult = pdfGroup.Value.Values.SelectMany(v => v).FirstOrDefault();
+
+                                if (firstResult != null)
+                                {
+                                    <h3>
+                                            <i class="fa fa-minus colpAllPage " aria-hidden="true"></i>
+                                        <a href="@Url.Action("DocPreview", "Project", new { filePath = firstResult.filepath })" target="_blank">
+                                                @pdfGroup.Key
+                                        </a>
+                                    </h3>
+
+                                        <div class="entireWrap">
+                                            @foreach (var pageGroup in pdfGroup.Value)
+                                            {
+                                                <div class="pageResult">
+                                                    @if (pageGroup.Value.Any())
+                                                    {
+                                                        <h5>
+                                                            <i class="fa fa-minus-square-o colpSolrPage" aria-hidden="true"></i>
+                                                            <a href="@Url.Action("DocPreview", "Project", new { filePath = firstResult.filepath, pageNo = pageGroup.Key })" target="_blank">
+                                                                Page @pageGroup.Key
+                                                            </a>
+                                                        </h5>
+                                                        <ul>
+                                                            @foreach (var result in pageGroup.Value)
+                                                            {
+                                                                @foreach (var line in result.Content)
+                                                                {
+                                                                    var highlightedLine = line;
+                                                                    if (!string.IsNullOrEmpty(ViewBag.Query))
+                                                                    {
+                                                                        string solr = ViewBag.Query.ToString();
+                                                                        solr = solr.Trim('*');
+                                                                        // Extracting exact match keywords (quoted words)
+                                                                        // Extracting quoted keywords
+                                                                        var quotedKeywords = Regex.Matches(solr, "\"([^\"]+)\"")
+                                                                        .Cast<Match>()
+                                                                        .Select(m => m.Groups[1].Value.Trim())
+                                                                        .Where(t => !string.IsNullOrEmpty(t))
+                                                                        .ToList();
+
+                                                                        // Removing quoted keywords from the original string
+                                                                        var unquotedPart = Regex.Replace(solr, "\"([^\"]+)\"", "").Trim();
+
+                                                                        // Extracting normal match keywords (non-quoted words)
+                                                                        var unquotedKeywords = Regex.Split(unquotedPart, @"[,\s&]+")
+                                                                        .Select(keyword => keyword.Trim().Trim('"'))
+                                                                        .Where(keyword => !quotedKeywords.Contains(keyword) && !string.IsNullOrEmpty(keyword))
+                                                                        .ToList();
+
+                                                                        // Highlighting exact match keywords
+                                                                        if (quotedKeywords != null && quotedKeywords.Count > 0)
+                                                                        {
+                                                                            foreach (var keyword in quotedKeywords)
+                                                                            {
+                                                                                highlightedLine = Regex.Replace(
+                                                                                highlightedLine,
+                                                                                @"\b" + Regex.Escape(keyword) + @"\b",
+                                                                                "<span style=\"background-color: yellow; text-decoration: underline;\">$&</span>",
+                                                                                RegexOptions.IgnoreCase
+                                                                                );
+                                                                            }
+                                                                        }
+
+                                                                        // Highlighting normal match keywords
+                                                                        if (unquotedKeywords != null && unquotedKeywords.Count > 0)
+                                                                        {
+                                                                            foreach (var keyword in unquotedKeywords)
+                                                                            {
+                                                                                var trkeyword = keyword.Trim().Trim('*');
+                                                                                highlightedLine = Regex.Replace(
+                                                                                highlightedLine,
+                                                                                @"\b\w*" + Regex.Escape(trkeyword) + @"\w*\b",
+                                                                                "<span style=\"background-color: yellow; text-decoration: underline;\">$&</span>",
+                                                                                RegexOptions.IgnoreCase
+                                                                                );
+                                                                            }
+                                                                        }
+
+                                                                    }
+                                                                    <li>
+                                                                        <a href="@Url.Action("DocPreview", "Project", new { filePath = firstResult.filepath, pageNo = pageGroup.Key })" target="_blank">
+                                                                            @Html.Raw(highlightedLine)
+                                                                        </a>
+                                                                    </li>
+                                                                }
+
+
+                                                            }
+                                                        </ul>
+                                                    }
+                                                </div>
+                                            }
+                                        </div>
+
+                                }
+                            }
+                        }
+                                </div>
+                    </div>
+                    <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                        <div class="modal-dialog modal-xl">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header cusModal-Header">
+                                    <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                        Print Order Form
+                                    </h4>
+                                    <h4 class="modal-title card-label font-weight-bolder" id="ordersummary-head" style="display:none;">
+                                        Print Order Summary
+                                    </h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <!-- Create order Form -->
+                                    <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                        <div class="row px-0 mx-0">
+                                            <div class="col-lg-6 pl-0 cpy-cntr-form">
+                                                <h6>Customer Info</h6>
+                                                <div class="formCls">
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Company<span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input tabindex="1" class="form-control form-control-solid " type="text"
+                                                                   value="" placeholder="Company" id="inpCompany" autocomplete="on" onchange="validateform(this.id)">
+                                                            <span class="loginError"></span>
+                                                            <input type="hidden" id="hdninpCompany" />
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Contact<span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                            <input type="hidden" id="Uid" />
+                                                            <input class="form-control form-control-solid " type="text"
+                                                                   value="" placeholder="Name" id="inpContact" autocomplete="on" onchange="validateform()">
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-1">
+
+                                                        <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address<span class="text-danger">*</span></label>
+
+                                                        <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                            <input tabindex="3" class="form-control"
+                                                                   type="text" value=""
+                                                                   placeholder="Address" id="inpAddr" onchange="validateform(this.id)">
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            <span class="text-danger"></span>
+                                                        </label>
+                                                        <div class="col-lg-5 col-xl-5 mb-lg-0 mb-2">
+
+                                                            <input tabindex="5" class="address_zipcode form-control form-control-solid"
+                                                                   name="address_zipcode" type="text" value=""
+                                                                   placeholder="City" id="inpCity" onchange="validateform(this.id)">
+                                                            <span class="loginError"></span>
+
+                                                        </div>
+                                                        <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                            <div class="dropdown px-0">
+                                                                <select tabindex="6" class="form-control form-control-solid mb-2" id="inpState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform(this.id)"></select>
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                            <input tabindex="4" class="address_zipcode form-control form-control-solid number-only"
+                                                                   name="address_zipcode" type="text" value=""
+                                                                   placeholder="Zip Code" id="inpZip" onchange="validateform(this.id)" maxlength="5">
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Phone<span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input tabindex="7" class="form-control"
+                                                                   type="text" value=""
+                                                                   placeholder="Phone" id="inpPhone" onchange="validateform(this.id)">
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    @* <div class="form-group row mb-1">
+
+                                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+
+                                                    <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                    <input tabindex="8" type="checkbox" class="mx-1" value="" />Text Message Notifications
+                                                    <span class="loginError"></span>
+                                                    </div>
+                                                    </div> *@
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Email<span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input tabindex="9" class="form-control  copy_email"
+                                                                   name="copy_email" type="text" value=""
+                                                                   placeholder="Email" id="inpEmail" onchange="validateform(this.id)">
+                                                            <input type="hidden" id="hdnFileName" />
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    @* <div class="form-group row mb-1">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">Upload Files</label>
+                                                    <div class="col-lg-9 col-xl-9 input-group">
+                                                    <form id="myForm" method="post" enctype="multipart/form-data">
+                                                    <input tabindex="10" type="file" class="form-control mr-2" id="fileUpload1" name="pdfFile" multiple />
+                                                    <input tabindex="11" type="button" class="btn-upload" style="float: right;" id="btnfileUpload1" onclick="UploadFile(this.event)" value="Upload" />
+
+                                                    <label id="lblMessage" style="display:none;"></label>
+                                                    </form>
+                                                    <span class="loginError" id="uploadError"></span>
+
+                                                    </div>
+                                                    </div>*@
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                                        <div class="col-lg-9 col-xl-9 input-group">
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-lg-6 pr-0 cpy-cntr-form">
+                                                <h6>Order Info</h6>
+                                                <div class="formCls">
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Project #
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input tabindex="12" class="form-control "
+                                                                   name="project_number" type="text" value=""
+                                                                   placeholder="Project #" id="inpProjNo" onchange="validateform(this.id)">
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            P.O.
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input tabindex="13" class="form-control"
+                                                                   name="order_po" type="text" value=""
+                                                                   placeholder="P.O." id="inpPO">
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">Deadline<span class="text-danger">*</span></label>
+
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <div class="input-group copy_order_deadline_box"
+                                                                 id=""
+                                                                 data-target-input="nearest">
+                                                                <input tabindex="14" type="date"
+                                                                       class="form-control"
+                                                                       data-target="" value="" id="inpDline" onchange="validateform(this.id)">
+                                                                <span class="loginError d-flex align-items-center px-1"></span>
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-1">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Delivery<span class="text-danger">*</span>
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <div class="dropdown bootstrap-select ">
+                                                                <div class="dropdown bootstrap-select">
+                                                                    <select tabindex="15" class="form-control" id="inpDelivery" onchange="validateform(this.id)">
+                                                                        <option value="" hidden="">-Select-</option>
+                                                                        @* <option value="1">Pickup</option>
+                                                                        <option value="2">Local Delivery(20)-Portland Metro Only</option>
+                                                                        <option value="3">UPS delivery</option>*@
+                                                                    </select>
+                                                                    <span class="loginError"></span>
+                                                                    <input type="hidden" name="HowShip" id="HowShip" />
+                                                                    <input type="hidden" id="TextHowShip" />
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="HideDelivery" id="DetShip">
+                                                        <div class="form-group row mb-1">
+
+                                                            <label class="col-xl-3 col-lg-3 col-form-label"></label>
+
+                                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                                <input tabindex="16" type="checkbox" class="mx-1" value="" id="chkDel" onclick="DelFunction()" />Same as Billing Address
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-1">
+
+                                                            <label class="col-xl-3 col-lg-3 col-form-label ">Shipping Address<span class="text-danger">*</span></label>
+
+                                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                                <input tabindex="17" class="form-control"
+                                                                       type="text" value=""
+                                                                       placeholder="Address" id="inpDelAddr" onchange="validateform(this.id)">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-1">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                                <span class="text-danger"></span>
+                                                            </label>
+                                                            <div class="col-lg-5 col-xl-5 mb-lg-0 mb-2">
+
+                                                                <input tabindex="19" class="address_zipcode form-control form-control-solid"
+                                                                       name="address_zipcode" type="text" value=""
+                                                                       placeholder="City" id="inpDelCity" onchange="validateform(this.id)">
+                                                                <span class="loginError"></span>
+
+                                                            </div>
+                                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+
+                                                                <div class="dropdown px-0">
+                                                                    <select tabindex="20" class="form-control form-control-solid mb-2" id="inpDelState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform(this.id)"></select>
+                                                                    <span class="loginError"></span>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="form-group row mb-1">
+                                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            </label>
+                                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                                <input tabindex="18" class="address_zipcode form-control form-control-solid number-only"
+                                                                       name="address_zipcode" type="text" value=""
+                                                                       placeholder="Zip Code" id="inpDelZip" onchange="validateform(this.id)" maxlength="5">
+                                                                <span class="loginError"></span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 px-0">
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-form-label col-md-2 test" style="max-width: 12.666667%;">
+                                                        Additional Instructions
+                                                    </label>
+                                                    <div class="input-group col-md-10" style="flex:0 0 87.3%;max-width: 87.3%;">
+                                                        <textarea tabindex="21" name="instructions"
+                                                                  class="instructions form-control" cols="30"
+                                                                  rows="5" id="inpInstruction" onchange="validateform(this.id)" onblur="validateform(this.id)"></textarea>
+                                                    </div>
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 px-0">
+                                                <div class="form-group row mb-1">
+                                                    <div class="col-lg-12 col-xl-12  d-none divUpload">
+                                                        <div class="modal-body">
+                                                            <table class="table table-bordred border select-file-table" id="tblUpload">
+                                                                <thead class="">
+                                                                    <tr>
+                                                                        <th>File Name</th>
+                                                                        <th style="width: 10%;">Page Count</th>
+                                                                        <th style="width: 10%;"># of Copies</th>
+                                                                        <th style="width: 12%;text-align:right;">Print</th>
+                                                                        <th style="width: 12%;text-align:right;">Page Size</th>
+                                                                    </tr>
+                                                                </thead>
+                                                                <tbody id="ftbody" class="">
+                                                                </tbody>
+                                                            </table>
+                                                            <div class="price-body">
+                                                            </div>
+                                                            <div class="nprice-body">
+                                                            </div>
+                                                            <div class="color-price-body">
+                                                            </div>
+                                                            <div class="color-nprice-body">
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            @* <div class="form-group row mb-1 d-none divUpload">
+                                            <div class="modal-body">
+                                            <table class="table table-bordred border select-file-table" id="tblUpload">
+                                            <thead class="text-center">
+                                            <tr>
+                                            <th>File Name</th>
+                                            <th>Page Count</th>
+                                            <th style="width: 20%;"># of Copies</th>
+                                            <th>Page Size</th>
+                                            </tr>
+                                            </thead>
+                                            <tbody id="ftbody" class="text-center">
+                                            </tbody>
+                                            </table>
+                                            <div class="price-body">
+                                            </div>
+                                            <div class="nprice-body">
+                                            </div>
+                                            </div>
+                                            </div>*@
+
+                                        </div>
+
+                                    </form>
+                                    <div class="col-md-12 newPro-btn">
+                                        <button id="next-btn" class="newProbtn modl-btn px-4" style="float: right;">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
+                                    </div>
+                                    <!-- Review Order Form -->
+
+                                    <form action="" class="col-md-12 review-form" style="display: none;">
+                                        @*<div id="loader-overlay" class="CopyCenterloader">
+                                        <div id="loader" class="popup-loader">
+                                        <img src="/assets/images/LoaderPCNW.gif" style="max-width: 20%;min-width:20%" />
+                                        </div>
+                                        </div>*@
+                                        <input type="hidden">
+                                        <div class="row text-left formCls">
+                                            <div class="col-lg-6 pl-0">
+                                                <h6>Customer Info</h6>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">Company</label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="Company" id="lblModCompany">
+
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Contact
+                                                    </label>
+                                                    <input type="hidden" id="ModUid" />
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="Name" id="lblModContact">
+                                                        +1 635544000
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+
+                                                    <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address</label>
+
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="Addr" id="lblModBillAddr">
+
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        <span class="text-danger"></span>
+                                                    </label>
+                                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                        <label class="col-form-label" name="City" id="lblModCity">
+                                                            Carolina
+                                                        </label>
+
+                                                    </div>
+                                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                        <label class="col-form-label" name="State" id="lblModState">
+                                                            Nevada
+                                                        </label>
+
+                                                    </div>
+
+                                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                                        <label class="col-form-label" name="Zip" id="lblModZip">
+                                                            9966TA
+                                                        </label>
+
+                                                    </div>
+                                                </div>
+
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Phone
+
+                                                    </label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="Phone" id="lblModPhone">
+                                                        +1 63577799
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Email
+
+                                                    </label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="Email" id="lblModEmail">
+                                                        testing@hotmail.com
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label"> Payment Info</label>
+
+                                                    <div class="col-lg-9 col-xl-9 col-form-label">
+                                                        <select id="inpPayInfo">
+                                                            <option value="1">CC</option>
+                                                            <option value="2">Add To Monthly Invoice</option>
+                                                        </select>
+                                                    </div>
+
+                                                </div>
+                                                @*<div class="form-group row mb-3 border mx-0">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">Plan</label>
+                                                <label class="col-lg-9 col-xl-9 col-form-label" name="FileName" id="lblModPlan">
+
+                                                </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">Price</label>
+                                                <label class="col-lg-9 col-xl-9 col-form-label" name="ShipAmt" id="lblModPrice">
+
+                                                </label>
+                                                </div>*@
+                                            </div>
+                                            <div class="col-lg-6 pr-0">
+                                                <h6>Order Info</h6>
+
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Project #
+                                                    </label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="ProjId" id="lblModProjNo">
+                                                        Project No#-504111
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label" id="">
+                                                        P.O.
+                                                    </label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="PO" id="lblModPO">
+                                                        400321
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        No. of Pages
+                                                    </label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="pages" id="lblModPages">
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label ">
+                                                        No. of
+                                                        Copies
+                                                    </label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="Prints" id="lblModCopy">
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">Deadline</label>
+
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="DeliveryDt" id="lblModDLine">
+                                                        26/9/2023
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Delivery
+
+                                                    </label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="HowShip" id="lblModDelivery">
+                                                        Pickup
+                                                    </label>
+                                                </div>
+
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address</label>
+                                                    <label class="col-lg-9 col-xl-9 col-form-label" name="NotifyAddress" id="lblModDelAddr">
+                                                        88 Scaremento North Carolina
+                                                    </label>
+                                                </div>
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        <span class="text-danger"></span>
+                                                    </label>
+                                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                        <label class="col-form-label" id="lblModDelCity">
+                                                            Carolina
+                                                        </label>
+
+                                                    </div>
+                                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                        <label class="col-form-label" id="lblModDelState">
+                                                            Nevada
+                                                        </label>
+
+                                                    </div>
+
+                                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                                        <label class="col-form-label" id="lblModDelZip">
+                                                            9966TA
+                                                        </label>
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 px-0">
+
+                                                <div class="form-group row mb-3 border mx-0">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Additional
+                                                        Instructions
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9" style="text-align: justify;">
+                                                        <label id="lblModDelInstruction" name="Instructions">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam omnis accusamus ratione atque incidunt, ipsa eum eveniet maxime deserunt doloribus possimus aperiam temporibus praesentium quo, inventore vitae. Tempora, maxime. Nam.</label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-12 px-0">
+                                                <table class="table table-bordered price-table-review cusTable">
+                                                    <thead>
+                                                        <tr>
+                                                            <th class="text-left">File Name</th>
+                                                            <th>No. of pages</th>
+                                                            <th>No. of copies</th>
+                                                            <th>Select Print</th>
+                                                            <th>Size</th>
+                                                            <th>Price</th>
+                                                            <th>Total Amount</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody class="prcTbody">
+                                                    </tbody>
+                                                    <tfoot id="prcFooter">
+                                                        <tr>
+                                                            <td class="font-weight-bold text-right" colspan="5">Delivery Charges</td>
+                                                            <td class="font-weight-bold text-center" id="delivCharges">$0</td>
+                                                        </tr>
+                                                        <tr>
+                                                            <td class="font-weight-bold text-right" colspan="5">Total</td>
+                                                            <td class="font-weight-bold text-center" id="priceTotal">$3024</td>
+                                                        </tr>
+                                                    </tfoot>
+
+                                                </table>
+                                                <input type="hidden" id="hdnTotalPrice" />
+                                            </div>
+                                            @*<div class="form-group col-12 pr-0 font-weight-bold">
+                                            <span style="float:right;"> Text Message Notifications. <input type="checkbox" class="mx-1"></span>
+                                            </div>*@
+                                            <div class="form-group col-12 px-0 newPro-btn">
+                                                <span style="float: right; cursor:pointer;" class="modl-btn px-4 newProbtn" onclick="submitData(this.event, @Model.ProjId)"><i class="fa fa-cloud-download" aria-hidden="true"></i> Pay</span>
+                                                <button id="prev-btn" style="float: left;" class="modl-btn px-4 newProbtn">
+                                                    <i class="fa fa-angle-double-left" aria-hidden="true"></i> Previous
+                                                </button>
+
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @* ------    thanku modal    ------*@
+                    <div class="modal modalthanks fade" id="thankyou-Modal" role="dialog">
+                        <div class="modal-dialog modal-lg">
+
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header p-2">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+
+                                <div class="modal-body">
+                                    <h1 class="text-success">Thank you</h1>
+                                    <h4>For using our Copy Center. You will receive a message when your order is complete and ready for pickup or delivery.</h4>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <button type="button" class="modl-btn" data-dismiss="modal">Close</button>
+                                </div>
+                            </div>
+
+                        </div>
+                    </div>
+                    <div class="modal modalPay" id="thankyou-Modal" role="dialog">
+                        <div class="modal-dialog modal-lg">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header cusModal-Header">
+                                    <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                        Payment Information
+                                    </h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="row">
+                                        <div class="col-md-12">
+                                            <div class="form-group">
+                                                <label for="CardHolderName">CARDHOLDER NAME:</label>
+                                                <input type="text" class="form-control" id="CardHolderName">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-group">
+                                                <label for="CardNumber">CARD INFORMATION:</label>
+                                                <input type="text" class="form-control" placeholder="Card Number" id="CardNumber">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-4">
+                                            <div class="form-group mt-2">
+                                                <label for="ExpiryDate"></label>
+                                                <input type="text" class="form-control" placeholder="MM/YY" id="ExpiryDate">
+                                            </div>
+                                        </div>
+                                        <div class="col-md-2">
+                                            <div class="col-md-2">
+                                                <div class="form-group mt-2">
+                                                    <label for="CVC"></label>
+                                                    <input type="text" class="form-control" placeholder="CVC" id="CVC">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <span style="cursor:pointer" onclick="PayData(@Model.ProjId)" type="button" class="modl-btn" data-dismiss="modal">Pay</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

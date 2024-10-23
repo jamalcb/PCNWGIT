@@ -1,0 +1,201 @@
+﻿@model LoginViewModel;
+@{
+    ViewData["Title"] = "Login Page";
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+	<meta charset="UTF-8">
+	<meta content="width=device-width, initial-scale=1" name="viewport" />
+	<title>Login</title>
+	<!-- Favicon-->
+	<link rel="icon" href="~/b-assets/images/Logo Master Horiz Black.jpg" type="image/x-icon">
+	<!-- Plugins Core Css -->
+	<link href="~/b-assets/css/app.min.css" rel="stylesheet">
+
+	<!-- Custom Css -->
+	<link href="~/b-assets/css/style.css" rel="stylesheet" />
+	<link href="~/b-assets/css/pages/extra_pages.css" rel="stylesheet" />
+
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y350DCZ35"></script>
+<script>
+	window.dataLayer = window.dataLayer || [];
+	function gtag() { dataLayer.push(arguments); }
+	gtag('js', new Date());
+
+	gtag('config', 'G-9Y350DCZ35');
+</script>
+<style>
+	a.txt1:hover {
+		color: #d6bb63;
+	}
+	.login-member{
+		margin-bottom: 0;
+		color: #ccc;
+		font-size: 16px;
+	}
+	.login100-form-btn:hover {
+		background-color: #6c84b5;
+	}
+
+	.login-footer
+	{
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.rememeberMe-checkbox {
+		padding-bottom: 10px;
+	}
+	.login-btn-outter-sec
+	{
+
+	}
+	.login-btn-outter-sec .log-btn
+	{
+		display: block;
+		color: #000;
+		background: #ff9900;
+		padding: 10px 30px;
+		border-radius: 2px;
+		font-size: 18px;
+		font-weight: 500;
+		text-transform: capitalize;
+		border: 0;
+		margin: auto;
+	}
+	.login-btn-outter-sec .log-btn:hover{
+			border-radius: 50px;
+			font-weight: bold;
+	}
+	.loginBgImg{
+		background-image: url(/assets/images/header-hm-back.jpg);
+		background-position: center;
+		background-repeat: no-repeat;
+		background-size: auto;
+		position: relative;
+		box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+	}
+
+	.wrap-login100.loginBgImg{
+		width: 500px;
+		border-radius: 15px;
+		overflow: hidden;
+		padding: 30px 50px 30px 50px;
+	}
+
+	.login100-form-title {
+		font-size: 35px;
+		text-transform: uppercase;
+		margin: 30px 0;
+		letter-spacing: 3px;
+	}
+
+	.input100:focus + .focus-input1001 {
+		top: -22px;
+		font-size: 18px;
+		-webkit-transition: top 0.3s ease, font-size 0.3s ease;
+		transition: top 0.3s ease, font-size 0.3s ease;
+	}
+
+	input:-webkit-autofill {
+		-webkit-box-shadow: 0 0 0 1000px white inset; /* Adjust the color and size as needed */
+		-webkit-text-fill-color: black; /* Adjust the text color if needed */
+	}
+
+</style>
+
+<body class="login-page">
+	<div class="limiter">
+		<div class="container-login100 page-background">
+			<div class="wrap-login100 loginBgImg">
+				<form class="login100-form validate-form" method="post" asp-action="Login">
+					<span class=" cus-login-logo">
+						<a href="/Home/Index">
+						@*<img alt="" src="~/b-assets/images/Logo Master Horiz Black.jpg">*@
+							<img class="img-fluid" alt=" logo" src="~/b-assets/images/Logo Master Horiz Clear White.png" />
+						</a>
+					</span>
+					<span class="login100-form-title">
+						Login
+					</span>
+					<div class="text-danger text-center" id="error-login-container">
+						@Model.RedirectFromLogin
+					</div>
+					<div class="wrap-input100 validate-input" data-validate="Enter username">
+						<input class="input100" type="text" asp-for="Email" placeholder="Username">
+						<i class="material-icons focus-input1001">person</i>
+					</div>
+					<div class="wrap-input100 validate-input mb-3" data-validate="Enter password">
+						<input type="hidden" asp-for="ReturnUrl" />
+						<input class="input100" type="password" asp-for="Password" placeholder="Password">
+						<i class="material-icons focus-input1001">lock</i>
+						<div class="text-right my-2">
+							<a class="txt1" href="Forgetpassword">
+								Forgot Password?
+							</a>
+						</div>
+						@*<input type="hidden" value="@Model.Password" id="hdnpreStep" />*@
+					</div>
+					
+					<div class="contact100-form-checkbox rememeberMe-checkbox">
+						<div class="form-check">
+							<label class="form-check-label">
+								<input class="form-check-input" asp-for="RememberMe" type="checkbox"> Remember me
+								<span class="form-check-sign" asp-for="RememberMe">
+									<span class="check"></span>
+								</span>
+							</label>
+						</div>
+					</div>
+					<div class="container-login100-form-btn login-btn-outter-sec">
+						<input type="submit" class="login100-form-btn log-btn" />
+					</div>
+					
+					<div class="text-center mt-4">
+						<p class="login-member">Not A Member ?</p>
+						<a class="txt1" asp-action="Register" asp-controller="MemberShip">
+							Click here to join
+						</a>
+						
+					</div>
+					<div class="login-footer">
+						
+						
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+	@*@if (Model.RedirectFromLogin != null)
+	{  
+        <script type="text/javascript">  
+            window.onload = function () {
+				alert(Model.RedirectFromLogin);
+			};  
+        </script>  
+    }*@  
+	<!-- Plugins Js -->
+
+	<script src="~/b-assets/js/app.min.js"></script>
+
+	<!-- Extra page Js -->
+	<script src="~/b-assets/js/pages/examples/pages.js"></script>
+
+</body>
+<script>
+	window.onload = function () { 
+		setTimeout(
+			function () {
+				document.getElementById('error-login-container').style.display = 'none';
+			}, 3000);
+    }
+</script>
+</html>

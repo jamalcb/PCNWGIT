@@ -1,0 +1,126 @@
+﻿@model List<SuperAdminViewModel>
+@{
+    ViewData["Title"] = "RenewalProjection";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+    var strRevenue = TempData["strRevenue"] ?? string.Empty;
+}
+@section Scripts{
+    <script src="~/js/AdminReports.js"></script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Renewal Projection</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Admin Reports</li>
+                        <li class="breadcrumb-item active">Renewal Projection</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+
+                    <div class="header">
+                        <h2>
+                            <strong>Renewal Projection</strong>
+                        </h2>
+                    </div>
+                    <div class="col-md-3 focused">
+                        <select id="monthSelect" class="form-control" data-role="select-dropdown" data-profile="" onchange="RenewalProjectionMonth()">
+                            <option selected disabled>Select Month</option>
+                            <option value="1">January</option>
+                            <option value="2">February</option>
+                            <option value="3">March</option>
+                            <option value="4">April</option>
+                            <option value="5">May</option>
+                            <option value="6">June</option>
+                            <option value="7">July</option>
+                            <option value="8">August</option>
+                            <option value="9">September</option>
+                            <option value="10">October</option>
+                            <option value="11">November</option>
+                            <option value="12">December</option>
+                        </select>
+                    </div>
+                    <form asp-action="RenewalProjectionRange" asp-controller="GlobalMaster" method="post">
+                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12 mt-3">
+                        <div class="row cus-select-date">
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            <label for="email_address">Select Date From</label>
+                                            <input id="myDatePicker" class="flatPicker flatpickr-input" name="startDate" placeholder="Please choose a date..." type="date">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-2 date-to">TO</div>
+                                <div class="col-sm-3">
+                                    <div class="form-group">
+                                        <div class="form-line">
+                                            <label for="email_address">Select Date</label>
+                                            <input id="myDatePicker" class="flatPicker flatpickr-input" name="endDate" placeholder="Please choose a date..." type="date">
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-3 d-flex align-items-center">
+                                    <div class="form-group mb-0">
+                                        <div class="form-line">
+                                            <input id="myDatePicker" class="flatPicker flatpickr-input cus-input-btn" placeholder="Please choose a date..." type="submit">
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- date range two in one  -->
+                            
+                        </div>
+                        </div>
+                    </form>
+                    <h5 class="mx-3">Possible Revenue: $ <span id="spnRev">@strRevenue</span></h5>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="pt-3 display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>Renewal Date</th>
+                                        <th>Start Date</th>
+                                        <th>Term</th>
+                                        <th>Status</th>
+                                        <th>Option</th>
+                                        <th>Membership</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body" id="activeTblBody">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Company)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.RenewalDate)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.StartDate)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Term)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Status)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Option)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.MemberShip)</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

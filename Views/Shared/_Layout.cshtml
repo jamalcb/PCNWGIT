@@ -1,0 +1,116 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - PCNW</title>
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/PCNW.styles.css" asp-append-version="true" />
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y350DCZ35"></script>
+<script>
+window.dataLayer = window.dataLayer || [];
+function gtag(){dataLayer.push(arguments);}
+gtag('js', new Date());
+
+gtag('config', 'G-9Y350DCZ35');
+</script>
+<body>
+    <header>
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
+                <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">PCNW</a>
+                <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target=".navbar-collapse" aria-controls="navbarSupportedContent"
+                        aria-expanded="false" aria-label="Toggle navigation">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between">
+                    <ul class="navbar-nav flex-grow-1">
+                        <li class="nav-item">
+                            <a class="nav-link text-dark" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        </li>
+                       
+                    </ul>
+                </div>
+            </div>
+        </nav>
+    </header>
+    <div class="container">
+        <main role="main" class="pb-3">
+            @RenderBody()
+        </main>
+    </div>
+
+    <footer class="border-top footer text-muted">
+        <div class="container">
+            &copy; 2022 - PCNW - <a asp-area="" asp-controller="Home" asp-action="Privacy">Privacy</a>
+        </div>
+    </footer>
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    <script type="text/javascript">
+        var idleTime = 0;
+        jQuery(document).ready(function () {
+
+            //Increment the idle time counter every minute.
+            var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+            //Zero the idle timer on mouse movement.
+            jQuery(this).mousemove(function (e) {
+                idleTime = 0;
+            });
+            jQuery(this).keypress(function (e) {
+                idleTime = 0;
+            });
+        });
+
+        function timerIncrement() {
+            var autologtime;
+            jQuery.ajax({
+                type: "GET",
+                dataType: 'json',
+                url: '/GlobalMaster/GetLogOffList',
+                data: {},
+                async: false,
+                success: function (response) {
+                    jQuery('#hdnId').val(response.data[0].Id);
+                    jQuery('#autoLogOff').val(response.data[0].LogOff);
+                    autologtime = response.data[0].LogOff
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+
+            idleTime = idleTime + 1;
+            if (idleTime >= autologtime) { // 15 minutes
+                jQuery.ajax({
+                    type: "Get",
+                    dataType: 'json',
+                    url: '/Account/Logout',
+                    data: { 'IsAutoLogout': true },
+                    async: false,
+                    success: function (response) {
+                        window.location.reload();
+                    },
+                    error: function (response) {
+                        console.log(response.responseText);
+                        window.location.reload();
+                    },
+                    failure: function (response) {
+                        console.log(response.responseText);
+                    }
+                });
+                //window.location.href="/Account/Logout";
+            }
+        }
+    </script>
+</body>
+</html>

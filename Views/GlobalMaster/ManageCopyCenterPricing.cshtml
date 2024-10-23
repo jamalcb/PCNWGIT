@@ -1,0 +1,181 @@
+﻿@model IEnumerable<CopyCenterAdminViewModel>;
+
+@{
+    ViewData["Title"] = "ManageCopyCenterPricing";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+    </style>
+}
+@section Scripts{
+    <script src="~/js/ManageCopyCenterPricing.js"></script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Manage Copy Center Price</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Copy Center Data</li>
+                        <li class="breadcrumb-item active">Copy Center Price</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                        <div class="modal-dialog">
+                            <!-- Modal content-->
+                            <div class="modal-content">
+                                <div class="modal-header cusModal-Header">
+                                    <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                        Update Pricing
+                                    </h4>
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                </div>
+                                <div class="modal-body">
+                                    <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                        <div class="formCls">
+                                            <span id="message" class="loginError"></span>
+                                            <div class="form-group row mb-3">
+                                                <input type="hidden" id="idSze" />
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                    Size<span class="text-danger">*</span>
+                                                </label>
+                                                <div class="col-lg-9 col-xl-9">
+                                                    <label class="col-form-label" id="Size" name="Size"></label>
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-3">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                    Member Price<span class="text-danger">*</span>
+                                                </label>
+                                                <div class="col-lg-9 col-xl-9">
+                                                    <input class="form-control form-control-solid " type="text"
+                                                           value="" placeholder="Member Price" id="MemberPrice" name="MemberPrice" autocomplete="on">
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-3">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                    Non-Member Price<span class="text-danger">*</span>
+                                                </label>
+                                                <div class="col-lg-9 col-xl-9">
+                                                    <input class="form-control form-control-solid " type="text"
+                                                           value="" placeholder="Non-Member Price" id="NonMemberPrice" name="NonMemberPrice" autocomplete="on">
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-3">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                   Color Member Price<span class="text-danger">*</span>
+                                                </label>
+                                                <div class="col-lg-9 col-xl-9">
+                                                    <input class="form-control form-control-solid " type="text" value="" placeholder="Color Member Price" id="ColorMemberPrice" name="ColorMemberPrice" autocomplete="on">
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-3">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                   Color Non-Member Price<span class="text-danger">*</span>
+                                                </label>
+                                                <div class="col-lg-9 col-xl-9">
+                                                    <input class="form-control form-control-solid " type="text" value="" placeholder="Color Non-Member Price" id="ColorNonMemberPrice" name="ColorNonMemberPrice" autocomplete="on">
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-3">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                    &nbsp;
+                                                </label>
+                                                <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                    <input style="opacity:1" type="checkbox" id="IsActiveUpdate" name="IsActiveUpdate" checked /><label for="IsActiveUpdate">&nbsp;IsActive</label>
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group mb-3 text-right">
+                                                <button id="next-btn" class="newProbtn modl-btn save" onclick="return SavePagePrice()">Save</button>
+                                            </div>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Size</th>
+                                        <th class="w-10">Member Price</th>
+                                        <th class="w-10">Non Member Price</th>
+                                        <th class="w-10">Color Member Price</th>
+                                        <th class="w-10">Color Non Member Price</th>
+                                        <th class="w-10">Status</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBody" class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.Size</td>
+                                            <td>@item.MemberPrice</td>
+                                            <td>@item.NonMemberPrice</td>
+                                            <td>@item.ColorMemberPrice</td>
+                                            <td>@item.ColorNonMemberPrice</td>
+                                            <td>@item.isActive</td>
+                                            <td><span title="Edit" class="btn btn-primary icon-edit" onclick="OpenForm(this, @item.Id)"><i class="fas fa-pencil-alt" aria-hidden="true"></i></span>&nbsp;</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

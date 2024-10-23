@@ -1,0 +1,676 @@
+﻿@model MemberManagement
+@{
+    ViewData["Title"] = "MemberManagement";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+@section dataTablesCss {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <link href="~/assets/css/datatable.css" rel="stylesheet" />
+    <link href="~/css/staff-dashboard.css" rel="stylesheet" />
+    <script src="~/js/member-management.js"></script>
+}
+@section dataTablesJs {
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+}
+@{
+    // Store the ReturnUrl value in a variable
+    string returnUrl = Model.ReturnUrl;
+}
+@section DashBoardScripts {
+    <script type="text/javascript">
+        //$(document).ready(function () {
+        //    var loader = $("#Membloader");
+        //    loader.show();
+        //});
+        $(window).on("load", function () {
+            var loader = $("#Membloader");
+            loader.hide();
+        });
+        function loadDataTables() {
+            setTimeout(function () {
+                $('.mTables').DataTable({
+                    "pageLength": 100,
+                    "lengthMenu": [
+                        [25, 50, 100, -1],
+                        [25, 50, 100, 'All']
+                    ],
+                    "order": [[0, 'asc']]
+                });
+                $('.cTables').DataTable({
+                    "pageLength": 100,
+                    "lengthMenu": [
+                        [25, 50, 100, -1],
+                        [25, 50, 100, 'All']
+                    ],
+                    "order": [[0, 'asc']]
+                });
+                //$('.aTables').DataTable({
+                //    "pageLength": 100,
+                //    "lengthMenu": [
+                //        [25, 50, 100, -1],
+                //        [25, 50, 100, 'All']
+                //    ],
+                //    "order": [[0, 'asc']]
+                //});
+                $('.eTables').DataTable({
+                    "pageLength": 100,
+                    columnDefs: [
+                        {
+                            target: 1,
+                            visible: false,
+                            searchable: false
+                        },
+                    ],
+                    "lengthMenu": [
+                        [25, 50, 100, -1],
+                        [25, 50, 100, 'All']
+                    ],
+                    "order": [[0, 'asc']]
+                });
+            }, 1000);
+        }
+
+
+        $(document).ready(function () {
+            loadDataTables();
+            $("#txtSearchCompany").change(function (e) {
+                var a = 0;
+                var datasearch = $(this).val();
+                if (datasearch != '') {
+                    $.ajax({
+                        url: '/StaffAccount/MemberManagementSearch/',
+                        type: 'POST',
+                        data: { 'searchText': datasearch },
+                        dataType: 'json',
+                        //contentType: 'application/json',
+                        success: function (response) {
+                            console.log(response);
+                            if (response != "" || response != null) {
+                                var model = new Array();
+                                model = response;
+                                $("#tblCompanySearch").html('');
+                                var CompanySearch = '';
+                                $.each(model, function (index, item) {
+                                    if (item.Company == null) {
+                                        item.Company = '';
+                                    }
+
+                                    if (item.Company == null) {
+                                        item.Company = '';
+                                    }
+                                    if (item.BillCity == null) {
+                                        item.BillCity = '';
+                                    }
+                                    if (item.BillState == null) {
+                                        item.BillState = '';
+                                    }
+
+                                    if (item.Email == null) {
+                                        item.Email = '';
+                                    }
+
+                                    CompanySearch += "<tr><td><a href='/Member/MemberProfile'><b>" + item.Company + "</b></a></td><td>" + item.ContactName + "</td><td>" + item.BillState + "</td><td>" + item.BillCity + "</td><td>" + item.ContactPhone + "</td><td>" + item.Email + "</td><td></td><td>" + item.Discipline + "</td><td class='text-center'>0</td><td>" + item.RenewalDate + "</td><td class='icon-td border-bottom-0'><form action='/Member/MemberProfile/1' method='post'><button><i class='fa fa-pencil' aria-hidden='true'></i></button><input name='__RequestVerificationToken' type='hidden' value='CfDJ8KB8QAnG-yxAt1lgO30hJ-Yd5sXf_dN5kUTqoakeZvAAyBu6RwpMy4R_RQ5ieIZ6Y2q8T1nlmGWfudTHtSf84eJaSOUlspFYo8XBwV3zWX0MHEVcE3qENWvaMMFROF_yWH6Fuqmyc_mKE3Ba0oNdlEgncTMqRbwRf8GdXLnXEqt0NpV7H6WWyP190KvvTp1oJA'></form><form><button><i class='fa fa-trash' aria-hidden='true'></i></button></form></td></tr>";
+                                });
+                                $("#tblCompanySearch").html(CompanySearch);
+
+
+                            }
+                            else {
+                                alert("No project. Please try again.");
+                                $("#txtSearchCompany").focus();
+                            }
+                        }
+                    });
+                }
+                //getPagination('#table-id');
+            });
+        });
+    </script>
+    <script type="text/javascript">
+        //getPagination('#table-id');
+
+        // function getPagination(table) {
+        //     var lastPage = 1;
+
+        //     $('#maxRows')
+        //         .on('change', function (evt) {
+
+        //             lastPage = 1;
+        //             $('.pagination')
+        //                 .find('li')
+        //                 .slice(1, -1)
+        //                 .remove();
+        //             var trnum = 0; // reset tr counter
+        //             var maxRows = parseInt($(this).val()); // get Max Rows from select option
+
+        //             if (maxRows == 150) {
+        //                 $('.pagination').hide();
+        //             } else {
+        //                 $('.pagination').show();
+        //             }
+
+        //             var totalRows = $(table + ' tbody tr').length; // numbers of rows
+        //             $(table + ' tr:gt(0)').each(function () {
+        //                 // each TR in  table and not the header
+        //                 trnum++; // Start Counter
+        //                 if (trnum > maxRows) {
+        //                     // if tr number gt maxRows
+
+        //                     $(this).hide(); // fade it out
+        //                 }
+        //                 if (trnum <= maxRows) {
+        //                     $(this).show();
+        //                 } // else fade in Important in case if it ..
+        //             }); //  was fade out to fade it in
+        //             if (totalRows > maxRows) {
+        //                 // if tr total rows gt max rows option
+        //                 var pagenum = Math.ceil(totalRows / maxRows); // ceil total(rows/maxrows) to get ..
+        //                 //	numbers of pages
+        //                 for (var i = 1; i <= pagenum;) {
+        //                     // for each page append pagination li
+        //                     $('.pagination #prev')
+        //                         .before(
+        //                             '<li data-page="' +
+        //                             i +
+        //                             '">\
+        //                                                                                                                                                           <span class="pagination-span">' +
+        //                             i++ +
+        //                             '<span class="sr-only">(current)</span></span>\
+        //                                                                                                                                                         </li>'
+        //                         )
+        //                         .show();
+        //                 } // end for i
+        //             } // end if row count > max rows
+        //             $('.pagination [data-page="1"]').addClass('active'); // add active class to the first li
+        //             $('.pagination li').on('click', function (evt) {
+        //                 // on click each page
+        //                 evt.stopImmediatePropagation();
+        //                 evt.preventDefault();
+        //                 var pageNum = $(this).attr('data-page'); // get it's number
+
+        //                 var maxRows = parseInt($('#maxRows').val()); // get Max Rows from select option
+
+        //                 if (pageNum == 'prev') {
+        //                     if (lastPage == 1) {
+        //                         return;
+        //                     }
+        //                     pageNum = --lastPage;
+        //                 }
+        //                 if (pageNum == 'next') {
+        //                     if (lastPage == $('.pagination li').length - 2) {
+        //                         return;
+        //                     }
+        //                     pageNum = ++lastPage;
+        //                 }
+
+        //                 lastPage = pageNum;
+        //                 var trIndex = 0; // reset tr counter
+        //                 $('.pagination li').removeClass('active'); // remove active class from all li
+        //                 $('.pagination [data-page="' + lastPage + '"]').addClass('active'); // add active class to the clicked
+        //                 // $(this).addClass('active');					// add active class to the clicked
+        //                 limitPagging();
+        //                 $(table + ' tr:gt(0)').each(function () {
+        //                     // each tr in table not the header
+        //                     trIndex++; // tr index counter
+        //                     // if tr index gt maxRows*pageNum or lt maxRows*pageNum-maxRows fade if out
+        //                     if (
+        //                         trIndex > maxRows * pageNum ||
+        //                         trIndex <= maxRows * pageNum - maxRows
+        //                     ) {
+        //                         $(this).hide();
+        //                     } else {
+        //                         $(this).show();
+        //                     } //else fade in
+        //                 }); // end of for each tr in table
+        //             }); // end of on click pagination list
+        //             limitPagging();
+        //         })
+        //         .val(50)
+        //         .change();
+
+        //     // end of on select change
+
+        //     // END OF PAGINATION
+        // }
+
+        // function limitPagging() {
+        //     // alert($('.pagination li').length)
+
+        //     if ($('.pagination li').length > 7) {
+        //         if ($('.pagination li.active').attr('data-page') <= 3) {
+        //             $('.pagination li:gt(5)').hide();
+        //             $('.pagination li:lt(5)').show();
+        //             $('.pagination [data-page="next"]').show();
+        //         } if ($('.pagination li.active').attr('data-page') > 3) {
+        //             $('.pagination li:gt(0)').hide();
+        //             $('.pagination [data-page="next"]').show();
+        //             for (let i = (parseInt($('.pagination li.active').attr('data-page')) - 2); i <= (parseInt($('.pagination li.active').attr('data-page')) + 2); i++) {
+        //                 $('.pagination [data-page="' + i + '"]').show();
+
+        //             }
+
+        //         }
+        //     }
+        // }
+
+        //query for tab btn show
+        $(document).ready(function () {
+
+            $(".Member").click(function () {
+                $(".member-btn").show();
+                $(".contractor-btn, .architect-btn, .register-btn, .other-con").hide();
+            })
+            $(".Contractors").click(function () {
+                $(".contractor-btn").show();
+                $(".architect-btn").show();
+                $(".other-con").show();
+                $(".member-btn, .register-btn").hide();
+            })
+            $(".Entity").click(function () {
+                $(".register-btn").show();
+                $(".member-btn, .architect-btn, .contractor-btn,.other-con").hide();
+            })
+        })
+        var Tab = $("#ReturnUrl").val();
+        if (Tab == 'Entity') {
+            $("#entity").prop("checked", true);
+            $(".register-btn").show();
+            $(".member-btn,.other-con").hide();
+        }
+        if (Tab == 'about') {
+            $("#about").prop("checked", true);
+            $(".contractor-btn").show();
+            $(".architect-btn").show();
+            $(".other-con").show();
+            $(".member-btn,.register-btn").hide();
+        }
+        // Get the current URL
+        var currentUrl = window.location.href;
+
+        // Remove the 'returnUrl' parameter from the URL
+        var updatedUrl = currentUrl.split('?')[0];
+
+        // Update the URL without the 'returnUrl' parameter
+        window.history.replaceState({}, document.title, updatedUrl);
+
+        //var memload = document.getElementById('Membloader');
+        //memload.style.display = 'none';
+        $(document).ready(function () {
+            setTimeout(function () {
+                let valueUthao = $('#table-id-Contractor_filter label input');
+                valueUthao.on('input', function () {                    
+                    // if($(this).val().length>1){
+                    // }
+                        GetOtherTabsSearchData();
+                });                
+            }, 1000);
+            
+
+        });
+        function GetOtherTabsSearchData() {
+            let inputValue = $('input[type="search"][aria-controls="table-id-Contractor"]').val();
+            if (inputValue) {
+                localStorage.setItem('serachterm', inputValue);
+                $('#searchtxt').val(inputValue);
+                $('#formsearch').submit();
+            }
+            else {
+                window.location.reload();
+            }
+        }
+        $(document).ready(function () {
+            var text = $('#searchtxt').val();
+            if (text) {
+                setTimeout(function () { 
+                    $('#table-id-Contractor_filter').find('input').val(text);
+                    $('#table-id-Contractor_filter').find('input').focus();
+                }, 1000);
+            }
+            setTimeout(function () {
+                var deepDivId = $('#table-id-Contractor_filter');
+                if (deepDivId) {
+                    // deepDivId.append('<a class="btn-deepSearch" onclick="GetOtherTabsSearchData()"><i class="fa fa-search font-14" aria-hidden="true"></i> Deep Search</a>');
+                }
+
+                $('#table-id-Contractor_wrapper').append($('.entitiespagination'));
+                $('#table-id-Contractor_info').remove()
+                $('#table-id-Contractor_paginate').remove()
+                $('.entitiespagination').removeClass('d-none')
+            }, 1000)
+
+        });
+    </script>
+}
+@section CustomCSS {
+    <style>
+        .bg-blue {
+            background: #5c8097;
+        }
+
+        .btn-new-proj {
+            color: #000;
+            background: #ff9900;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: capitalize;
+            line-height: normal;
+            border: 0;
+        }
+
+            .btn-new-proj:hover {
+                color: #323232;
+                text-decoration: none;
+            }
+
+        .separate-line {
+            white-space: nowrap;
+        }
+
+        .cus-scroll-tbl {
+            max-height: 600px;
+        }
+
+            .cus-scroll-tbl table {
+                display: inline-table;
+            }
+
+        div.dataTables_filter {
+            position: sticky;
+            top: 0;
+            background-color: #f9f9f9;
+            width: 50%;
+            padding: 5px;
+            margin: 0 0 0px 0;
+        }
+
+        div.dataTables_length {
+            position: sticky;
+            top: 0;
+            background-color: #f9f9f9;
+            width: 50%;
+            padding: 8px;
+            margin: 0 0 0px 0;
+        }
+        .entitiespagination{
+            min-width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+        }
+        .fix-thead {
+            width: 100%;
+            top: 45px;
+            bottom: auto;
+            position: sticky;
+            background: #f5f5f5;
+        }
+
+        .cusTable tbody tr td {
+            font-size: 15px;
+            vertical-align: middle;
+            font-weight: 500;
+        }
+
+        .box-space .table tbody tr td {
+            font-weight: 400;
+        }
+
+        .main-content {
+            padding: 5px 0;
+        }
+
+        .btn-new-proj {
+            margin: 5px;
+        }
+
+        .MEMloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            /*display:none;*/
+        }
+
+            .MEMloader img {
+                display: block;
+                margin: 0 auto;
+                width: 100px;
+                margin-top: 20%;
+            }
+
+        .cus-scroll-tbl::-webkit-scrollbar-track {
+            background: #f1f1f1; /* color of the track */
+            main-heading: bg-blue
+        }
+
+        /* Handle */
+        .cus-scroll-tbl::-webkit-scrollbar-thumb {
+            background: #888; /* color of the scroll thumb */
+        }
+
+            /* Handle on hover */
+            .cus-scroll-tbl::-webkit-scrollbar-thumb:hover {
+                background: #555; /* color of the scroll thumb on hover */
+            }
+    </style>
+}
+<div class="MEMloader" id="Membloader">
+    <img src="/assets/images/loading-gif.gif" style="max-width: 5%;min-width:5%" alt="loading" />
+</div>
+<div class="container-fluid">
+    <div class="dashboard-box">
+        <div class="main-heading bg-blue">
+            <div class="row m-0">
+                <div class="col-md-12 d-flex justify-content-between">
+                    <h2>Entities Management</h2>
+                    @*<form class="form m-1" method="get">*@
+                    @* <input type="hidden" id="ReturnUrl" name="ReturnUrl" value="@returnUrl" />
+                    <a style="display:block;" class="btn-new-proj searchBtn member-btn" asp-action="NewRegMember" asp-controller="StaffAccount">Register Member</a> *@
+                    <div class=" other-con">
+                        <div class="d-flex">
+                            @* <form class="contractor-btn" style="display:none;" asp-action="RegContractor" method="post" asp-controller="StaffAccount">
+                            <a class="btn-new-proj searchBtn" onclick="OtherContactTab(this)">Register Contractor</a>
+                            <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                            </form> *@
+                            <form class="architect-btn" asp-action="RegisterContact" method="post" asp-controller="StaffAccount">
+                                <a class="btn-new-proj searchBtn" onclick="OtherContactTab(this)">Add Contact</a>
+                                <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                            </form>
+                            <form class="architect-btn" id="formsearch" asp-action="Entities" asp-controller="StaffAccount">
+                                @if (!string.IsNullOrEmpty(Model.Searchtext))
+                                {
+                                    <input type="hidden" id="searchtxt" name="searchTerm" value=@Model.Searchtext />
+                                }
+                                else
+                                {
+                                    <input type="hidden" id="searchtxt" name="searchTerm" />
+                                }
+                                <input type="hidden" name="page" value="1" />
+                            </form>
+                        </div>
+                    </div>
+                    <a style="display:none;" class="btn-new-proj searchBtn register-btn" onclick="OpenEntityModel()">Register Entity</a>
+                    @* </form>*@
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <div class="dashboard-box">
+        @*------------- new tabs ------------*@
+        <div class="row mx-0">
+            <div class="col-md-12">
+                <div class="table-responsive cus-scroll-tbl mt-2">
+                    <table class="table table-bordered table-striped table-vertical-center cusTable cTables" id="table-id-Contractor">
+                        <thead class="fix-thead">
+                            <tr class="table-secondary">
+                                <th style="width:350px;">Company</th>
+                                <th style="width:150px;">Contact</th>
+                                <th style="width:100px;">City</th>
+                                <th style="width:50px;">St</th>
+                                <th style="width:150px;">Phone</th>
+                                <th style="width:250px;">Email</th>
+                                <th>Membership</th>
+                                <th>Speciality</th>
+                                <th class="separate-line">Last Active</th>
+                                <th>Action</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tblCompanySearch">
+                            @if (Model.OtherTabData != null)
+                            {
+                                @foreach (var item in Model.OtherTabData)
+                                {
+                                    string actionValue = "";
+                                    string inactive = "";
+                                    string Term = "";
+                                    <tr>
+                                        <td style="width: 380.371px;">
+                                            @{
+                                                int comptype = item.CompType;
+                                                if (comptype == 1)
+                                                {
+                                                    actionValue = "MemberProfile";
+                                                }
+                                                if (comptype == 2)
+                                                {
+                                                    actionValue = "ContractorProfile";
+                                                }
+                                                if (comptype == 3)
+                                                {
+                                                    actionValue = "ArchitectProfile";
+                                                }
+                                            }
+                                            <form asp-action="@actionValue" method="post" asp-controller="StaffAccount" asp-route-id="@item.Id">
+                                                <a style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" onclick="OtherContactTab(this)"><b>@Html.DisplayFor(modelItem => item.Company)</b></a>
+                                                <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                            </form>
+
+                                        </td>
+                                        <td class="separate-line">@Html.DisplayFor(modelItem => item.Contact)</td>
+                                        <td class="separate-line">@Html.DisplayFor(modelItem => item.BillCity)</td>
+                                        <td class="separate-line">@Html.DisplayFor(modelItem => item.BillState)</td>
+                                        <td class="separate-line">@Html.DisplayFor(modelItem => item.Phone)</td>
+                                        <td>@Html.DisplayFor(modelItem => item.Email)</td>
+                                        <td style="width:170px;">
+                                            @{
+                                                string term = item.Term;
+                                                string pack = item.Package;
+                                                if (actionValue == "MemberProfile")
+                                                {
+                                                    if (pack == "Free")
+                                                    {
+                                                        Term = "Inactive\n" + " (" + pack + ")";
+                                                    }
+                                                    else if (pack == "Non Member")
+                                                    {
+                                                        Term = " (" + pack + ")";
+                                                    }
+                                                    else if (pack == "Free Trial Member")
+                                                    {
+                                                        Term = " (" + pack + ")";
+                                                    }
+                                                    else
+                                                    {
+                                                        if (term == "12 Months" || term == null || term == "" || term == "Yearly")
+                                                        {
+                                                            term = "Yearly";
+                                                            Term = pack + " (" + term + ")";
+                                                        }
+                                                        if (term == "Monthly")
+                                                        {
+                                                            term = "Monthly";
+                                                            Term = pack + " (" + term + ")";
+                                                        }
+                                                        if (term == "3 Months" || term == "Quarterly" || term == "6 Months")
+                                                        {
+                                                            term = "Quarterly";
+                                                            Term = pack + " (" + term + ")";
+                                                        }
+                                                        if (actionValue == "MemberProfile")
+                                                        {
+                                                            Term = "Inactive\n" + Term;
+                                                        }
+                                                    }
+                                                }
+                                                else
+                                                {
+                                                    Term = " (" + pack + ")";
+                                                }
+                                            }
+                                            @Html.DisplayFor(modelItem => Term)
+                                        </td>
+                                        <td style="width:300px;">@Html.DisplayFor(modelItem => item.Discipline)</td>
+                                        <td>
+                                            @(
+                                                item.RenewalDate != null ? Convert.ToDateTime(item.RenewalDate).ToString("MM/dd/yyyy") : ""
+                                                )
+                                        </td>
+                                        <td class="icon-td border-bottom-0">
+                                            <form asp-action="@actionValue" method="post" asp-controller="StaffAccount" asp-route-id="@item.Id">
+                                                <button onclick="OtherContactTab(this)"><i data-toggle="tooltip" title="Edit" class="fa fa-pencil" aria-hidden="true"></i></button>
+                                                <input type="hidden" id="ActiveTab" name="ActiveTab" />
+                                            </form>
+                                            <button onclick="OtherContactDelete('@actionValue','@item.Id',this)"><i data-toggle="tooltip" title="Delete" class="fa fa-trash" aria-hidden="true"></i></button>
+                                        </td>
+                                    </tr>
+                                }
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            @Html.Partial("PaginationPartial", Model)
+        </div>
+    </div>
+</div>
+<div class="modal m-modal fade" role="dialog">
+    <div class="modal-dialog modal-md">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <h4 id="Headertext" class="modal-title card-label font-weight-bolder">
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form id="EntityForm" method="POST" class="col-md-12 order-form text-left formCls">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-12 pl-0">
+                            <div class="form-group row mb-3">
+                                <label class="col-xl-3 col-lg-3 col-form-label pl-0">
+                                    Entity Type<span class="text-danger">*</span>
+                                </label>
+                                <div class="col-lg-4 col-xl-9">
+                                    <input class="form-control form-control-solid " type="text" placeholder="Entity Type" id="EntityType" />
+                                    <input type="hidden" id="EntityID" />
+                                    <span class="text-danger"></span>
+                                </div>
+                                <div class="col-lg-4 col-xl-4 form-check">
+                                    <input class="form-check-input" type="checkbox" id="IsActive" name="IsActive" />
+                                    <label class="form-check-label" for="IsActive"> &nbsp; IsActive</label>
+                                    <span class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-12 pl-0">
+                            <div class="form-group row mb-3 justify-content-end">
+                                <div class="col-lg-4 col-xl-4 newPro-btn">
+                                    <input type="button" class="modl-btn px-4 newProbtn" style="float: right;" onclick="SaveEntityType()" value="Add Entity" />
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+

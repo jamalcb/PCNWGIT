@@ -1,0 +1,264 @@
+﻿@model IEnumerable<CopyCenterAdminViewModel>;
+@{
+    ViewData["Title"] = "ManageCopyCenterSize";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+        /*custom toggle*/
+        #switch input[type=checkbox] {
+            height: 0;
+            width: 0;
+            visibility: hidden;
+        }
+
+        label.cst-switch {
+            cursor: pointer;
+            text-indent: -9999px;
+            width: 74px;
+            height: 40px;
+            background: grey;
+            display: block;
+            border-radius: 100px;
+            position: relative;
+        }
+
+            label.cst-switch:after {
+                content: '';
+                position: absolute;
+                top: 5px;
+                left: 5px;
+                width: 30px;
+                height: 30px;
+                background: #fff;
+                border-radius: 90px;
+                transition: 0.3s;
+            }
+
+        input#switch:checked + .cst-switch {
+            background: #81e37b;
+        }
+
+        input:checked + label:after {
+            left: calc(100% - 5px);
+            transform: translateX(-100%);
+        }
+
+        label.cst-switch:active:after {
+            width: 130px;
+        }
+        /*custom toggle*/
+    </style>
+}
+@section Scripts{
+    <script src="~/js/ManageCopyCenterSize.js"></script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Manage Copy Center Size</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Copy Center Data</li>
+                        <li class="breadcrumb-item active">Manage Copy Center Size</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header row justify-content-end">
+                        @*<input type="checkbox" onchange="GetActiveData()" id="check_value"/>*@
+                        <div class="col-lg-2 d-flex align-items-center justify-content-around">
+                            <label class="fw-bold" id="lblActive">Get only active data</label>
+                            <input onchange="GetActiveData()" type="checkbox" id="switch" /><label class="cst-switch" for="switch"></label>
+                        </div>
+                        <div class="col-lg-1">
+                            <a href="#" class="btn cus-pro-type" onclick="OpenPrintModel()">
+                                <i class=" fa fa-plus mx-1"></i>
+                                New
+                            </a>
+                        </div>
+
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Save Size Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Size Name<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Size Name" id="SizeName" name="SizeName" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Size<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Size" id="Size" name="Size" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Member Price<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Member Price" id="MemberPrice" name="MemberPrice" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Non-Member Price<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Non-Member Price" id="NonMemberPrice" name="NonMemberPrice" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        &nbsp;
+                                                    </label>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActiveSave" name="IsActiveSave" checked /><label for="IsActiveSave">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return SavePageSize()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal p-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Update Size Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm2" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3">
+                                                    <input type="hidden" id="idSze" />
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Size Name<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <label class="col-form-label" id="SizeName" name="SizeName"></label>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Size<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               placeholder="Size" id="EdSize" name="EdSize" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        &nbsp;
+                                                    </label>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActive" name="IsActive" /><label for="IsActive">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return EditPageSize()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Size Name</th>
+                                        <th class="w-10">Size</th>
+                                        <th class="w-10">Status</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBody" class="active-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

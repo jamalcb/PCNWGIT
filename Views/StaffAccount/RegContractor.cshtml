@@ -1,0 +1,127 @@
+﻿
+@{
+    ViewData["Title"] = "RegContractor";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+@section Scripts{
+    <script src="/js/RegContractor.js"></script>
+    <script src="/js/custom-validation.js"></script>
+    }
+<style>
+    .form-box {
+        background: #fff;
+        padding: 15px;
+    }
+
+    .bg-blue {
+        background: #5c8097;
+    }
+
+    .formCls .form-control {
+        height: auto;
+    }
+
+    .loginError {
+        color: red;
+        font-size: 15px;
+    }
+
+    .user-register {
+        padding: 10px 30px;
+        border-radius: 4px;
+        letter-spacing: normal !important;
+        background: #ff9900;
+        font-weight: 700;
+        font-size: 15px;
+    }
+
+        .user-register:hover {
+            border-color: transparent;
+            -webkit-transform: translateY(-1px);
+            transform: translateY(-1px);
+            box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05), 0px 2px 2px rgba(0, 0, 0, 0.05), 0px 4px 4px rgba(0, 0, 0, 0.05), 0px 8px 8px rgba(0, 0, 0, 0.05), 0px 16px 16px rgba(0, 0, 0, 0.05);
+        }
+</style>
+<section class="mainBox">
+    <div class="container">
+        <div class="dashboard-box">
+            <div class="main-heading bg-blue">
+                <div class="d-flex justify-content-between">
+                    <h2>Register Contractor</h2>
+                    @*<form class="form m-3" method="get">
+                    <a class="btn-new-proj searchBtn" href="/MemberShip/Register">New Member</a>
+                    </form>*@
+                </div>
+            </div>
+        </div>
+        <div class="contact-info-box formCls form-box">
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Company Name</label>
+                <div class="col-sm-10">
+                    <input type="hidden" id="hdnCompType" value="2" />
+                    <input type="text" placeholder="Company Name" class="form-control" id="ConCompany" tabindex="10" autofocus="autofocus">
+                    <span class="loginError"></span>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Address</label>
+                <div class="col-sm-10">
+                    <div class="form-group row mb-0">
+                        <div class="col-md-12 mb-2">
+                            <input type="text" class="form-control" id="ConAddr" placeholder="Address" tabindex="20">
+                            <span class="loginError"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control" id="ConCity" placeholder="City" tabindex="40">
+                            <span class="loginError"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <select tabindex="50" class="form-control" id="ConState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" required=""></select>
+                            <span class="loginError"></span>
+                        </div>
+                        <div class="col-md-3">
+                            <input type="text" class="form-control number-only" id="ConZip" placeholder="Zip Code" tabindex="30" maxlength="5">
+                            <span class="loginError"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Contact</label>
+                <div class="col-sm-5">
+                    <input type="text" placeholder="First Name" class="form-control" id="ConFirstName" tabindex="60">
+                    <span class="loginError"></span>
+                </div>
+                <div class="col-sm-5">
+                    <input type="text" placeholder="Last Name" class="form-control" id="ConLastname" tabindex="70">
+                </div>
+            </div>
+            <div class="form-group row">
+                <label class="col-sm-2 col-form-label">Contact Phone</label>
+                <div class="col-sm-4">
+                    <input type="text" placeholder="(555) 555-5555" class="form-control" id="ConPhone" tabindex="80">
+                    <span class="loginError"></span>
+                </div>
+                <div class="col-sm-1">
+                    <input type="text" placeholder="EXT" class="form-control number-only" id="ConExt" tabindex="90" maxlength="4">
+                    <span class="loginError"></span>
+                </div>
+                <label class="col-sm-1 col-form-label">E-mail</label>
+                <div class="col-sm-4">
+                    <input type="text" placeholder="Email" class="form-control" id="ConEmail" tabindex="100" onchange="checkUniqueEmail()">
+                    <span class="loginError"></span>
+                </div>
+            </div>
+            @*<div class="form-group row">
+                <label class="col-sm-2 col-form-label">E-mail</label>
+                <div class="col-sm-5">
+                    <input type="text" placeholder="Email" class="form-control" id="">
+                </div>
+            </div>*@
+            <div class="col-md-12 text-right px-0" disabled>
+                <span id="spnSave" class="btn btn-solid btn-n user-register text-dark text-uppercase btn-bordered cusBtn" style="pointer-events:auto;" tabindex="110" onclick="SaveNewCon()">Register</span>
+            </div>
+        </div>
+    </div>
+</section>
+

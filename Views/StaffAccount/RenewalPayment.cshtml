@@ -1,0 +1,260 @@
+﻿@model MemberShipRegistration;
+@{
+    ViewData["Title"] = "RenewalPayment";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+
+
+@section CustomCSS{
+    <style>
+        .form-inner-section {
+            padding: 10px 30px;
+        }
+
+        .CPBox.isActive:before {
+            content: '\f00c';
+            font-family: 'Font Awesome 5 Free';
+            font-weight: 900;
+            color: #555;
+            position: absolute;
+            height: 30px;
+            width: 30px;
+            top: -15px;
+            right: -15px;
+            background: #fff;
+            border: 2px solid #40b3ff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .CPBox {
+            text-align: center;
+            border: 1px solid #ebedf3;
+            border-radius: 10px;
+            padding: 5px 0 10px;
+            position: relative;
+            cursor: pointer;
+            margin-bottom: 20px;
+        }
+        .CPBox.isActive {
+            border-color: #40b3ff;
+            background: rgba(64,179,255,0.1);
+        }
+        .CPBox i {
+            font-size: 25px;
+            padding: 15px;
+            color: #555;
+        }
+
+        .CPBox p {
+            margin-bottom: 0;
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .paymentInfo {
+            width: 50%;
+            margin: auto;
+            margin-top: 60px;
+        }
+
+        .formCls .paymentInfo label {
+            margin-bottom: 5px;
+            color: #5c8097;
+        }
+
+        .formCls .form-control {
+            margin-bottom: 5px;
+            border-radius: 2px;
+            height: calc(2em + 0.75rem + 2px);
+            background: #f4f4f4;
+            border: 1px solid #cfcfcf;
+        }
+
+        .formCls .form-control {
+            margin-bottom: 5px;
+            border-radius: 2px;
+            height: calc(2em + 0.75rem + 2px);
+            background: #f4f4f4;
+            border: 1px solid #cfcfcf;
+        }
+        .paymentPhone {
+            width: 50%;
+            margin: auto;
+            margin-top: 60px;
+            text-align: center;
+        }
+
+        .dis-pay {
+            display: none;
+        }
+
+        .loginError{
+            color:red;
+        }
+
+        .cusBtn {
+            padding: 10px 30px;
+            border-radius: 4px;
+            letter-spacing: normal !important;
+        }
+
+        .btn-solid {
+            background: #ff9900;
+            color: #fff;
+        }
+
+        .btn {
+            display: -webkit-inline-box;
+            display: inline-flex;
+            position: relative;
+            border: 1px solid var(--color-primary);
+            border-radius: 0;
+            font-size: 1em;
+            white-space: nowrap;
+                font-weight: bold;
+            -webkit-transition: all .3s ease;
+            transition: all .2s ease;
+            box-shadow: 0 0 0 rgba(0, 0, 0, 0.05), 0 0 0 rgba(0, 0, 0, 0.05), 0 0 0 rgba(0, 0, 0, 0.05), 0 0 0 rgba(0, 0, 0, 0.05), 0 0 0 rgba(0, 0, 0, 0.05);
+        }
+
+            .btn:hover {
+                border-color: transparent;
+                background-color: #ff9900;
+                color: #fff;
+                -webkit-transform: translateY(-1px);
+                transform: translateY(-1px);
+                box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.05), 0px 2px 2px rgba(0, 0, 0, 0.05), 0px 4px 4px rgba(0, 0, 0, 0.05), 0px 8px 8px rgba(0, 0, 0, 0.05), 0px 16px 16px rgba(0, 0, 0, 0.05);
+            }
+    </style>
+}
+@section Scripts{
+    <script src="~/js/renewal-payment.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+    <script>
+        
+    </script>
+}
+
+<section>
+    <div id="" class="container" style="background: #fff;padding: 15px 20px;">
+        <div class="contact-info-box formCls">
+            <div class="frm-title text-center">
+                <input type="hidden" id="Cost" value="@ViewBag.Cost" />
+                <input type="hidden" id="PkageText" value="@ViewBag.PkgText" />
+                <input type="hidden" id="HdnId" value="@ViewBag.Id" />
+                <input type="hidden" id="Term" value="@ViewBag.Term" />
+                <input type="hidden" id="MemType" value="@ViewBag.MemType" />
+                <input type="hidden" id="DiscountId" value="@ViewBag.DiscountId" />
+                <input type="hidden" id="Controller" value="StaffAccount" />
+                <h2>Choose Payment Method Below</h2>
+                <h4 class="review-cost" id="pkgText" ></h4>
+            </div>
+            <div class="form-inner-section" style=" min-height: 60vh;">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="CPBox isActive" id="ActiveCard">
+                            <i class="fa fa-credit-card" aria-hidden="true"></i>
+                            <p>Pay with Credit Card</p>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="CPBox">
+                            <i class="fa fa-phone" aria-hidden="true"></i>
+                            <p>Pay with E-check or ACH</p>
+                        </div>
+                    </div>
+                    <div class="paymentInfo">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="CardHolderName">CARDHOLDER NAME:</label>
+                                    <input type="text" class="form-control" id="CardHolderName">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="CardNumber">CARD INFORMATION:</label><span class="loginError">*</span>
+                                    <input type="text" class="form-control" placeholder="Card Number" id="CardNumber" onblur="validateInput(this)" maxlength="19" onkeypress="return /[ 0-9]/i.test(event.key)">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group mt-2">
+                                    <label for="ExpiryDate"></label>
+                                    <input type="text" class="form-control" placeholder="MM/YY" id="ExpiryDate" onkeypress="return /[0-9,/]/i.test(event.key)" oninput="formatExpiryDate(this)" maxlength="5" onblur="ValidateExpiryDate(this)">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group mt-2">
+                                    <label for="CVC"></label>
+                                    <input type="text" class="form-control number-only" placeholder="CVC" id="CVC" maxlength="3">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                          
+                            <div class="col-12">
+                                <div class="form-group row mx-0 fw-bold">
+                                    <div class="col-md-3 pr-0">
+                                        <div class="form-group my-2">
+                                            <label for="usr"> Total Amount :</label>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group my-2">
+                                            <span style="color: #5c8097;">$</span> <label id="TotalAmmount"></label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="paymentPhone dis-pay">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="BankName">Bank NAME:</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" id="BankName" placeholder="Bank Name">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="CheckNum">Cheque INFORMATION:</label>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <input type="text" class="form-control" placeholder="Card Number" id="CheckNum">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <h3>You will pay by phone!</h3>
+                                <p>We will contact by phone number as you entered. Please wait!</p>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="d-flex justify-content-center border-top pt-2">
+            <div class="mr-2">
+                @*<span onclick="chnageStep(1,2)" class="btn btn-solid btn-n font-size-15 font-weight-bold text-dark text-uppercase btn-bordered cusBtn">Previous</span>*@
+            </div>
+            <div>
+                <button type="button" class="btn btn-solid btn-n  text-dark text-uppercase  cusBtn" onclick="GoToRenewalPayment()">Pay & Submit</button>
+            </div>
+        </div>
+    </div>
+</section>

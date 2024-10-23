@@ -1,0 +1,72 @@
+﻿@model IEnumerable<ProjectInformation>;
+@{
+    ViewData["Title"] = "ProjectUpdate";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+}
+
+@section Scripts
+    {
+function AddDashboard(i, e, arg) {
+        jQuery.ajax({
+                url: '/Member/AddDashboard/',
+                data: { "Change": i, "ProjId": e },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        }
+}
+<section class="mainsection">
+    <div class="container">
+        <div class="row">
+            <table class="table table-bordered table-striped mTables" id="table-id-pending">
+                <thead>
+                    <tr>
+                        <th style="display:none;"></th>
+                        <th scope="col">Project Title</th>
+                        <th scope="col">City</th>
+                        <th scope="col">State</th>
+                        <th scope="col">County</th>
+                        <th scope="col">Bid Date</th>
+                    </tr>
+                </thead>
+                <tbody id="pendingTblBody">
+
+                    @if (Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+
+                            <tr>
+                                <td style="display:none;">
+                                    @{
+                                        string strbid = Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy");
+                                    }
+                                </td>
+                                <td>@item.Title</td>
+                                <td>@item.LocCity</td>
+                                <td>@Html.DisplayFor(modelItem => item.LocState)</td>
+                                <td>@item.LocAddr2</td>
+                                <td>@strbid</td>
+
+
+
+                            </tr>
+
+                        }
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+

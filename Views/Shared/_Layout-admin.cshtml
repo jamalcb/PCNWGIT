@@ -1,0 +1,251 @@
+﻿<!DOCTYPE html>
+<html lang="en"
+      class="csspositionsticky supports backgroundblendmode objectfit object-fit backgroundcliptext cssfilters cssmask backdropfilter">
+<style>
+    #loader-overlay2 {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .popup-loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /*background-color: black;*/
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .current-menu-item a {
+        color: #ff9900 !important;
+    }
+</style>
+<head>
+
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="theme-color" content="#3ed2a7">
+    <link rel="shortcut icon" href="~/assets/images/Logo Master Vert Black.jpg">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    @await RenderSectionAsync("google", required: false)
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" />
+    @*<link rel="stylesheet" href="~/assets/css/liquid-icon.min.css">
+    <link rel="stylesheet" href="~/assets/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/assets/css/theme-vendors.min.css">
+    <link rel="stylesheet" href="~/assets/css/theme.min.css">
+    <link rel="stylesheet" href="~/assets/css/mainstyles.css">*@
+    <link href="~/admincss/adminstyle.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.10.3/themes/smoothness/jquery-ui.css">
+    @await RenderSectionAsync("dataTablesCss", required: false)
+    @await RenderSectionAsync("CustomCSS", required: false)
+    <link rel="stylesheet" href="~/css/custom.css">
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y350DCZ35"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-9Y350DCZ35');
+</script>
+<body>
+    <div id="loader-overlay2" style="display:none;">
+        <div id="loader" class="popup-loader">
+            <img src="/assets/images/loading-gif.gif" style="max-width: 40%;min-width:40%" alt="loading" />
+        </div>
+    </div>
+    <div id="main-wrap">
+
+        <nav class="navbar navbar-expand-md bg-cus navbar-dark">
+            <div class="overlay-admin"></div>
+            <div class="container">
+                <a class="navbar-brand" href="/Home/Index"><img src="/assets/images/logo master horiz clear white.png"></a>
+                <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#collapsibleNavbar">
+                    <span class="navbar-toggler-icon"></span>
+                </button>
+                <div class="collapse navbar-collapse" id="collapsibleNavbar">
+                    @{
+                        var currentcontrolleritem = Context.Request.RouteValues["controller"].ToString();
+                        var currentactionitem = Context.Request.RouteValues["action"].ToString();
+                    }
+                    <ul class="navbar-nav ml-auto">
+                        <li class="nav-item @((currentcontrolleritem == "StaffAccount" && currentactionitem == "Dashboard") ? "current-menu-item" : "")">
+                            <a class="nav-link" asp-controller="StaffAccount" asp-action="Dashboard">Project Dashboard</a>
+                        </li>
+                        <li class="nav-item @((currentcontrolleritem == "StaffAccount" && currentactionitem == "MemberManagement") ? "current-menu-item" : "")">
+                            <a class="nav-link" asp-action="MemberManagement" asp-controller="StaffAccount">Members</a>
+                        </li>
+                        <li class="nav-item @((currentcontrolleritem == "StaffAccount" && currentactionitem == "Entities") ? "current-menu-item" : "")">
+                            <a class="nav-link" asp-action="Entities" asp-controller="StaffAccount">Entities</a>
+                        </li>
+                        <li class="nav-item @((currentcontrolleritem == "StaffAccount" && currentactionitem == "CopyCenter") ? "current-menu-item" : "")">
+                            <a class="nav-link" asp-action="CopyCenter" asp-controller="StaffAccount">Copy Center</a>
+                        </li>
+                        @*<li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" id="" data-toggle="dropdown" aria-expanded="false">
+                        <i class="fa fa-user"></i>
+                        </a>
+                        <ul class="dropdown-menu p-0 cus-drop drop-member" aria-labelledby="navbarDropdownMenuLink">
+                        <li><a class="dropdown-item" asp-action="AllMembers" asp-controller="Report">Reports</a></li>
+                        <li><a class="dropdown-item" asp-action="RenewalProjection" asp-controller="GlobalMaster">Admin</a></li>
+                        <li><a class="dropdown-item" href="#">Pages</a></li>
+
+                        </ul>
+                        </li>*@
+                        <li class="nav-item">
+                            <a class="nav-link" asp-action="Logout" asp-controller="Account">Logout</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </nav>
+
+        <main id="content" class="main-content">
+            <!--Content Area-->
+            @RenderBody()
+        </main><!-- /#content.content -->
+
+        <div class="lqd-sticky-footer-wrap">
+            <div class="lqd-sticky-footer-sentinel" style=""></div>
+            <footer class="main-footer bg-cover pt-90 footer-stuck" data-sticky-footer="true">
+
+                <section class="footerBottom">
+                    <div class="container">
+                        <div class="row">
+
+
+                            <div class="bottom-footer">
+
+                                <p>
+                                    Copyright <span id="CopyYear"></span> Contractor Plan Center
+                                </p>
+
+                            </div><!-- /.lqd-column col-md-8 text-right -->
+
+                        </div>
+
+                    </div>
+                </section>
+            </footer>
+
+        </div><!-- /.main-footer -->
+
+    </div>
+
+    @await RenderSectionAsync("IndexBottomjs", required: false)
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.js"></script>
+    @await RenderSectionAsync("dataTablesJs", required: false)
+    @*<script src="https://cdn.jsdelivr.net/npm/jquery@3.6.0/dist/jquery.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/popper.js@1.16.1/dist/umd/popper.min.js"></script>*@
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+    @RenderSection("MemberProfileScripts", required: false)
+    <script src="~/assets/js/jquery.min.js"></script>
+    @RenderSection("ProjectInfoScripts", required: false)
+    @RenderSection("CopyCenterScripts", required: false)
+    @RenderSection("DashBoardScripts", required: false)
+    @RenderSection("FindProjectScripts", required: false)
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-7TWGMFHRTW"></script>
+
+    <script type="text/javascript">
+        var $loading = jQuery('#loader-overlay2');
+        $loading.hide();
+        var $loadingcc = jQuery('#Memloader');
+        $loadingcc.hide();
+        jQuery(document)
+            .ajaxStart(function () {
+                $loading.show();
+            })
+            .ajaxStop(function () {
+                $loading.hide();
+            });
+
+        var idleTime = 0;
+        jQuery(document).ready(function () {
+
+            //Increment the idle time counter every minute.
+            var idleInterval = setInterval(timerIncrement, 60000); // 1 minute
+
+            //Zero the idle timer on mouse movement.
+            jQuery(this).mousemove(function (e) {
+                idleTime = 0;
+            });
+            jQuery(this).keypress(function (e) {
+                idleTime = 0;
+            });
+        });
+
+        function timerIncrement() {
+            var autologtime;
+            jQuery.ajax({
+                type: "GET",
+                dataType: 'json',
+                url: '/GlobalMaster/GetLogOffList',
+                data: {},
+                async: false,
+                success: function (response) {
+                    jQuery('#hdnId').val(response.data[0].Id);
+                    jQuery('#autoLogOff').val(response.data[0].LogOff);
+                    autologtime = response.data[0].LogOff
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+
+            var pathname = window.location.pathname;
+            var controller = pathname.substring(0, pathname.lastIndexOf("/") + 1);
+            cont = controller.replaceAll("/", "");
+            var view = pathname.slice(pathname.lastIndexOf('/') + 1);
+            views = view;
+            idleTime = idleTime + 1;
+            if (idleTime >= autologtime) { // 15 minutes
+                jQuery.ajax({
+                    type: "Get",
+                    dataType: 'json',
+                    url: '/StaffAccount/AutoLogout',
+                    data: { 'IsAutoLogout': true, 'returnUrl': pathname },
+                    async: false,
+                    success: function (response) {
+                        if (respons.Status == 'success')
+                            window.location.href = "/StaffAccount/Login?returnUrl=" + pathname;
+                    },
+                    error: function (response) {
+                        console.log(response.responseText);
+                        window.location.href = "/StaffAccount/Login?returnUrl=" + pathname;
+                    },
+                    failure: function (response) {
+                        console.log(response.responseText);
+                    }
+                });
+                //window.location.href="/Account/Logout";
+            }
+        }
+        jQuery(document).ready(function () {
+            const d = new Date();
+            let year = d.getFullYear();
+            jQuery('#CopyYear').html(year);
+        });
+    </script>
+</body>
+<grammarly-desktop-integration data-grammarly-shadow-root="true"></grammarly-desktop-integration>
+
+</html>

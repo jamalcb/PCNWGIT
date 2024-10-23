@@ -1,0 +1,1722 @@
+﻿@model IEnumerable<OrderTables>
+@{
+    ViewData["Title"] = "CopyCenter";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+}
+@section dataTablesCss{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+}
+@section dataTablesJs{
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+}
+@section CustomCSS{
+    <style>
+        #progress-container {
+            width: 90%;
+            height: 26px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #3498db;
+            / Set your desired color / transition: width 0.3s ease;
+        }
+        .ui-menu {
+            z-index: 1100 !important;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+            line-height: 0;
+        }
+
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        .cpy-cntr-form .form-group .form-control {
+            height: 32px;
+        }
+
+        .bg-blue {
+            background: #5c8097;
+        }
+
+        /*pricing styling*/
+        .rate-ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 14px;
+            height: 32px;
+        }
+
+        .rate-head {
+            position: relative;
+        }
+
+            .rate-head legend {
+                width: auto;
+                position: absolute;
+                top: -25px;
+                background: #f2f2f2;
+                padding: 0 12px;
+                font-weight: 600;
+                color: #ff9900;
+                font-size: 20px;
+            }
+
+        .rate-ul li input {
+            width: 15% !important;
+            margin-bottom: 0px !important;
+            font-size: 14px !important;
+            border: none;
+            border-bottom: 1px solid #ccc;
+            /*height: 1.5rem !important;*/
+        }
+
+        .rate-ul {
+            border: 1px solid #f909;
+        }
+
+            .rate-ul li label {
+                margin-bottom: 0px;
+                font-size: 18px;
+                font-weight: 500;
+            }
+
+            .rate-ul li span {
+                font-weight: 600;
+            }
+
+        .header h2 {
+            font-size: 20px;
+            color: #666666;
+            background: #fff;
+        }
+
+        .MEMloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            /*display:none;*/
+        }
+
+            .MEMloader img {
+                display: block;
+                margin: 0 auto;
+                width: 100px;
+                margin-top: 20%;
+            }
+
+        .color-select {
+            display: none;
+        }
+        .info-border{
+            border-right: 1px solid #ccc;
+            font-weight:bold;
+        }
+        .info-color{
+            color: #202020 !important
+        }
+        .cstPrintTbl tr td{
+            font-size: 16px;
+            vertical-align: middle;
+            font-weight: 600;
+        }
+        /* -------------- */
+        #time_wrapper {
+            width: fit-content;
+            margin: 0 auto;
+            position: relative;
+            top: 150px;
+            transform: scale(1.5);
+        }
+
+        #time_input {
+            border: 2px solid #706e6e;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            border-radius: 0px !important;
+        }
+
+            #time_input input {
+                width: 50px;
+                height: auto;
+                border: none;
+                box-sizing: border-box;
+                padding: 2px;
+                text-align: center;
+                color: #132c14;
+                background: #f4f4f4;
+            }
+
+            #time_input label {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                position: relative;
+                margin-bottom: 0px;
+            }
+
+        .label {
+            font-size: 0.55rem;
+            position: absolute;
+            top: 4.5px;
+        }
+
+            .label.lbl-hrs {
+                left: 20px;
+            }
+
+            .label.lbl-min {
+                left: 14px;
+            }
+
+            .label.lbl-sec {
+                left: 13px;
+            }
+
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        #time_input,
+        input {
+            border-radius: 8px;
+            /*font-size: 1.5rem;*/
+        }
+
+            #time_input input:focus {
+                outline: 3px solid #5c8097;
+                border-radius: 0;
+            }
+
+            input:focus + .label {
+                color: var(--active);
+            }
+
+            input.invalid:focus {
+                outline: 3px solid red;
+            }
+
+                input.invalid:focus + .label {
+                    color: red;
+                }
+    </style>
+}
+
+@section Scripts{
+    @* <script src="https://frontenddeveloping.github.io/pdfjs-dist/build/pdf.js"></script>
+    <script src="https://frontenddeveloping.github.io/pdfjs-dist/build/pdf.worker.js"></script> 
+    <script src="https://kit.fontawesome.com/bde2bd25f3.js" crossorigin="anonymous"></script>*@
+}
+
+@section CopyCenterScripts{
+    <script src="~/js/member-copy-center.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+}
+<div class="MEMloader" id="Membloader">
+    <img src="/assets/images/loading-gif.gif" style="max-width: 5%;min-width:5%" alt="loading" />
+</div>
+<div class="container-fluid">
+    <div class="dashboard-box">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-heading bg-blue">
+                    <div class="row mx-0">
+                        <div class="col-md-12 d-flex justify-content-between">
+                            <h2>Copy Center</h2>
+                            <div class="custom-file upload-member-project-files newPro-btn my-1" style="width:auto;">
+                                <button type="button" class="btn btn-sm newProbtn" data-toggle="modal" data-target="#printPrice">
+                                    Price Details
+                                </button>
+                                <a href="#" class="btn btn-sm newProbtn px-15" onclick="OpenPrintModel()">
+                                    <i class=" fa fa-plus mx-1"></i>
+                                    Print Order Form
+                                </a>
+                                <input type="hidden" id="selectCheck" />
+                                <input type="hidden" id="uploadCheck" />
+                                <input type="hidden" id="LoadChk" value="@ViewBag.LoadValChk" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <!-- Price Details modal -->
+        <div class="modal fade" id="printPrice" tabindex="-1" aria-labelledby="printPriceLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl modal-dialog-scrollable">
+                <div class="modal-content">
+                    <div class="modal-header cusModal-Header">
+                        <h4 class="modal-title" id="printPriceLabel">Price Details</h4>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="box-space">
+                            <div class="row clearfix">
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <div class="card">
+                                        <div class="header text-center">
+                                            <h2>
+                                                <strong>Rates For Members</strong>
+                                            </h2>
+                                        </div>
+                                        <div class="body px-5 pt-4">
+                                            <ul class=" rate-ul p-0" id="MemberPrice">
+                                            </ul>
+                                        </div>
+                                        <!-- Electronics block -->
+                                        <div class="header pt-0">
+                                        </div>
+                                        <div class="body px-5 pt-4">
+                                            <ul class=" rate-ul p-0" id="ColorMemberPrice"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- non-member block -->
+                                <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                                    <div class="card">
+                                        <div class="header text-center">
+                                            <h2>
+                                                <strong>Rates For Non-Members</strong>
+                                            </h2>
+                                        </div>
+                                        <div class="body px-5 pt-4">
+                                            <ul class=" rate-ul p-0" id="NonMemberPrice">
+                                            </ul>
+                                        </div>
+                                        <!-- Electronics block  -->
+                                        <div class="header pt-0">
+                                        </div>
+                                        <div class="body px-5 pt-4">
+                                            <ul class=" rate-ul p-0" id="ColorNonMemberPrice"></ul>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-space">
+            <div class="row align-items-center">
+                <div class="col-md-12">
+                    <div class="text-center ">
+
+                        <!-- Modal -->
+
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-heading">
+                    <h2>Current Print Orders</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-space">
+
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped cusTable pTables">
+                    <thead>
+                        <tr>
+                            <th style="display:none"></th>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Location</th>
+                            <th>Phone Number</th>
+                            <th>Email Address</th>
+                            <th>View Order</th>
+                            <th>View Documents</th>
+                            <th>Deadline</th>
+                            <th>Pickup or Delivery</th>
+                            <th>Order Placed</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int a = 1;
+                        }
+                        @foreach (var item in Model)
+                        {
+                            if (item.DoneDt == null)
+                            {
+
+                                <tr id="ViewCheck_@a" class="ViewClass">
+
+                                    <input type="hidden" id="hidViewed_@a" value="@item.Viewed.ToString()" />
+                                    <input type="hidden" id="OrderId_@a" value="@item.OrderId" />
+                                    <input type="hidden" id="ProjId_@a" value="@item.ProjId" />
+                                    <input type="hidden" id="PO_@a" value="@item.PO" />
+                                    <input type="hidden" id="Sz1Qty_@a" value="@item.Sz1Qty" />
+                                    <input type="hidden" id="Sz2Qty_@a" value="@item.Sz2Qty" />
+                                    <input type="hidden" id="Sz3Qty_@a" value="@item.Sz3Qty" />
+                                    <input type="hidden" id="Sz4Qty_@a" value="@item.Sz4Qty" />
+                                    <input type="hidden" id="Sz5Qty_@a" value="@item.Sz5Qty" />
+                                    <input type="hidden" id="Sz6Qty_@a" value="@item.Sz6Qty" />
+                                    <input type="hidden" id="Prints_@a" value="@item.Prints" />
+                                    <input type="hidden" id="Instructions_@a" value="@item.Instructions" />
+                                    <td style="display:none">
+                                        @if (item.GetTblProjs != null)
+                                        {
+                                            @foreach (var Pages in @item.GetTblProjs)
+                                            {
+                                                <input type="hidden" name="hidPageCount_@a" value="@Pages.Pages" />
+                                            }
+                                        }
+                                    </td>
+                                    <td id="tdComp_@a">@item.Company</td>
+                                    <td id="tdName_@a">@item.Name</td>
+                                    <td id="tdLoc_@a">@item.Addr, @item.CSZ</td>
+                                    <td id="tdPhone_@a">@item.Phone</td>
+                                    <td id="tdEmail_@a">@item.Email</td>
+                                    <td class="newPro-btn">
+                                        <a href="" class="table-btn" id="showModal_@a" data-toggle="modal" data-target="#viewOrder-Modal" onclick="ShowModal(this.id)">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="viewOrder-Modal" role="dialog">
+                                            <div class="modal-dialog modal-lg">
+
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header cusModal-Header">
+                                                        <h4 class="modal-title card-label font-weight-bolder">Order Detail</h4>
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    </div>
+
+                                                    <div class="modal-body p-4">
+                                                        <div class="row">
+                                                            <div class="col-lg-6 text-left details-border">
+                                                                <div class="form-group row mb-3">
+                                                                    <input type="hidden" class="" value="3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Company</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblCompany">
+                                                                            <b>Andy's Company</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label" id="lblContact">Contact</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblName">
+                                                                            <b>Andy C</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Address</label>
+                                                                    <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label" id="lblAddr">
+                                                                            <b>123456, , OR</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Phone</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblPhone">
+                                                                            <b>1234567890</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Email</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblEmail">
+                                                                            <b>andy@bytagig.net</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6 text-left details-border">
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Project #</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblProjNo">
+
+                                                                            <b>1234</b>
+                                                                        </label>
+                                                                        <input type="hidden" id="ModOrderId" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">P.O.</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblProjPO">
+                                                                            <b>55</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                               
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Deadline</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblDLine">
+                                                                            <b>06/24/2022</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Pickup or Delivery</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblHow">
+                                                                            <b>Pickup</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3 ">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Plan</label>
+                                                                    <div class="col-lg-8 col-xl-8 input-group">
+                                                                        <label class="col-form-label newPro-btn">
+                                                                            <a class="btn  btn-upload viewPdf-btn text-white p-1" id="viewDocFr" target="_blank">
+                                                                                <b>View<i class="fa fa-file-pdf px-1" aria-hidden="true"></i></b>
+                                                                            </a>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 px-0 text-left details-border">
+                                                                <div class="form-group row mb-3 m-auto">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Additional Instructions</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblNotes">
+                                                                            <b>Testing notes</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="col-lg-12 col-xl-12" style="padding-top:20px;">
+                                                                <table class="table table-bordred border select-file-table " id="tblUpload">
+                                                                    <thead class="">
+                                                                        <tr>
+                                                                            <th>File Name</th>
+                                                                            <th>Page Count</th>
+                                                                            <th># of Copies</th>
+                                                                            <th>Print</th>
+                                                                            <th>Page Size</th>
+                                                                            <th>Price</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="OrderDetails" class="">
+                                                                    </tbody>
+                                                                </table>
+                                                                <div class="row" style="float:right">
+                                                                    <div class="col-lg-1"></div>
+                                                                    <div class="col-lg-11"><b><label>Total Price: </label> <label> $</label><label id="TotalOrderPrice"></label></b></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    @*<div class="modal-footer">
+                                            <button type="button" class="modl-btn newProbtn" data-dismiss="modal" onclick="SendNoticeModal()">Complete Order</button>
+                                            </div>*@
+                                                </div>
+
+                                            </div>
+                                        </div>
+
+                                    </td>
+                                    <td class="newPro-btn">
+                                        <a asp-action="ViewDoc" asp-controller="Member" asp-route-OrderId="@item.OrderId" class="table-btn" target="_blank">
+                                            <i class="fa fa-search"
+                                       aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                    <td id="tdDeliveryDt_@a">@(item.DeliveryDt != null ? Convert.ToDateTime(item.DeliveryDt.Value).ToString("MM/dd/yyyy") : "")</td>
+                                    <td id="tdHowShip_@a">@item.HowShip</td>
+                                    <td id="tdOrderDt_@a">@(item.OrderDt != null ? Convert.ToDateTime(item.OrderDt.Value).ToString("MM/dd/yyyy") : "")</td>
+                                </tr>
+                                a++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Modal -->
+        <div class="modal modalthanks fade" id="thankyou-Modal" role="dialog">
+            <div class="modal-dialog modal-lg">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header p-2">
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+
+                    <div class="modal-body">
+                        <h1 class="text-success">Thank you</h1>
+                        <h4>For using our Copy Center. You will receive a message when your order is complete and ready for pickup or delivery.</h4>
+                    </div>
+
+                    <div class="modal-footer">
+                        <button type="button" class="modl-btn" data-dismiss="modal">Close</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-heading">
+                    <h2>Ready For Pickup/Delivery</h2>
+                </div>
+            </div>
+        </div>
+        <div class="box-space">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped cusTable mb-0 sTables">
+                    <thead>
+                        <tr>
+                            <th style="display:none"></th>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Location</th>
+                            <th>Phone Number</th>
+                            <th>Email Address</th>
+                            <th>View Order</th>
+                            <th>View Documents</th>
+                            <th>Deadline</th>
+                            <th>Pickup or Delivery</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int b = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            if (item.DoneDt != null && item.ShipDt == null)
+                            {
+                            // var FDeliveryDt = Date
+                                <tr>
+                                    <input type="hidden" id="hidViewedc_@b" value="@item.Viewed" />
+                                    <input type="hidden" id="OrderIdc_@b" value="@item.OrderId" />
+                                    <input type="hidden" id="ProjIdc_@b" value="@item.ProjId" />
+                                    <input type="hidden" id="POc_@b" value="@item.PO" />
+                                    <input type="hidden" id="Sz1Qtyc_@b" value="@item.Sz1Qty" />
+                                    <input type="hidden" id="Sz2Qtyc_@b" value="@item.Sz2Qty" />
+                                    <input type="hidden" id="Sz3Qtyc_@b" value="@item.Sz3Qty" />
+                                    <input type="hidden" id="Sz4Qtyc_@b" value="@item.Sz4Qty" />
+                                    <input type="hidden" id="Sz5Qtyc_@b" value="@item.Sz5Qty" />
+                                    <input type="hidden" id="Sz6Qtyc_@b" value="@item.Sz6Qty" />
+                                    <input type="hidden" id="Printsc_@b" value="@item.Prints" />
+                                    <input type="hidden" id="Instructionsc_@b" value="@item.Instructions" />
+                                    <td style="display:none">
+                                        @if (item.GetTblProjs != null)
+                                        {
+                                            @foreach (var Pages in @item.GetTblProjs)
+                                            {
+                                                <input type="hidden" name="hidPageCountc_@b" value="@Pages.Pages" />
+                                            }
+                                        }
+                                    </td>
+                                    <td id="tdCompc_@b">@item.Company</td>
+                                    <td id="tdNamec_@b">@item.Name</td>
+                                    <td id="tdLocc_@b">@item.Addr, @item.CSZ</td>
+                                    <td id="tdPhonec_@b">@item.Phone</td>
+                                    <td id="tdEmailc_@b">@item.Email</td>
+                                    <td class="newPro-btn">
+                                        <a href="" class="table-btn" id="showModalc_@b" data-toggle="modal" data-target="#viewOrder-Modal-c" onclick="ShowModalC(this.id)">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="viewOrder-Modal-c" role="dialog">
+                                            <div class="modal-dialog modal-lg">
+
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header cusModal-Header">
+                                                        <h4 class="modal-title card-label font-weight-bolder ">Order Detail</h4>
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    </div>
+
+                                                    <div class="modal-body p-4">
+                                                        <div class="row ml-0">
+                                                            <div class="col-lg-6 pl-0 text-left details-border">
+                                                                <div class="form-group row mb-3">
+                                                                    <input type="hidden" class="" value="3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Company</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblCompanyc">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold" id="lblContact">Contact</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblNamec">
+                                                                            <b>Andy C</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Address</label>
+                                                                    <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label" id="lblAddrc">
+                                                                            <b>123456, , OR</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Phone</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblPhonec">
+                                                                            <b>1234567890</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Email</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblEmailc">
+                                                                            <b>andy@bytagig.net</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6 pr-0 text-left details-border">
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Project #</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblProjNoc">
+
+                                                                            <b>1234</b>
+                                                                        </label>
+                                                                        <input type="hidden" id="ModOrderIdc" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">P.O.</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblProjPOc">
+                                                                            <b>55</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Deadline</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblDLinec">
+                                                                            <b>06/24/2022</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Pickup or Delivery</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblHowc">
+                                                                            <b>Pickup</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Plan</label>
+                                                                    <div class="col-lg-8 col-xl-8 input-group">
+                                                                        <label class="col-form-label newPro-btn">
+                                                                            <a class="btn  btn-upload viewPdf-btn text-white p-1" id="RviewDocFr" target="_blank">
+                                                                                <b>View<i class="fa fa-file-pdf px-1" aria-hidden="true"></i></b>
+                                                                            </a>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 px-0 text-left details-border">
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Additional Instructions</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblNotesc">
+                                                                            <b>Testing notes</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-12 col-xl-12" style="padding-top:20px;">
+
+                                                                <table class="table table-bordred border select-file-table" id="tblUpload">
+                                                                    <thead class="">
+                                                                        <tr>
+                                                                            <th>File Name</th>
+                                                                            <th>Page Count</th>
+                                                                            <th># of Copies</th>
+                                                                            <th>Print</th>
+                                                                            <th>Print Size</th>
+                                                                            <th>Price</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="ROrderDetails" class="">
+                                                                    </tbody>
+                                                                </table>
+                                                                <div class="row" style="float:right">
+                                                                    <div class="col-lg-1"></div>
+                                                                    <div class="col-lg-11"><b><label>Total Price: </label> <label> $</label><label id="RTotalOrderPrice"></label></b></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    @*<div class="modal-footer">
+                                            <button type="button" class="modl-btn" data-dismiss="modal" onclick="ReadyDeliveryModal()">Ready For Delivery</button>
+                                            </div>*@
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="newPro-btn">
+                                        <a asp-action="ViewDoc" asp-controller="Member" asp-route-OrderId="@item.OrderId" class="table-btn" target="_blank">
+                                            <i class="fa fa-search"
+                                       aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                    <td id="tdDeliveryDtc_@b">@(item.DeliveryDt != null ? Convert.ToDateTime(item.DeliveryDt.Value).ToString("MM/dd/yyyy") : "")</td>
+                                    <td id="tdHowShipc_@b">@item.HowShip</td>
+                                </tr>
+                                b++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <div class="row">
+            <div class="col-md-12">
+                <div class="main-heading">
+                    <h2>Completed Orders</h2>
+                </div>
+            </div>
+        </div>
+
+        <div class="box-space">
+            <div class="table-responsive">
+                <table class="table table-bordered table-striped cusTable tTables">
+                    <thead>
+                        <tr>
+                            <th style="display:none"></th>
+                            <th>Company</th>
+                            <th>Contact</th>
+                            <th>Location</th>
+                            <th>Phone Number</th>
+                            <th>Email Address</th>
+                            <th>View Order</th>
+                            <th>View Documents</th>
+                            <th>Order Completed</th>
+                            <th>Pickup or Delivery</th>
+                            <th>Re-order</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{
+                            int c = 1;
+                        }
+
+                        @foreach (var item in Model)
+                        {
+                            if (item.DoneDt != null && item.ShipDt != null)
+                            {
+                                <tr>
+                                    <input type="hidden" id="hidViewedd_@c" value="@item.Viewed" />
+                                    <input type="hidden" id="OrderIdd_@c" value="@item.OrderId" />
+                                    <input type="hidden" id="ProjIdd_@c" value="@item.ProjId" />
+                                    <input type="hidden" id="POd_@c" value="@item.PO" />
+                                    <input type="hidden" id="Sz1Qtyd_@c" value="@item.Sz1Qty" />
+                                    <input type="hidden" id="Sz2Qtyd_@c" value="@item.Sz2Qty" />
+                                    <input type="hidden" id="Sz3Qtyd_@c" value="@item.Sz3Qty" />
+                                    <input type="hidden" id="Sz4Qtyd_@c" value="@item.Sz4Qty" />
+                                    <input type="hidden" id="Sz5Qtyd_@c" value="@item.Sz5Qty" />
+                                    <input type="hidden" id="Sz6Qtyd_@c" value="@item.Sz6Qty" />
+                                    <input type="hidden" id="Printsd_@c" value="@item.Prints" />
+                                    <input type="hidden" id="Instructionsd_@c" value="@item.Instructions" />
+                                    <td style="display:none">
+                                        @if (item.GetTblProjs != null)
+                                        {
+                                            @foreach (var Pages in @item.GetTblProjs)
+                                            {
+                                                <input type="hidden" name="hidPageCountd_@c" value="@Pages.Pages" />
+                                            }
+                                        }
+                                    </td>
+                                    <td id="tdCompd_@c">@item.Company</td>
+                                    <td id="tdNamed_@c">@item.Name</td>
+                                    <td id="tdLocd_@c">@item.Addr, @item.CSZ</td>
+                                    <td id="tdPhoned_@c">@item.Phone</td>
+                                    <td id="tdEmaild_@c">@item.Email</td>
+                                    <td class="newPro-btn">
+                                        <a href="" class="table-btn" id="showModald_@c" data-toggle="modal" data-target="#viewOrder-Modal-d" onclick="ShowModalD(this.id)">
+                                            <i class="fa fa-search" aria-hidden="true"></i>
+                                        </a>
+                                        <!-- Modal -->
+                                        <div class="modal fade" id="viewOrder-Modal-d" role="dialog">
+                                            <div class="modal-dialog modal-lg">
+
+                                                <!-- Modal content-->
+                                                <div class="modal-content">
+                                                    <div class="modal-header cusModal-Header">
+                                                        <h4 class="modal-title card-label font-weight-bolder ">Order Detail</h4>
+                                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                    </div>
+
+                                                    <div class="modal-body p-4">
+                                                        <div class="row ml-0">
+                                                            <div class="col-lg-6 pl-0 text-left details-border">
+                                                                <div class="form-group row mb-3">
+                                                                    <input type="hidden" class="" value="3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold">Company</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblCompanyd">
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label font-weight-bold" id="lblContactd">Contact</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblNamed">
+                                                                            <b>Andy C</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Address</label>
+                                                                    <div class="col-lg-8 col-xl-8 mb-lg-0 mb-2">
+                                                                        <label class="col-form-label" id="lblAddrd">
+                                                                            <b>123456, , OR</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Phone</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblPhoned">
+                                                                            <b>1234567890</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Email</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblEmaild">
+                                                                            <b>andy@cytagig.net</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-6 pr-0 text-left details-border">
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Project #</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblProjNod">
+
+                                                                            <b>1234</b>
+                                                                        </label>
+                                                                        <input type="hidden" id="ModOrderIdd" />
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">P.O.</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblProjPOd">
+                                                                            <b>55</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Deadline</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblDLined">
+                                                                            <b>06/24/2022</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Pickup or Delivery</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblHowd">
+                                                                            <b>Pickup</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Plan</label>
+                                                                    <div class="col-lg-8 col-xl-8 input-group">
+                                                                        <label class="col-form-label newPro-btn">
+                                                                            <a class="btn  btn-upload viewPdf-btn text-white p-1" id="COviewDocFr" target="_blank">
+                                                                                <b>View<i class="fa fa-file-pdf px-1" aria-hidden="true"></i></b>
+                                                                            </a>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-12 px-0 text-left details-border">
+                                                                <div class="form-group row mb-3">
+                                                                    <label class="col-xl-4 col-lg-4 col-form-label">Additional Instructions</label>
+                                                                    <div class="col-lg-8 col-xl-8">
+                                                                        <label class="col-form-label" id="lblNotesd">
+                                                                            <b>Testing notes</b>
+                                                                        </label>
+                                                                    </div>
+                                                                </div>
+                                                            </div>
+                                                            <div class="col-lg-12 col-xl-12" style="padding-top:20px;">
+                                                                <table class="table table-bordred border select-file-table" id="tblUpload">
+                                                                    <thead class="">
+                                                                        <tr>
+                                                                            <th>File Name</th>
+                                                                            <th>Page Count</th>
+                                                                            <th># of Copies</th>
+                                                                            <th>Print</th>
+                                                                            <th>Page Size</th>
+                                                                            <th>Price</th>
+                                                                        </tr>
+                                                                    </thead>
+                                                                    <tbody id="COOrderDetails" class="">
+                                                                    </tbody>
+                                                                </table>
+                                                                <div class="row" style="float:right">
+                                                                    <div class="col-lg-1"></div>
+                                                                    <div class="col-lg-11"><b><label>Total Price: </label> <label> $</label><label id="COTotalOrderPrice"></label></b></div>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="modal-footer">
+                                                        <button type="button" class="modl-btn" data-dismiss="modal">Reorder</button>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                    </td>
+                                    <td class="newPro-btn">
+                                        <a asp-action="ViewDoc" asp-controller="Member" asp-route-OrderId="@item.OrderId" class="table-btn" target="_blank">
+                                            <i class="fa fa-search"
+                                       aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                    <td id="tdDeliveryDtd_@c">Completed</td>
+                                    <td id="tdHowShipd_@c">@item.HowShip</td>
+                                    <td class="newPro-btn">
+                                        <a id="sendNoticed_@c" class="table-btn" onclick="Reorder(@item.OrderId)">
+                                            <i class="fa fa-paper-plane"
+                                       aria-hidden="true"></i>
+                                        </a>
+                                    </td>
+                                </tr>
+                                c++;
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+
+        <!-- Modal -->
+        <input type="hidden" id="hdnNoofPages" value='' />
+        <div class="modal modalPay" id="thankyou-Modal" role="dialog">
+            <div class="modal-dialog modal-lg">
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div id="loader-overlay" class="PayCopyCenterloader">
+                        <div id="loader" class="popup-loader">
+                            <img src="/assets/images/loading-gif.gif" style="max-width: 10%;min-width:10%" />
+                        </div>
+                    </div>
+                    <div class="modal-header cusModal-Header">
+                        <h4 class="modal-title card-label font-weight-bolder d-block" id="orderform-head1">
+                            Payment Information
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="row">
+                            <div class="col-md-12">
+                                <div class="form-group">
+                                    <label for="CardHolderName">CARDHOLDER NAME:</label> <label class="loginError">*</label>
+                                    <input type="text" class="form-control" id="CardHolderName" onkeypress="return /[a-z, ,A-Z,]/i.test(event.key)">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="form-group">
+                                    <label for="CardNumber">CARD INFORMATION:</label> <label class="loginError">*</label>
+                                    <input type="text" class="form-control" placeholder="Card Number" id="CardNumber" onblur="validateInput(this)" maxlength="19" onkeypress="return /[ 0-9]/i.test(event.key)">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="ExpiryDate"></label>
+                                <input type="text" class="form-control mt-2" placeholder="MM/YY" id="ExpiryDate" oninput="formatExpiryDate(this)" onkeypress="return /[0-9,/]/i.test(event.key)" maxlength="5" onblur="ValidateExpiryDate(this)">
+                                <span class="loginError"></span>
+                            </div>
+                            <div class="col-md-2">
+                                <div class="form-group">
+                                    <label for="CVC"></label>
+                                    <input type="text" class="form-control number-only mt-2" placeholder="CVC" id="CVC" maxlength="3">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <span style="cursor:pointer" onclick="PayData()" type="button" class="modl-btn">Pay</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+            <div class="modal-dialog modal-xl">
+
+                <!-- Modal content-->
+                <div class="modal-content">
+                    <div class="modal-header cusModal-Header">
+                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                            Print Order Form
+                        </h4>
+                        <h4 class="modal-title card-label font-weight-bolder" id="ordersummary-head" style="display:none;">
+                            Print Order Summary
+                        </h4>
+                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                    </div>
+                    <div class="modal-body">
+                        <!-- Create order Form -->
+                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                            <div class="row px-0 mx-0">
+                                <div class="col-lg-6 pl-0 cpy-cntr-form">
+                                    <h6>Customer Info</h6>
+                                    <div class="formCls">
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                Company<span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="1" class="form-control form-control-solid " type="text"
+                                                       value="" placeholder="Company" id="inpCompany" autocomplete="on" onchange="validateform(this.id)">
+                                                <span class="loginError"></span>
+                                                <input type="hidden" id="hdninpCompany" />
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                Contact<span class="text-danger">*</span>
+                                            </label>
+                                            <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                <input type="hidden" id="Uid" />
+                                                <input class="form-control form-control-solid " type="text"
+                                                       value="" placeholder="Name" id="inpContact" autocomplete="on" onchange="validateform()">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mb-1">
+
+                                            <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address<span class="text-danger">*</span></label>
+
+                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                <input tabindex="3" class="form-control"
+                                                       type="text" value=""
+                                                       placeholder="Address" id="inpAddr" onchange="validateform(this.id)">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                <span class="text-danger"></span>
+                                            </label>
+                                            <div class="col-lg-5 col-xl-5 mb-lg-0 mb-2">
+
+                                                <input tabindex="5" class="address_zipcode form-control form-control-solid"
+                                                       name="address_zipcode" type="text" value=""
+                                                       placeholder="City" id="inpCity" onchange="validateform(this.id)">
+                                                <span class="loginError"></span>
+
+                                            </div>
+                                            <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                                <div class="dropdown px-0">
+                                                    <select tabindex="6" class="form-control form-control-solid mb-2 p-1" id="inpState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform(this.id)"></select>
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+
+                                            </label>
+                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                <input tabindex="4" class="address_zipcode form-control form-control-solid number-only mb-1"
+                                                       name="address_zipcode" type="text" value=""
+                                                       placeholder="Zip Code" id="inpZip" onchange="validateform(this.id)" maxlength="5">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                Phone<span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="7" class="form-control"
+                                                       type="text" value=""
+                                                       placeholder="Phone" id="inpPhone" onchange="validateform(this.id)">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        @* <div class="form-group row mb-1">
+
+                                            <label class="col-xl-3 col-lg-3 col-form-label"></label>
+
+                                            <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                <input tabindex="8" type="checkbox" class="mx-1" value="" />Text Message Notifications
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div> *@
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                Email<span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="9" class="form-control  copy_email"
+                                                       name="copy_email" type="text" value=""
+                                                       placeholder="Email" id="inpEmail" onchange="validateform(this.id)">
+                                                <input type="hidden" id="hdnFileName" />
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+
+                                        @* <div class="form-group row mb-1">
+                                        <label class="col-xl-3 col-lg-3 col-form-label">Upload Files</label>
+                                        <div class="col-lg-9 col-xl-9 input-group">
+                                        <form id="myForm" method="post" enctype="multipart/form-data">
+                                        <input tabindex="10" type="file" class="form-control mr-2" id="fileUpload1" name="pdfFile" multiple />
+                                        <input tabindex="11" type="button" class="btn-upload" style="float: right;" id="btnfileUpload1" onclick="UploadFile(this.event)" value="Upload" />
+
+                                        <label id="lblMessage" style="display:none;"></label>
+                                        </form>
+                                        <span class="loginError" id="uploadError"></span>
+
+                                        </div>
+                                        </div>*@
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                            <div class="col-lg-9 col-xl-9 input-group">
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-lg-6 pr-0 cpy-cntr-form">
+                                    <h6>Order Info</h6>
+                                    <div class="formCls">
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                Project #
+                                            </label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="12" class="form-control "
+                                                       name="project_number" type="text" value=""
+                                                       placeholder="Project #" id="inpProjNo" onchange="validateform(this.id)">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                P.O.
+                                            </label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="13" class="form-control"
+                                                       name="order_po" type="text" value=""
+                                                       placeholder="P.O." id="inpPO">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">Deadline<span class="text-danger">*</span></label>
+
+                                            <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+
+                                                <input tabindex="14" class="form-control datepicker-custom" placeholder="Select Date" tabindex="120" type="text" value="" autocomplete="off" onchange="DeadLineDateTime(this.id)" id="inpDline">
+                                                <span class="loginError"></span>
+                                            </div>
+                                            <div class="col-8  col-sm-3 col-md-3 col-lg-3 mt-420">
+                                                <div id="time_input">
+                                                    <label for="hours">
+                                                        <input tabindex="15" type="number" value="00" id="tComp" autocomplete="off">
+                                                    </label>
+                                                    <span>:</span>
+                                                    <label for="minutes">
+                                                        <input tabindex="16" type="number" value="00" id="hComp" autocomplete="off">
+                                                    </label>
+                                                    <span>:</span>
+                                                    <label for="seconds">
+                                                        <input type="text" tabindex="17" value="AM" id="mValue"  class="ui-autocomplete-input" autocomplete="off">
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="form-group row mb-1">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">
+                                                Delivery/Pickup<span class="text-danger">*</span>
+                                            </label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <div class="dropdown bootstrap-select ">
+                                                    <div class="dropdown bootstrap-select">
+                                                        <select tabindex="150" class="form-control p-1" id="inpDelivery" onchange="validateform(this.id)">
+                                                            <option value="" hidden="">-Select-</option>
+                                                            @* <option value="1">Pickup</option>
+                                                            <option value="2">Local Delivery(20)-Portland Metro Only</option>
+                                                            <option value="3">UPS delivery</option>*@
+                                                        </select>
+                                                        <span class="loginError"></span>
+                                                        <input type="hidden" name="HowShip" id="HowShip" />
+                                                        <input type="hidden" id="TextHowShip" />
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="HideDelivery" id="DetShip">
+                                            <div class="form-group row mb-0 align-items-center">
+                                                <label class="col-xl-3 col-lg-3 col-form-label"></label>
+
+                                                <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                    <input tabindex="160" type="checkbox" class="mx-1" value="" id="chkDel" onclick="DelFunction()" />Same as Billing Address
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-1 align-items-center">
+
+                                                <label class="col-xl-3 col-lg-3 col-form-label py-0">Shipping Address<span class="text-danger">*</span></label>
+
+                                                <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                                    <input tabindex="170" class="form-control"
+                                                           type="text" value=""
+                                                           placeholder="Address" id="inpDelAddr" onchange="validateform(this.id)">
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-1">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                    <span class="text-danger"></span>
+                                                </label>
+                                                <div class="col-lg-5 col-xl-5 mb-lg-0 mb-2">
+
+                                                    <input tabindex="190" class="address_zipcode form-control form-control-solid"
+                                                           name="address_zipcode" type="text" value=""
+                                                           placeholder="City" id="inpDelCity" onchange="validateform(this.id)">
+                                                    <span class="loginError"></span>
+
+                                                </div>
+                                                <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+
+                                                    <div class="dropdown px-0">
+                                                        <select tabindex="200" class="form-control form-control-solid mb-1 p-1" id="inpDelState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform(this.id)"></select>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="form-group row mb-1">
+                                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                                </label>
+                                                <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                                    <input tabindex="180" class="address_zipcode form-control form-control-solid number-only"
+                                                           name="address_zipcode" type="text" value=""
+                                                           placeholder="Zip Code" id="inpDelZip" onchange="validateform(this.id)" maxlength="5">
+                                                    <span class="loginError"></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 px-0">
+                                    <div class="form-group row mb-3">
+                                        <label class="col-form-label col-md-2 test" style="max-width: 12.666667%;">
+                                            Additional Instructions
+                                        </label>
+                                        <div class="input-group col-md-10" style="flex:0 0 87.3%;max-width: 87.3%;">
+                                            <textarea tabindex="210" name="instructions"
+                                                      class="instructions form-control" cols="30"
+                                                      rows="5" id="inpInstruction" onchange="validateform(this.id)" onblur="validateform(this.id)"></textarea>
+                                        </div>
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="form-group row mb-1">
+                                        <label class="col-form-label col-sm-2 col-md-2 col-lg-2" style="max-width: 12.6%;">Upload Files</label>
+                                        <div class=" col-sm-10 col-md-10 col-lg-10 dragbgChange" style="flex: 0 0 87.3%;max-width: 87.3%;">
+                                            <form id="myForm" method="post" enctype="multipart/form-data">
+
+                                                <div class="drag-wrap m-0">
+                                                    <div class="drag-append">
+                                                        <div class="drag-file">
+                                                            <div class="file__input" id="file__input" style="height: 100px; border: 3px dotted;">
+                                                                <input class="file__input--file" id="fileUpload1" tabindex="9" name="pdfFile" type="file" multiple="multiple">
+                                                                <label class="file__input--label" for="fileUpload1" data-text-btn="Upload">Drag and Drop a file : </label>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="d-flex flex-wrap" id="file_input">
+                                                    </div>
+                                                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8No4CcOAvZtGhwWH9oIjvX_EJxC-IzDPY5Gnx62CA71RdYAlnhAbXfAsPJ31nkeVZkw-eDXWlSAZfjXI9UdBpPGnNYK04jYIvvJ2XzNkpmygwO3kH2_s-Ge3TfBfetr0dEnBbMOymT4vZQDOASH_k-cyUzFQHRpvt5IBvjVWFl34k5OQveAQwHPtlFUPsfhilQ">
+
+                                                </div>
+                                                @*<input type="button" class="btn-upload my-2" style="float: right;" id="btnfileUpload1" onclick="UploadPdfFile()" value="Upload" />*@
+                                                <input type="hidden" id="hdnFileName" />
+                                                <label id="lblMessage" style="display:none;"></label>
+                                            </form>
+                                            <div id="progress-container" style="display: none;">
+                                                <div id="progress-bar"> <div id="progress-text">0%</div></div>
+                                                <div id="filenameid"></div>
+                                            </div>
+                                            <div id="loader-overlay" class="CopyCenterloader">
+                                                <div id="loader" class="popup-loader">
+                                                    <img src="/assets/images/loading-gif.gif" style="max-width: 10%;min-width:10%" />
+                                                </div>
+                                            </div>
+                                            <span class="loginError d-flex align-items-center px-1 mt-2" id="uploadError"></span>
+                                        </div>
+                                        <div class="col-lg-12 col-xl-12  d-none divUpload">
+                                            <div class="modal-body">
+                                                <table class="table table-bordred border select-file-table tblUpload" id="tblUpload">
+                                                    <thead class="">
+                                                        <tr>
+                                                            <th>File Name</th>
+                                                            <th style="width: 10%;">Page Count</th>
+                                                            <th style="width: 10%;"># of Copies</th>
+                                                            <th style="width: 12%;text-align:right;">Print Type</th>
+                                                            <th style="width: 12%;">Page Size</th>
+                                                            <th style="width: 0%;text-align:right;">Delete</th>
+                                                        </tr>
+                                                    </thead>
+                                                    <tbody id="ftbody" class="cstPrintTbl">
+                                                    </tbody>
+                                                </table>
+                                                <div class="price-body">
+                                                </div>
+                                                <div class="nprice-body">
+                                                </div>
+                                                <div class="color-price-body">
+                                                </div>
+                                                <div class="color-nprice-body">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                        </form>
+                        <div class="col-md-12 newPro-btn">
+                            <button id="next-btn" class="newProbtn modl-btn px-4" style="float: right;">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
+                        </div>
+                        <!-- Review Order Form -->
+
+                        <form action="" class="col-md-12 review-form" style="display: none;">
+                            <div id="loader-overlay" class="CopyCenterloader">
+                                <div id="loader" class="popup-loader">
+                                    <img src="/assets/images/LoaderPCNW.gif" style="max-width: 10%;min-width:10%" />
+                                </div>
+                            </div>
+                            <input type="hidden">
+                            <div class="row text-left formCls">
+                                <div class="col-lg-6 pl-0">
+                                    <h6>Customer Info</h6>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">Company</label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="Company" id="lblModCompany">
+
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            Contact
+                                        </label>
+                                        <input type="hidden" id="ModUid" />
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="Name" id="lblModContact">
+                                            +1 635544000
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">Billing Address</label>
+
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="Addr" id="lblModBillAddr">
+
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                            <span class="text-danger"></span>
+                                        </label>
+                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                            <label class="col-form-label" name="City" id="lblModCity">
+                                                Carolina
+                                            </label>
+
+                                        </div>
+                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                            <label class="col-form-label" name="State" id="lblModState">
+                                                Nevada
+                                            </label>
+
+                                        </div>
+
+                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                            <label class="col-form-label" name="Zip" id="lblModZip">
+                                                9966TA
+                                            </label>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            Phone
+
+                                        </label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="Phone" id="lblModPhone">
+                                            +1 63577799
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            Email
+
+                                        </label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="Email" id="lblModEmail">
+                                            testing@hotmail.com
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border"> Payment Info</label>
+
+                                        <div class="col-lg-9 col-xl-9 col-form-label">
+                                            <select id="inpPayInfo" onchange="ChangePayOrOrderButton()">
+                                                <option value="1">Pay by Credit Card</option>
+                                                <option value="2">Add To Monthly Invoice</option>
+                                            </select>
+                                        </div>
+
+                                    </div>
+                                    @*<div class="form-group row mb-3 border mx-0">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Plan</label>
+                                    <label class="col-lg-9 col-xl-9 col-form-label" name="FileName" id="lblModPlan">
+
+                                    </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Price</label>
+                                    <label class="col-lg-9 col-xl-9 col-form-label" name="ShipAmt" id="lblModPrice">
+
+                                    </label>
+                                    </div>*@
+                                </div>
+                                <div class="col-lg-6 pr-0">
+                                    <h6>Order Info</h6>
+
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            Project #
+                                        </label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="ProjId" id="lblModProjNo">
+                                            Project No#-504111
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border" id="">
+                                            P.O.
+                                        </label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="PO" id="lblModPO">
+                                            400321
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            No. of Pages
+                                        </label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="pages" id="lblModPages">
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            No. of
+                                            Copies
+                                        </label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="Prints" id="lblModCopy">
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0"> 
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">Deadline</label>
+
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="DeliveryDt" id="lblModDLine">
+                                            26/9/2023
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            Delivery
+
+                                        </label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="HowShip" id="lblModDelivery">
+                                            Pickup
+                                        </label>
+                                    </div>
+
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">Billing Address</label>
+                                        <label class="col-lg-9 col-xl-9 col-form-label info-color" name="NotifyAddress" id="lblModDelAddr">
+                                            88 Scaremento North Carolina
+                                        </label>
+                                    </div>
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                            <span class="text-danger"></span>
+                                        </label>
+                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                            <label class="col-form-label" id="lblModDelCity">
+                                                Carolina
+                                            </label>
+
+                                        </div>
+                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                            <label class="col-form-label" id="lblModDelState">
+                                                Nevada
+                                            </label>
+
+                                        </div>
+
+                                        <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                            <label class="col-form-label" id="lblModDelZip">
+                                                9966TA
+                                            </label>
+
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 px-0">
+
+                                    <div class="form-group row mb-3 border mx-0">
+                                        <label class="col-xl-3 col-lg-3 col-form-label info-border">
+                                            Additional
+                                            Instructions
+                                        </label>
+                                        <div class="col-lg-9 col-xl-9" style="text-align: justify;">
+                                            <label id="lblModDelInstruction" class="col-form-label info-color" name="Instructions">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam omnis accusamus ratione atque incidunt, ipsa eum eveniet maxime deserunt doloribus possimus aperiam temporibus praesentium quo, inventore vitae. Tempora, maxime. Nam.</label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-12 px-0">
+                                    <table class="table table-bordered price-table-review cusTable fw-6">
+                                        <thead>
+                                            <tr>
+                                                <th>S No.</th>
+                                                <th class="text-left">File Name</th>
+                                                <th>No. of pages</th>
+                                                <th>No. of copies</th>
+                                                <th>Size</th>
+                                                <th>Print Size</th>
+                                                <th>Price</th>
+                                                <th>Total Amount</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody class="prcTbody">
+                                        </tbody>
+                                        <tfoot id="prcFooter">
+                                            <tr>
+                                                <td class="font-weight-bold text-right" colspan="5">Delivery Charges</td>
+                                                <td class="font-weight-bold text-center" id="delivCharges">$0</td>
+                                            </tr>
+                                            <tr>
+                                                <td class="font-weight-bold text-right" colspan="5">Total</td>
+                                                <td class="font-weight-bold text-center" id="priceTotal">$3024</td>
+                                            </tr>
+                                        </tfoot>
+
+                                    </table>
+                                    <input type="hidden" id="hdnTotalPrice" />
+                                </div>
+                                @*<div class="form-group col-12 pr-0 font-weight-bold">
+                                <span style="float:right;"> Text Message Notifications. <input type="checkbox" class="mx-1"></span>
+                                </div>*@
+                                <div class="form-group col-12 px-0 newPro-btn">
+                                    <span id="SubmitId" style="float: right; cursor:pointer;" class="modl-btn px-4 newProbtn" onclick="submitData(this.event)"><i class="fa fa-cloud-download" aria-hidden="true"></i> Pay</span>
+                                    <button id="prev-btn" style="float: left;" class="modl-btn px-4 newProbtn">
+                                        <i class="fa fa-angle-double-left" aria-hidden="true"></i> Previous
+                                    </button>
+
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

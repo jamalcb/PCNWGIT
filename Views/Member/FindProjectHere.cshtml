@@ -1,0 +1,1031 @@
+﻿@using System.Globalization;
+@model FindProjectModel
+@{
+    ViewData["Title"] = "Find Project Here";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+
+}
+
+@section dataTablesCss {
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <link href="~/assets/css/datatable.css" rel="stylesheet" />
+}
+@section dataTablesJs {
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+    <script src="~/js/find-project-here.js"></script>
+    <script src="~/js/jssavedsearch.js"></script>
+}
+
+@section FindProjectScripts {
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+}
+
+@section CustomCSS {
+    <style>
+
+        select[multiple] option:checked {
+            background-color: #fe920082; /* Replace with your desired color */
+        }
+
+        .project-tabs li {
+            width: 25%;
+        }
+
+            .project-tabs li a {
+                color: black !important;
+                font-weight: 500 !important;
+            }
+
+            .project-tabs li .active {
+                background: #1b2c4a !important;
+                border: 1px solid #1b2c4a !important;
+                color: #fff !important;
+                font-weight: 600 !important;
+                border-top: 4px solid #ffbe08 !important;
+            }
+
+        .active {
+            background-color: #fff !important;
+        }
+
+        div#table-id-pending_info, div#table-id-pending_paginate, div#table-id-pending_length, div#table-id-pending_filter {
+            color: #666;
+        }
+
+        .search-box-sec {
+            text-align: right;
+            margin-top: 15px;
+        }
+
+            .search-box-sec .search-box-btn {
+                color: #ffffff;
+                background: #4d7f96;
+                padding: 12px 15px;
+                border-radius: 4px;
+                font-size: 15px;
+                font-weight: 500;
+                text-transform: capitalize;
+                line-height: normal;
+                border: 0;
+                margin-top: 10px;
+            }
+
+        .fix-find {
+            position: fixed;
+            left: 0;
+            max-height: 78vh;
+            overflow-y: scroll;
+        }
+
+        .find-proj-table {
+            /* margin-left: 180px; */
+        }
+
+        .MEMloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            /*display:none;*/
+        }
+
+            .MEMloader img {
+                display: block;
+                margin: 0 auto;
+                width: 100px;
+                margin-top: 20%;
+            }
+
+        .main-content {
+            padding: 12px 0;
+        }
+
+        .slider-container {
+            width: 100%;
+            position: relative;
+            margin: 10px 0;
+        }
+
+        .slider-track {
+            height: 10px;
+            background-color: #ccc;
+            border-radius: 5px;
+        }
+
+        .slider-handle {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 20px;
+            height: 20px;
+            background-color: #fd8c00;
+            border-radius: 50%;
+            cursor: pointer;
+        }
+
+        .slider-handle-background {
+            height: 10px; /* Adjust height as needed */
+            background: ##ccc; /* Set your desired background color */
+            border-radius: 5px;
+            flex-grow: 1; /* Enable stretching to fill the scrollable area */
+        }
+
+        .stickyFilter {
+            width: auto;
+            position: sticky;
+            top: 110px;
+            background: #ccc;
+            max-height: 100%;
+            height: calc(100% - 70px);
+            overflow: hidden;
+        }
+
+        .stickyInside {
+            overflow-y: auto;
+            scrollbar-gutter: stable;
+            max-height: 100% !important;
+            padding-right: 0;
+        }
+
+        .stickyInside {
+            /* Scrollbar styles */
+            scrollbar-width: thin; /* Adjust scrollbar width */
+            scrollbar-color: #ccc #f0f0f0; /* Set scrollbar thumb and track colors */
+            /* Tracker styles */
+            &::-webkit-scrollbar-thumb {
+            width: 5px; /* Adjust tracker width */
+            background-color: #666; /* Set tracker color */
+            border-radius: 3px; /* Add rounded corners */
+        }
+
+        &::-webkit-scrollbar-track {
+            background-color: #f0f0f0; /* Set track color */
+        }
+
+        /* Hover effects */
+        &::-webkit-scrollbar-thumb:hover {
+            background-color: #444; /* Change color on hover */
+        }
+
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css?family=Work+Sans:400,600,700&display=swap" rel="stylesheet">
+    <link href="~/css/staff-dashboard.css" rel="stylesheet" />
+}
+<section class="mainsection">
+    <div class="MEMloader" id="Membloader">
+        <img src="/assets/images/loading-gif.gif" style="max-width: 5%;min-width:5%" alt="loading" />
+    </div>
+    <div class="container-fluid find-container">
+        <div class="row">
+            <div class="col-md-3">
+
+                <div class="stickyFilter">
+                    <div class="stickyInside">
+                <div class="pageheading">
+                    <h1 class="p-2" style="font-size: 20px;">Find Projects Here</h1>
+                </div>
+                <div class="filtersec p-2">
+                    <form method="post" asp-action="FindProjectHereSearch" asp-controller="Member" id="searchform">
+
+                        <input type="hidden" value="@Model.IsSolrSearched" id="isSolrSearched" name="IsSolrSearched" />
+                        <input type="hidden" value="@Model.SolrKeyword" id="solrKeyword" name="SolrKeyword" />
+                        <div class="accordion" id="accordionType">
+                            <div class="card">
+                                <div class="card-header p-1" id="headingptype">
+                                    <h2 class="mb-0 ">
+                                        <button class="findChev btn btn-link btn-block text-left p-1 collapsed" type="button" data-toggle="collapse" data-target="#collapseptype" aria-expanded="true" aria-controls="collapseptype">
+                                            Project Type
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="collapseptype" class="collapse" aria-labelledby="headingptype" data-parent="#accordionType">
+                                    <div class="card-body p-0">
+                                        <ul class="findAccordUl" id="ProjectType">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="accordion" id="accordionSubtype">
+                            <div class="card">
+                                <div class="card-header p-1" id="headingSubtype">
+                                    <h2 class="mb-0 ">
+                                        <button class="findChev btn btn-link btn-block text-left p-1 disabled collapsed" type="button" data-toggle="collapse" id="btnsubtype" data-target="#collapseSubtype" aria-expanded="true" aria-controls="collapseSubtype">
+                                            Project SubType
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="collapseSubtype" class="collapse" aria-labelledby="headingSubtype" data-parent="#accordionSubtype">
+                                    <div class="card-body p-0">
+                                        <ul class="findAccordUl" id="ProjectSubType">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion" id="accordionScope">
+                            <div class="card">
+                                <div class="card-header p-1" id="headingScope">
+                                    <h2 class="mb-0 ">
+                                        <button class="findChev btn btn-link btn-block text-left p-1 collapsed" type="button" data-toggle="collapse" data-target="#collapseScope" aria-expanded="true" aria-controls="collapseScope">
+                                            Project Scope
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="collapseScope" class="collapse" aria-labelledby="headingScope" data-parent="#accordionScope">
+                                    <div class="card-body p-0">
+                                        <ul class="findAccordUl" id="ProjectScope">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion" id="accordionestCost">
+                            <div class="card">
+                                <div class="card-header p-1" id="headingestCost">
+                                    <h2 class="mb-0 ">
+                                        <button class="findChev btn btn-link btn-block text-left p-1 collapsed" type="button" data-toggle="collapse" data-target="#collapseestCost" aria-expanded="true" aria-controls="collapseestCost">
+                                            Estimated Cost
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="collapseestCost" class="collapse" aria-labelledby="headingestCost" data-parent="#accordionestCost">
+                                    <div class="card-body p-0">
+                                        <ul class="findAccordUl" id="ProjectestCost">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="accordion" id="accordionState">
+                            <div class="card">
+                                <div class="card-header p-1" id="headingState">
+                                    <h2 class="mb-0 ">
+                                        <button class="findChev btn btn-link btn-block text-left p-1 collapsed" type="button" data-toggle="collapse" data-target="#collapseState" aria-expanded="true" aria-controls="collapseState">
+                                            Project States
+                                            <i class="fa fa-chevron-down" aria-hidden="true"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+
+                                <div id="collapseState" class="collapse" aria-labelledby="headingState" data-parent="#accordionState">
+                                    <div class="card-body p-0">
+                                        <ul class="findAccordUl" id="ProjectState">
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div>
+                            <input type="hidden" id="Prevailingcheckhidden" name="PrevailingWageFlag">
+                            <ul class="findAccordUl mb-2" id="wages">
+                            </ul>
+                        </div>
+                        <div class="dropdown show mb-2">
+                            <a class="btns srtbtn dropdown-toggle mb-1" href="#" id="calenderdropdownMenuLink" data-toggle="dropdown">
+                                <i class="fa fa-calendar"></i> Bid Date Range
+                            </a>
+
+                            <div class="dropdown-menu calender-sec" aria-labelledby="dropdownMenuLink">
+                                <div class="drpsec filterfrms ">
+                                    <h4>Bid Date From</h4>
+                                    <input type="date" class="form-control" placeholder="select date" id="strBidDateFrom" name="strBidDateFrom" tabindex="170" />
+                                    <h4>Bid Date To</h4>
+                                    <input type="date" class="form-control" placeholder="select date" id="strBidDateTo" name="strBidDateTo" tabindex="170" />
+                                    <button class="btns serchbtn mt-1 p-2" onclick="prepareForm()">Search</button>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="">
+                            <div class="serchfrm">
+                                <input type="hidden" value="@ViewBag.ActiveSearchText" id="hdnActiveSearchText" />
+                                <input type="hidden" value="@ViewBag.FutureSearchText" id="hdnFutureSearchText" />
+                                <input type="hidden" value="@ViewBag.PreviousSearchText" id="hdnPreviousSearchText" />
+
+                                <div class="graficalsec filterfrms srch-font w-100">
+
+                                    <h4>Search Projects by Distance</h4>
+                                    <select class="form-control form-control-solid mb-2" id="inpState" name="State" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                                    <select class="form-control form-control-solid mb-2" id="inpDistance" name="Distance">
+                                        <option value="0">Search Projects under Miles</option>
+                                        <option value="25">&lt; 25 Miles</option>
+                                        <option value="50">&lt; 50 Miles</option>
+                                        <option value="100">&lt; 100 Miles</option>
+                                        <option value="200">&lt; 200 Miles</option>
+                                    </select>
+                                    <input class="form-control form-control-solid mb-2" type="text" id="inpCity" name="City" placeholder="Enter City">
+                                    @*<input class="form-control form-control-solid mb-2" type="text" id="inpDistance" name="Distance" placeholder="Distance in Mile">*@
+                                    <input type="hidden" name="checkvalue" id="checkvalue" />
+                                    @*  <span id="spnMessage" class="search-box-sec">
+                                    <span class="filterclear-btn btns serchbtn" onclick="window.location.reload();" style="cursor:pointer;">Reset</span>
+                                    <input class="btns scndclr" type="submit" value="Submit" />
+
+                                    <button class="btns serchbtn mt-1" onclick="prepareForm()">Search</button>
+                                    <button class="btns scndclr" onclick="ShowSearch()">Save Search</button>
+
+                                    </span> *@
+
+                                </div>
+                                <div class="formInput-inner">
+                                    @* <i class="fa fa-search"></i> *@
+                                    <input type="text" id="txtSearchProj" class="search-bar" name="SearchText" placeholder="Search Keywords" />
+                                </div>
+                                @* <div class="col-lg-12">
+                                <span class="slider-value"></span>
+                                <div class="slider-container">
+                                <div class="slider-track">
+                                <div class="slider-handle-background"></div>
+                                </div>
+                                <div class="slider-handle"></div>
+                                </div>
+                                </div> *@
+                                @* <div class="formInput-inner">
+                                <select class="form-control" id="ddlCost" name="EstCost">
+                                <option value="0">Estimated Cost</option>
+                                <option value="0-100000">less than 100000</option>
+                                <option value="100001-500000">1,00,001-5,00,000</option>
+                                <option value="500001-1000000">5,00,001-1,000,000</option>
+                                <option value="1000001-5000000">1,000,001-5,000,000</option>
+                                <option value="5000001-10000000">5,000,001-10,000,000</option>
+                                <option value="10000001-50000000">Greater than 10,000,000</option>
+                                <option value="50000000">Greater than 50,000,000</option>
+                                </select>
+                                </div>*@
+                                @*<div class="drpsec cst-county d-none">
+                                <h4>Search Projects in Specific States</h4>
+                                <ul id="StateListUL">
+                                </ul>
+                                </div>*@
+                                @*<div class="form-group sideSrchCheck">
+
+
+                                <div class="form-check">
+                                <input type="hidden" id="FutureWorkhidden" name="FutureWorkFlag">
+                                <input type="checkbox" class="form-check-input" id="FutureWorkcheck" name="FutureWorkFlag">
+                                <label class="form-check-label">
+                                Future Work
+                                </label>
+                                </div>
+                                </div>*@
+
+                            </div>
+
+                        </div>
+
+
+
+
+
+                        <span id="spnMessage" class="search-box-sec">
+
+
+                        </span>
+                        <div class="graficalsec filterfrms srch-font mt-1">
+
+                            @* <h4>Search Projects within (distance) of (zip code)</h4>
+                            <input class="form-control form-control-solid mb-2" type="text" id="inpCity" name="City" placeholder="Enter City">
+                            <select class="form-control form-control-solid mb-2" id="inpState" name="State" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))"></select>
+                            <input class="form-control form-control-solid mb-2" type="text" id="inpDistance" name="Distance" placeholder="Distance in Mile">
+                            <input type="hidden" name="checkvalue" id="checkvalue" /> *@
+                            <span id="spnMessage" class="search-box-sec">
+                                <span class="filterclear-btn btns serchbtn" onclick="window.location.reload();" style="cursor:pointer;">Clear Filters</span>
+                                @* <input class="btns scndclr" type="submit" value="Submit" /> *@
+
+                                <button class="btns serchbtn mt-1" onclick="prepareForm()">Search</button>
+                                @* <button class="btns scndclr" onclick="ShowSearch()">Save Search</button> *@
+
+                            </span>
+
+                        </div>
+                        @* <div class="graficalsec filterfrms pt-2">
+                        <span id="spnMessage" class="search-box-sec">
+                        <input type="text" class="form-control" id="NameSearch" placeholder="Search Name"><br />
+                        <span class="search-box-btn" onclick="SaveSearch()" style="cursor:pointer;">Save Search</span>
+                        <span class="text-primary" id="sucMsg"></span>
+                        </span>
+                        </div> *@
+
+                    </form>
+                    <div class="dropdown show mt-3 srch-font">
+                        <h4>Extract Project by saved search</h4>
+                        <a class="btns srtbtn dropdown-toggle" style="font-size: 18px;" href="#" id="dropdownMenuLink" data-toggle="dropdown">
+                            <i class="fa fa-filter"></i> Saved Searches
+                        </a>
+
+                        <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                            <div class="drpsec filter-srch saveSrchHeight" style="min-width:300px">
+                                <ul id="SavedSerachList">
+                                    <span class="filterfrms" style="flex:0 0 100%;"><button class=" p-2 btns serchbtn m-0" id="addnewSearch"><i class="fa fa-plus" aria-hidden="true"></i>  Add New Search</button></span>
+                                </ul>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+            </div>
+            </div>
+            @*New tabindex Star*@
+
+            <div class="col-md-9 col-lg-9 find-proj-table">
+                <div class="layout">
+                    <input name="nav" type="radio" class="nav home-radio" id="home" checked="checked" />
+                    <div class="page home-page">
+                        <div class="page-contents">
+                            <div class="table-responsive cst-tbl-scroll">
+                                <table class="table table-bordered table-striped mTables same-tbl" id="table-id-active">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-nowrap" scope="col">Type</th>
+                                            <th class="text-nowrap" scope="col">Project Title</th>
+                                            <th class="text-nowrap" scope="col">Location</th>
+                                            <th class="text-nowrap" scope="col">Bid Date</th>
+                                            <th class="text-nowrap" scope="col">Add to Dashboard</th>
+                                            <th class="text-nowrap" scope="col">Addenda</th>
+                                            @*<th scope="col">Confiremd Bidding</th>*@
+                                            @* <th class="text-nowrap" scope="col">Member Tracking</th> *@
+                                        </tr>
+                                    </thead>
+                                    <tbody id="activeTblBody">
+
+                                        @if (Model.ActiveProjs != null && Model.ActiveProjs.Count > 0)
+                                        {
+                                            foreach (var item in Model.ActiveProjs)
+                                            {
+                                                string Location = "";
+                                                bool publish = item.Publish != null ? (bool)item.Publish : false;
+                                                bool plan = item.SpecsOnPlans != null ? (bool)item.SpecsOnPlans : false;
+                                                bool MemberTrack = item.MemberTrack != null ? (bool)item.MemberTrack : false;
+                                                var strbd = "";
+                                                var BiDateValue = DateTime.Now.Date;
+                                                DateTime dateTimeValue = DateTime.MinValue;
+                                                try
+                                                {
+                                                    dateTimeValue = DateTime.ParseExact(item.strBidDt5, "HH:mm", CultureInfo.InvariantCulture);
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    // Handle the exception here, e.g., log an error or set a default value
+                                                    dateTimeValue = DateTime.MinValue;
+                                                }
+                                                string BidTime = dateTimeValue == DateTime.MinValue ? "" : dateTimeValue.ToString("hh:mm tt");
+                                                if (item.strBidDt == "TBD" || item.BidDt == null)
+                                                {
+                                                    strbd = "TBD";
+                                                }
+                                                else
+                                                {
+                                                    string inputDate = item.BidDt >= BiDateValue ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+                                                    if (inputDate != "")
+                                                    {
+                                                        DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                                        string formattedDate = date.ToString("MMM dd");
+                                                        strbd = formattedDate;
+                                                        strbd = BidTime == "" ? strbd : strbd + " - " + BidTime + " PT";
+                                                    }
+
+                                                }
+
+                                                if (publish && !string.IsNullOrEmpty(strbd))
+                                                {
+                                                    <tr>
+                                                        <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                        <td>
+                                                            <form asp-action="Preview" method="post" asp-controller="Member" asp-route-id="@item.ProjId" asp-route-solr="@Model.SolrKeyword">
+                                                                <a href="#" style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" name="titleId" onclick="ActiveSearchText(this)">@item.Title</a>
+                                                                <input type="hidden" id="SearchText" name="search" />
+                                                            </form>
+                                                            @if (item.MBDCheck == "Y")
+                                                            {
+                                                                <p class="text-danger">Note: Primes request bids at various dates and times.</p>
+                                                            }
+                                                        </td>
+                                                        @{
+                                                            string ConsBillAddress = "";
+                                                            // ConsBillAddress = string.IsNullOrEmpty(item.LocAddr1) ? "" : item.LocAddr1;
+                                                            ConsBillAddress = string.IsNullOrEmpty(item.LocCity) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocCity : ConsBillAddress + ", " + item.LocCity);
+                                                            ConsBillAddress = string.IsNullOrEmpty(item.LocState) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocState : ConsBillAddress + ", " + item.LocState);
+                                                            // ConsBillAddress = string.IsNullOrEmpty(item.LocAddr2) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocAddr2 : ConsBillAddress + ", " + item.LocAddr2);
+                                                            // ConsBillAddress = string.IsNullOrEmpty(item.LocZip) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocZip : ConsBillAddress + ", " + item.LocZip);
+
+                                                        }
+                                                        <td>@ConsBillAddress</td>
+                                                        <td>
+                                                            @strbd
+                                                        </td>
+                                                        <td class="text-center"><input id="chkDashboard" type="checkbox" value="@item.ProjId" checked="@item.MemberTrack" onchange="AddDashboard(this.checked, this.value, this.id)"></td>
+                                                        <td class="text-center">
+                                                            @* <a href="" class="table-btn" data-toggle="modal" onclick="ListPdfAddenda(@item.ProjId)"> *@
+                                                            @* <i class="fa fa-eye" aria-hidden="true"></i> *@
+                                                            @* </a><span> , @item.AddendaCount</span> *@
+                                                            @if (item.AddendaCount > 0)
+                                                            {
+                                                                <a id="asdf" href="@Url.Action("Preview","Member",new{id=@item.ProjId})"> <span>@item.AddendaCount</span></a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>@item.AddendaCount</span>
+                                                            }
+                                                        </td>
+                                                        @*  <td id="tdSpc">@Html.DisplayFor(modelItem => item.TrackCount)</td> *@
+
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                                <!--Addenda Modal -->
+
+                            </div>
+                        </div>
+                    </div>
+                    <label class="nav" for="home" id="activeproj">
+                        <span>
+                            Active Projects
+                        </span>
+                    </label>
+                    <input name="nav" type="radio" class="about-radio" id="about" />
+                    <div class="page about-page">
+                        <div class="page-contents">
+                            <div class="table-responsive cst-tbl-scroll">
+                                <table class="table table-bordered table-striped lTables same-tbl" id="table-id-pending">
+                                    <thead>
+                                        <tr>
+                                            <th scope="col">Type</th>
+                                            <th scope="col">Project Title</th>
+                                            <th scope="col">Location</th>
+                                            <th scope="col">Bid Date</th>
+                                            <th scope="col">Add to Dashboard</th>
+                                            <th scope="col">Addenda</th>
+                                            @*<th scope="col">Confiremd Bidding</th>*@
+                                            @*  <th scope="col">Member Tracking</th> *@
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pendingTblBody">
+                                        @if (Model.FutureProjs != null && Model.FutureProjs.Count > 0)
+                                        {
+                                            @foreach (var item in Model.FutureProjs)
+                                            {
+                                                string Location = "";
+                                                bool publish = item.Publish != null ? (bool)item.Publish : false;
+                                                bool plan = item.SpecsOnPlans != null ? (bool)item.SpecsOnPlans : false;
+                                                bool MemberTrack = item.MemberTrack != null ? (bool)item.MemberTrack : false;
+                                                var strbd = "";
+                                                var BiDateValue = DateTime.Now.Date;
+                                                DateTime dateTimeValue = DateTime.MinValue;
+                                                try
+                                                {
+                                                    dateTimeValue = DateTime.ParseExact(item.strBidDt5, "HH:mm", CultureInfo.InvariantCulture);
+                                                }
+                                                catch (Exception ex)
+                                                {
+                                                    // Handle the exception here, e.g., log an error or set a default value
+                                                    dateTimeValue = DateTime.MinValue;
+                                                }
+                                                string BidTime = dateTimeValue == DateTime.MinValue ? "" : dateTimeValue.ToString("hh:mm tt");
+                                                if (item.strBidDt == "TBD" || item.BidDt == null)
+                                                {
+                                                    strbd = "TBD";
+                                                }
+                                                else
+                                                {
+                                                    string inputDate = item.BidDt >= BiDateValue ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+                                                    if (inputDate != "")
+                                                    {
+                                                        DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                                        string formattedDate = date.ToString("MMM dd");
+                                                        strbd = formattedDate;
+                                                        strbd = BidTime == "" ? strbd : strbd + " - " + BidTime + " PT";
+                                                    }
+
+                                                }
+
+                                                if (publish && !string.IsNullOrEmpty(strbd))
+                                                {
+                                                    <tr>
+                                                        <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                        <td>
+                                                            <form asp-action="Preview" method="post" asp-controller="Member" asp-route-id="@item.ProjId" asp-route-solr="@Model.SolrKeyword">
+                                                                <a href="#" style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" name="titleId" onclick="FutureSearchText(this)">@item.Title</a>
+                                                                <input type="hidden" id="FSearchText" name="FutureSearch" />
+                                                            </form>
+                                                            @if (item.MBDCheck == "Y")
+                                                            {
+                                                                <p class="text-danger">Note: Primes request bids at various dates and times.</p>
+                                                            }
+                                                        </td>
+                                                        @{
+                                                            string ConsBillAddress = "";
+                                                            // ConsBillAddress = string.IsNullOrEmpty(item.LocAddr1) ? "" : item.LocAddr1;
+                                                            ConsBillAddress = string.IsNullOrEmpty(item.LocCity) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocCity : ConsBillAddress + ", " + item.LocCity);
+                                                            ConsBillAddress = string.IsNullOrEmpty(item.LocState) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocState : ConsBillAddress + ", " + item.LocState);
+                                                            // ConsBillAddress = string.IsNullOrEmpty(item.LocAddr2) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocAddr2 : ConsBillAddress + ", " + item.LocAddr2);
+                                                            // ConsBillAddress = string.IsNullOrEmpty(item.LocZip) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocZip : ConsBillAddress + ", " + item.LocZip);
+
+                                                        }
+                                                        <td>@ConsBillAddress</td>
+                                                        <td>
+                                                            @strbd
+                                                        </td>
+                                                        <td class="text-center"><input id="chkDashboard" type="checkbox" value="@item.ProjId" checked="@item.MemberTrack" onchange="AddDashboard(this.checked, this.value, this.id)"></td>
+                                                        <td class="text-center">
+                                                            @* <a href="" class="table-btn" data-toggle="modal" onclick="ListPdfAddenda(@item.ProjId)"> *@
+                                                            @* <i class="fa fa-eye" aria-hidden="true"></i> *@
+                                                            @* </a><span> , @item.AddendaCount</span> *@
+                                                            @if (item.AddendaCount > 0)
+                                                            {
+                                                                <a id="asdf" href="@Url.Action("Preview","Member",new{id=@item.ProjId})"> <span>@item.AddendaCount</span></a>
+                                                            }
+                                                            else
+                                                            {
+                                                                <span>@item.AddendaCount</span>
+                                                            }
+                                                        </td>
+                                                        @* <td id="tdSpc">@Html.DisplayFor(modelItem => item.TrackCount)</td> *@
+
+                                                    </tr>
+                                                }
+                                            }
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <label class="nav" for="about" id="futureproj">
+                        <span>
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12" y2="17"></line></svg>
+                            Future Projects
+                        </span>
+                    </label>
+                    <input name="nav" type="radio" class="contact-radio" id="contact" />
+                    <div class="page contact-page">
+                        <div class="page-contents">
+                            <div class="table-responsive cst-tbl-scroll">
+                                <table class="table table-bordered table-striped tTables same-tbl" id="table-id-past">
+                                    <thead>
+                                        <tr>
+                                            <th class="text-nowrap" scope="col">Type</th>
+                                            <th class="text-nowrap" scope="col">Project Title</th>
+                                            <th class="text-nowrap" scope="col">Location</th>
+                                            <th class="text-nowrap" scope="col">Bid Date</th>
+                                            <th class="text-nowrap" scope="col">Add to Dashboard</th>
+                                            <th class="text-nowrap" scope="col">Addenda</th>
+                                            @*<th scope="col">Confiremd Bidding</th>*@
+                                            @*  <th class="text-nowrap" scope="col">Member Tracking</th> *@
+                                        </tr>
+                                    </thead>
+                                    <tbody id="pastTblBody">
+                                        @if (Model.PrevProjs != null && Model.PrevProjs.Count > 0)
+                                        {
+                                            @foreach (var item in Model.PrevProjs)
+                                            {
+                                                var Location = "";
+                                                bool publish = item.Publish != null ? (bool)item.Publish : false;
+                                                bool plan = item.SpecsOnPlans != null ? (bool)item.SpecsOnPlans : false;
+                                                bool spc = item.SpcChk != null ? (bool)item.SpcChk : false;
+                                                bool MemberTrack = item.MemberTrack != null ? (bool)item.MemberTrack : false;
+                                                DateTime date = DateTime.Now;
+                                                if (item.BidDt != null)
+                                                {
+                                                    if (item.BidDt < date)
+                                                    {
+                                                        <tr>
+                                                            <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                            <td>
+                                                                <form asp-action="Preview" method="post" asp-controller="Member" asp-route-id="@item.ProjId" asp-route-solr="@Model.SolrKeyword">
+                                                                    <a href="#" style="color:#5c8097;cursor:pointer;font-size: 14px;font-weight: 400;" name="titleId" onclick="PreviousSearchText(this)">@item.Title</a>
+                                                                    <input type="hidden" id="PreviousText" name="PreviousSearch" />
+                                                                </form>
+                                                                @if (item.MBDCheck == "Y")
+                                                                {
+                                                                    <p class="text-danger">Note: Primes request bids at various dates and times.</p>
+                                                                }
+                                                            </td>
+                                                            @{
+                                                                string ConsBillAddress = "";
+                                                                // ConsBillAddress = string.IsNullOrEmpty(item.LocAddr1) ? "" : item.LocAddr1;
+                                                                ConsBillAddress = string.IsNullOrEmpty(item.LocCity) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocCity : ConsBillAddress + ", " + item.LocCity);
+                                                                ConsBillAddress = string.IsNullOrEmpty(item.LocState) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocState : ConsBillAddress + ", " + item.LocState);
+                                                                // ConsBillAddress = string.IsNullOrEmpty(item.LocAddr2) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocAddr2 : ConsBillAddress + ", " + item.LocAddr2);
+                                                                // ConsBillAddress = string.IsNullOrEmpty(item.LocZip) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocZip : ConsBillAddress + ", " + item.LocZip);
+
+                                                            }
+                                                            <td>@ConsBillAddress</td>
+                                                            @{
+                                                                string PrevInputDate = item.BidDt != null ? Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy") : "";
+                                                                DateTime Prevdate = DateTime.ParseExact(PrevInputDate, "MM/dd/yyyy", null);
+                                                                string formattedDate = Prevdate.ToString("MMM dd");
+                                                            }
+                                                            <td>@formattedDate</td>
+                                                            <td class="text-center"><input id="chkDashboard" type="checkbox" value="@item.ProjId"></td>
+                                                            <td class="text-center">
+                                                                @* <a href="" class="table-btn" data-toggle="modal" onclick="ListPdfAddenda(@item.ProjId)"> *@
+                                                                @* <i class="fa fa-eye" aria-hidden="true"></i> *@
+                                                                @* </a><span> , @item.AddendaCount</span> *@
+                                                                @if (item.AddendaCount > 0)
+                                                                {
+                                                                    <a id="asdf" href="@Url.Action("Preview","Member",new{id=@item.ProjId})"> <span>@item.AddendaCount</span></a>
+                                                                }
+                                                                else
+                                                                {
+                                                                    <span>@item.AddendaCount</span>
+                                                                }
+                                                            </td>
+                                                            @* <td id="tdSpc">@item.TrackCount</td> *@
+                                                        </tr>
+                                                    }
+                                                }
+                                            }
+
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                    <label class="nav" for="contact" id="prevproj">
+                        <span>
+                            <svg viewBox="0 0 24 24" width="24" height="24" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round" class="css-i6dzq1"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"></path></svg>
+                            Previously Bid Projects
+                        </span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        @*End Tab *@
+    </div>
+    @*<div class="row">
+    <div class="col-md-12">
+    <div class="card mt-4">
+    <div class="card-title">
+    Active Project
+    </div>
+    <div class="dataTables_length" id="DataTables_Table_1_length">
+    <!--		Show Numbers Of Rows 		-->
+    <label>
+
+    <select name="DataTables_Table_1_length" aria-controls="DataTables_Table_1" id="maxRows" style="display:none">
+    <option value="100">100</option>
+    <option value="200">200</option>
+    </select>
+    </label>
+    </div>
+    <div class="table-responsive">
+    <table class="table table-bordered table-striped cusTable" id="table-id">
+    <thead>
+    <tr>
+    <th scope="col">Project Type</th>
+    <th scope="col">Project Title</th>
+    <th scope="col">Location</th>
+    <th scope="col">Deadline</th>
+    <th scope="col">Add to Dashboard</th>
+    <th scope="col">Addenda</th>
+    <th scope="col">Confiremd Bidding</th>
+    <th scope="col">Member Tracking Project</th>
+    <th scope="col">Current Plan</th>
+    </tr>
+    </thead>
+    <tbody id="pendingTblBody">
+
+    @if (Model.Any())
+    {
+    foreach (var item in Model)
+    {
+    bool publish = item.Publish != null ? (bool)item.Publish : false;
+    bool plan = item.SpecsOnPlans != null ? (bool)item.SpecsOnPlans : false;
+    bool spc = item.SpcChk != null ? (bool)item.SpcChk : false;
+    if (!publish)
+    {
+    <tr>
+    <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+    <td><a asp-route-id="@item.ProjId" asp-action="Edit" asp-controller="Project" name="titleId">@item.Title</a></td>
+    <td>@Html.DisplayFor(modelItem => item.LocCity)</td>
+    <td>@Html.DisplayFor(modelItem => item.strBidDt)</td>
+    <td><input id="chkDashboard" type="checkbox"  value="@item.ProjId" checked="@item.MemberTrack" onchange="AddDashboard(this.checked, this.value, this.id)"></td>
+    <td>@Html.DisplayFor(modelItem => item.strAddenda)</td>
+    <td id="tdPlan">@Html.DisplayFor(modelItem => item.strBidDt)</td>
+    <td id="tdSpc">@Html.DisplayFor(modelItem => item.TrackCount)</td>
+    <td >@Html.DisplayFor(modelItem => item.PlanNoMain)</td>
+
+    </tr>
+    }
+    }
+    }
+
+    </tbody>
+    </table>
+    <div class='dataTables_paginate paging_simple_numbers pagination-container'>
+    <nav>
+    <ul class="pagination cus-pagi">
+
+    <li data-page="prev">
+    <span class="font-weight-bold"> Previous <span class="sr-only">(current)</span></span>
+    </li>
+    <!--	Here the JS Function Will Add the Rows -->
+    <li data-page="next" id="prev">
+    <span class="font-weight-bold"> Next <span class="sr-only">(current)</span></span>
+    </li>
+    </ul>
+    </nav>
+    </div>
+    </div>
+
+    </div>
+    <div class="card mt-4">
+    <div class="card-title">
+    Active Project
+    </div>
+    <table class="table">
+    <thead>
+    <tr>
+    <th scope="col">Project Type</th>
+    <th scope="col">Project Title</th>
+    <th scope="col">Location</th>
+    <th scope="col">Deadline</th>
+    <th scope="col">Add to Dashboard</th>
+    <th scope="col">Addenda</th>
+    <th scope="col">Confiremd Bidding</th>
+    <th scope="col">Member Tracking Project</th>
+    <th scope="col">Current Plan</th>
+    </tr>
+    </thead>
+    <tbody id="activeTblBody">
+    @foreach (var item in Model)
+    {
+    bool publish = item.Publish != null ? (bool)item.Publish : false;
+    bool plan = item.SpecsOnPlans != null ? (bool)item.SpecsOnPlans : false;
+    bool spc = item.SpcChk != null ? (bool)item.SpcChk : false;
+    if (publish)
+    {
+    <tr>
+    <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+    <td><a asp-route-id="@item.ProjId" asp-action="Edit" asp-controller="Project" name="titleId">@item.Title</a></td>
+    <td>@Html.DisplayFor(modelItem => item.LocCity)</td>
+    <td>@Html.DisplayFor(modelItem => item.strBidDt)</td>
+    <td><input id="chkDashboard" type="checkbox" value="@item.ProjId"></td>
+    <td>@Html.DisplayFor(modelItem => item.strAddenda)</td>
+    <td id="tdPlan">@Html.DisplayFor(modelItem => item.strBidDt)</td>
+    <td id="tdSpc">@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+    <td >@Html.DisplayFor(modelItem => item.PlanNo)</td>
+
+    </tr>
+    }
+    }
+    </tbody>
+    </table>
+    </div>
+    <div class="card mt-4">
+    <div class="card-title">
+    Past Project
+    </div>
+    <table class="table">
+    <thead>
+    <tr>
+    <th scope="col">Project Type</th>
+    <th scope="col">Project Title</th>
+    <th scope="col">Location</th>
+    <th scope="col">Deadline</th>
+    <th scope="col">Add to Dashboard</th>
+    <th scope="col">Addenda</th>
+    <th scope="col">Confiremd Bidding</th>
+    <th scope="col">Member Tracking Project</th>
+    <th scope="col">Current Plan</th>
+    </tr>
+    </thead>
+    <tbody id="pastTblBody">
+    @foreach (var item in Model)
+    {
+    bool publish = item.Publish != null ? (bool)item.Publish : false;
+    bool plan = item.SpecsOnPlans != null ? (bool)item.SpecsOnPlans : false;
+    bool spc = item.SpcChk != null ? (bool)item.SpcChk : false;
+
+    <tr>
+    <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+    <td><a asp-route-id="@item.ProjId" asp-action="Edit" asp-controller="Project" name="titleId">@item.Title</a></td>
+    <td>@Html.DisplayFor(modelItem => item.LocCity)</td>
+    <td>@Html.DisplayFor(modelItem => item.strBidDt)</td>
+    <td><input id="chkDashboard" type="checkbox" value="@item.ProjId"></td>
+    <td>@Html.DisplayFor(modelItem => item.strAddenda)</td>
+    <td id="tdPlan">@Html.DisplayFor(modelItem => item.strBidDt)</td>
+    <td id="tdSpc">@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+    <td >@Html.DisplayFor(modelItem => item.UCPWD)</td>
+
+    </tr>
+    }
+
+    </tbody>
+    </table>
+    </div>
+    </div>*@
+    <div class="modal fade m-modal" id="viewOrder-Modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header cusModal-Header">
+                    <h4 class="modal-title card-label font-weight-bold">Addenda Pdf File List</h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row px-0 mx-0" id="Addendapdf">
+                        <div class="table-responsive">
+                            <table class="table table-bordered table-striped cusTable" id="table-id">
+                                <thead>
+                                    <tr>
+                                        <th><b>Addenda File Name List</b></th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblAddendaFile" class="text-left">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <div class="modal-footer newPro-btn">
+                        <button type="button" id="PrintAddenda" class="modl-btn newProbtn">Print</button>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+    <div class="modal fade es-modal" id="viewOrder-Modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <partial name="_savedSearchModal"></partial>
+
+        </div>
+    </div>
+    <script>
+        const sliderHandle = document.querySelector('.slider-handle');
+        const sliderTrack = document.querySelector('.slider-track');
+        const sliderValue = document.querySelector('.slider-value'); // Optional
+
+        let initialX = 0;
+        let handleOffset = 0;
+
+        // Use mousedown and mouseup events for precise dragging behavior
+        //sliderHandle.addEventListener('mousedown', (event) => {
+        //    initialX = event.clientX;
+        //    handleOffset = sliderHandle.offsetLeft;
+
+        //    // Capture events at the document level to ensure dragging works even when the mouse leaves the slider
+        //    document.addEventListener('mousemove', handleMouseMove);
+        //    document.addEventListener('mouseup', handleMouseUp);
+        //});
+
+        function handleMouseMove(event) {
+            const newX = event.clientX;
+            const offset = newX - initialX;
+            const newPosition = Math.min(
+                Math.max(offset + handleOffset, 0),
+                sliderTrack.clientWidth - sliderHandle.clientWidth
+            );
+
+            sliderHandle.style.left = `${newPosition}px`;
+
+            // Optional: Update slider value display
+            if (sliderValue) {
+                const value = calculateValueFromPosition(newPosition); // Implement your value calculation logic
+                sliderValue.textContent = value;
+            }
+        }
+
+        function handleMouseUp() {
+            // Remove event listeners after dragging is complete
+            document.removeEventListener('mousemove', handleMouseMove);
+            document.removeEventListener('mouseup', handleMouseUp);
+        }
+
+        // Implement `calculateValueFromPosition` based on your slider's logic (e.g., percentage, numerical range)
+        function calculateValueFromPosition(position) {
+            // Replace with your value calculation logic
+            const maxPosition = sliderTrack.clientWidth - sliderHandle.clientWidth;
+            const percentage = (position / maxPosition) * 100;
+            return `${percentage.toFixed(2)}%`; // Example: Return a percentage
+        }
+
+
+    </script>
+</section>

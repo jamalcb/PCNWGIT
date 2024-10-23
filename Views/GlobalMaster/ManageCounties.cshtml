@@ -1,0 +1,70 @@
+﻿@model ManageCountyViewModel;
+@{
+    ViewData["Title"] = "ManageCounties";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts{
+    <script src="~/js/ManageCounties.js"></script>
+}
+<style>
+    .modl-btn.update {
+    border: none;
+    background: #ff9a27;
+    padding: 8px 20px;
+    border-radius: 5px;
+    font-size:18px;
+}
+
+    .classCounty .col-md-2 span{
+    font-size:18px
+    }
+</style>
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Manage Counties</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-1">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Membership Package </li>
+                        <li class="breadcrumb-item active">Manage Counties</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Example Tab -->
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    
+                    <div class="body">
+                        <div class="row align-items-center border-bottom">
+                            <div class="col-lg-1 col-md-1 col-sm-1 col-xs-6"><label><b>Package</b></label></div>
+                            <div class="col-lg-4 col-md-4 col-sm-4 col-xs-6">
+                                <select id="PackageSelect" class="form-control" data-role="select-dropdown"
+                                        data-profile="" onchange="OnPackageSelect()">
+                                    <option value="0" selected>Select</option>
+                                </select>
+                            </div>
+                        </div>
+                        <!-- Checkboxes row start from here -->
+                        <div class="row pt-3 classCounty">
+                            
+                        </div>
+                        <div class="col-md-12 text-right mb-0 border-top pt-3">
+                            <button class="modl-btn update" onclick="UpdateCounty()"><i class="fas fa-cloud-upload-alt pr-2"></i>Update</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    </div>
+</section>
+
+

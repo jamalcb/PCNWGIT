@@ -1,0 +1,242 @@
+﻿@model IEnumerable<DiscountViewModel>;
+@{
+    ViewData["Title"] = "ManageDiscount";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts{
+    <script src="~/js/ManageDiscount.js"></script>
+}
+@section jQueryUICss{
+    <link rel="stylesheet" href="https://code.jquery.com/ui/1.13.2/themes/base/jquery-ui.css">
+    <link rel="stylesheet" href="https:/resources/demos/style.css">
+}
+@section jQueryUI{
+    <script src="https://code.jquery.com/ui/1.13.2/jquery-ui.js"></script>
+}
+@section CustomCss{
+    <style>
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 7px 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+    </style>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Manage Discount</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Membership Package </li>
+                        <li class="breadcrumb-item active">Manage Discount</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header text-right ">
+                        <a href="#" class="btn cus-pro-type" onclick="OpenPrintModel()">
+                            <i class=" fa fa-plus mx-1"></i>
+                            Add Discount
+                        </a>
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Save Discount Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Discount Rate<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Discount Rate" id="DiscountRate" name="DiscountRate" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Start Date<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="date"
+                                                               id="StartDate" name="StartDate" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        End Date<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="date"
+                                                               placeholder="Member Price" id="EndDate" name="EndDate" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Description
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <textarea class="form-control form-control-solid " type="text" placeholder="Description" id="Description" name="Description" autocomplete="on"></textarea>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        &nbsp;
+                                                    </label>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActiveSave" name="IsActiveSave" checked /><label for="IsActiveSave">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return SaveDiscount()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="modal p-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Update Size Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm2" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3">
+                                                    <input type="hidden" id="idSze" />
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Discount Rate<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Size Name" id="UDiscountRate" name="UDiscountRate" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Start Date<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid datepicker" type="text"
+                                                               id="UStartDate" name="UStartDate" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        End Date<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid datepicker" type="text"
+                                                                 id="UEndDate" name="UEndDate" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Description
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <textarea class="form-control form-control-solid " type="text" placeholder="Description" id="UDescription" name="UDescription" autocomplete="on"></textarea>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        &nbsp;
+                                                    </label>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActiveUpdate" name="IsActiveUpdate" checked /><label for="IsActiveUpdate">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return UpdateDiscount()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Discount Rate (%)</th>
+                                        <th class="w-10">Start Date</th>
+                                        <th class="w-10">End Date</th>
+                                        <th class="w-10">Description</th>
+                                        <th class="w-10">Status</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBody" class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        string st = Convert.ToDateTime(item.StartDate).ToString("d");
+                                        string et = Convert.ToDateTime(item.EndDate).ToString("d");
+                                        <tr>
+                                            <td>@item.DiscountRate</td>
+                                            <td>@st</td>
+                                            <td>@et</td>
+                                            <td>@item.Description</td>
+                                            <td>@item.isActive</td>
+                                            <td><span title="Edit" class="btn btn-primary icon-edit" onclick="EditDiscount(this, @item.DiscountId)"><i class="fas fa-pencil-alt" aria-hidden="true"></i></span>&nbsp;</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

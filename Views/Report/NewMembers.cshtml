@@ -1,0 +1,181 @@
+﻿@{
+    ViewData["Title"] = "NewMembers";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+@section Scripts{
+    <script src="~/js/new-members.js"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/buttons/2.3.6/css/buttons.dataTables.min.css"></script>
+    <script type="text/javascript" src="https://cdn.datatables.net/1.13.4/css/jquery.dataTables.min.css"></script>
+    <script>
+        $(document).ready(function () {
+            $('#exampless').DataTable({
+                dom: 'Bfrtip',
+                buttons: [
+                    'copyHtml5',
+                    'excelHtml5',
+                    'csvHtml5',
+                    'pdfHtml5'
+                ]
+            });
+        });
+    </script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">New Members</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Marketing Reports</li>
+                        <li class="breadcrumb-item active">New Members</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Sort By Range</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <!-- Nav tabs -->
+                        <ul class="nav nav-tabs tab-nav-right cus-date-tabs" role="tablist">
+                            <li role="presentation" class="width">
+                                <a href="#home" data-toggle="tab" class="active show">Search By Range</a>
+                            </li>
+                            <li role="presentation">
+                                <a href="#profile">OR</a>
+                            </li>
+                            <li role="presentation" class="width">
+                                <a href="#messages" data-toggle="tab">Search By Date</a>
+                            </li>
+                        </ul>
+                        <!-- Tab panes -->
+                        <div class="tab-content">
+                            <div role="tabpanel" class="tab-pane fade in active show" id="home">
+                                <div class="row cus-date-to">
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdDaily" value="Daily" checked="checked">
+                                                <span>Daily</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdWeek" value="Week">
+                                                <span>Weekly</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdMonth" value="Month">
+                                                <span>Monthly</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-2 col-lg-2 col-md-2">
+                                        <div class="form-check form-check-radio">
+                                            <label>
+                                                <input class="with-gap" name="RdRange" type="radio" id="RdYear" value="Year">
+                                                <span>Yearly</span>
+                                            </label>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div role="tabpanel" class="tab-pane fade" id="profile">
+                            </div>
+                            <div role="tabpanel" class="tab-pane fade" id="messages">
+                                <form method="post">
+                                    <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                                        <div class="row cus-select-date">
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <div class="form-line">
+                                                        <label for="email_address" class="active">Select Date From</label>
+                                                        <input id="startPicker" class="flatPicker flatpickr-input" name="startDate" placeholder="Please choose a date..." type="date">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-2 date-to">TO</div>
+                                            <div class="col-sm-3">
+                                                <div class="form-group">
+                                                    <div class="form-line">
+                                                        <label for="email_address" class="active">Select Date</label>
+                                                        <input id="endPicker" class="flatPicker flatpickr-input" name="endDate" placeholder="Please choose a date..." type="date">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-sm-3 d-flex align-items-center">
+                                                <div class="form-group mb-0">
+                                                    <div class="form-line">
+                                                        <input class="cus-input-btn" type="button" onclick="return checkDate()" value="Submit">
+                                                        <span id="dateError"></span>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <!-- date range two in one  -->
+
+                                        </div>
+                                    </div>
+                                    <input name="__RequestVerificationToken" type="hidden" value="CfDJ8OaDAEvati9OhQIygNFoibK3kMcj8hLaX80A-BjFN8yk0fVTnhIDv2cW5PJFufz4ByFBxGFZMIo6W4Lhxe65GCah2Xs3XxD7UZc8tMGzn5-tWbWNzimAOd2UndL6VArBnVbktzfIvRRIC9PM0HnPJ_o4alTM-DgjKbbJNvPTbGsYUKC4uMODbGIcuJ8n2P_B6A">
+                                </form>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>New Members Report</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="exampless" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>City</th>
+                                        <th>State</th>
+                                        <th>Speciality</th>
+                                        <th>Insert Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body" id="tblNewMember">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+
+
+

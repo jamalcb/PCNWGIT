@@ -1,0 +1,902 @@
+﻿@using System.Globalization;
+@model MemberDashboard
+@{
+    ViewData["Title"] = "Your Projects";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+}
+
+@section dataTablesCss{
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.1/css/jquery.dataTables.min.css">
+    <link href="~/assets/css/datatable.css" rel="stylesheet" />
+}
+@section dataTablesJs{
+    <script src="https://cdn.datatables.net/1.13.1/js/jquery.dataTables.min.js"></script>
+}
+@section DashBoardScripts{
+    <script type="text/javascript">
+        var jq = $.noConflict();
+        function loadDataTables() {
+            jq('.tTables').dataTable({
+                "pageLength": 100
+            });
+            jq('.mTables').dataTable({
+                "pageLength": 100
+            });
+            setTimeout(function () {
+                jq('.mTables').DataTable();
+                jq('.tTables').DataTable();
+            }, 1000);
+        }
+        jq(document).ready(function () {
+            loadDataTables();
+            //$("#txtEmail").first().focus();
+            $("#txtSearchProj").change(function (e) {
+                //$("#txtSearchProj").change(function () {
+                //alert('1')
+                var datasearch = $(this).val();
+                var projType = "";
+                //$("#txtName").val(emailId);
+                if (datasearch != '') {
+                    $.ajax({
+                        url: '/Member/DashboardMemberSearch/',
+                        type: 'POST',
+                        data: { 'searchText': datasearch },
+                        dataType: 'json',
+                        //contentType: 'application/json',
+                        success: function (response) {
+
+                            if (response.length != 0) {
+                                document.getElementById("alertMsg").textContent = ""
+                                var model = new Array();
+                                model = response;
+                                $("#pendingTblBody").html('');
+                                $("#activeTblBody").html('');
+                                $("#pastTblBody").html('');
+                                var pendingRows = '';
+                                var activeRows = '';
+                                var pastRows = '';
+                                var a = 0;
+
+                                $.each(model, function (index, item) {
+
+                                    if (item.ProjNumber == null) {
+                                        item.ProjNumber = '';
+                                    }
+
+                                    if (item.LocCity == null) {
+                                        item.LocCity = '';
+                                    }
+                                    if (item.Title == null) {
+                                        item.Title = '';
+                                    }
+                                    if (item.LocState == null) {
+                                        item.LocState = '';
+                                    }
+                                    if (item.CompleteDt == null) {
+                                        item.CompleteDt = '';
+                                    }
+                                    if (item.ProjTypeId == null) {
+                                        item.LocState = '';
+                                    }
+                                    //if (item.BidDt == null) {
+                                    //    item.BidDt = '';
+                                    //}
+                                    if (item.TrackCount == null) {
+                                        item.TrackCount = '';
+                                    }
+                                    if (item.BidCount == null) {
+                                        item.BidCount = '';
+                                    }
+                                    else {
+                                        var date = new Date(item.BidDt);
+                                        var year = date.getFullYear();
+
+                                        var month = (1 + date.getMonth()).toString();
+                                        month = month.length > 1 ? month : '0' + month;
+
+                                        var day = date.getDate().toString();
+                                        day = day.length > 1 ? day : '0' + day;
+                                        item.BidDt = month + '/' + day + '/' + year;
+                                    }
+                                    if (item.ArrivalDt == null) {
+                                        item.ArrivalDt = '';
+                                    }
+                                    else {
+                                        var date = new Date(item.ArrivalDt);
+                                        var year = date.getFullYear();
+
+                                        var month = (1 + date.getMonth()).toString();
+                                        month = month.length > 1 ? month : '0' + month;
+
+                                        var day = date.getDate().toString();
+                                        day = day.length > 1 ? day : '0' + day;
+                                        item.ArrivalDt = month + '/' + day + '/' + year;
+                                    }
+
+                                    if (item.Publish == null) {
+                                        item.Publish = false;
+                                    }
+                                    if (item.SpecsOnPlans == null) {
+                                        item.SpecsOnPlans = false;
+                                    }
+                                    if (item.SpcChk == null) {
+                                        item.SpcChk = false;
+                                    }
+                                    if (item.CompleteDt) {
+                                        item.CompleteDt = false;
+                                    }
+                                    var Cmemberid = item.CurrMemberId;
+                                    var memberid = item.memberId;
+
+                                    pendingRows += "<tr>"
+                                        + "<td>" + item.ProjTypeIdString + "</td>"
+                                        + "<td><a name='titleId' href = '/Member/Preview/" + item.ProjId + "'>" + item.Title + "</a></td>"
+                                        + "<td>" + item.LocCity + "</td><td>" + item.LocState + "</td>"
+                                        + "<td>" + item.BidDt + "</td><td>" + item.CompleteDt + "</td>"
+                                        + "<td id='tdPlan'>" + item.BidCount + "</td>"
+                                        + "<td id='tdSpc'>" + item.TrackCount + "</td>"
+                                        + "<td id='tdPub'class='text-center'>" + item.ArrivalDt + "</td>"
+                                        + "<td></td>"
+                                        + "<td class='icon-td'><form method='post'target='_blank' action='/Member/Preview/"
+                                        + item.ProjId + "'><button><i class='fa fa-eye' aria-hidden='true'></i></button>"
+                                        + "</form><form method='post'action='/Member/Preview/" + item.ProjId + "'>"
+                                        + "<button><i class='fa fa-pencil' aria-hidden='true'></i></button>"
+                                        + "</form><button><i class='fa fa-trash'aria-hidden='true'></i></button></td></tr>";
+                                });
+                                $("#pendingTblBody").html(pendingRows);
+                                $("#activeTblBody").html(activeRows);
+                                $("#pastTblBody").html(pastRows);
+
+                            }
+                            else {
+                                $("#pendingTblBody").html('');
+                                $("#activeTblBody").html('');
+                                $("#pastTblBody").html('');
+                                document.getElementById("alertMsg").textContent = "Data is not available"
+                                //alert("No project. Please try again.");
+                                $("#txtSearchProj").focus();
+                            }
+                        }
+                    });
+                }
+
+            });
+        });
+        jq(window).on("load", function () {
+            var loader = jq("#Membloader");
+            loader.hide();
+        });
+    </script>
+
+
+    <script type="text/javascript">
+        function ChangeSpecsOnPlans(i, e, arg) {
+            var myString = arg;
+            var lastChar = myString[myString.length - 1];
+            var a = jQuery("#" + arg).parent('td').siblings().children('input[id^=chkSpc_]').is(':checked');
+            if (i == true && a == true)
+                jQuery("#" + arg).parent('td').siblings().children('input[id^=chkPub]').removeAttr("disabled");
+            else {
+                jQuery("#" + arg).parent('td').siblings().children('input[id^=chkPub]').attr("disabled", "disabled");
+            }
+
+
+        }
+        function ChangeSpecsOrPlans(i, arg) {
+            var myString = arg;
+            var lastChar = myString[myString.length - 1];
+
+            console.log("#" + arg)
+            if (i == true)
+                jQuery("#" + arg).parent('td').siblings().children('input[id^=chkPub]').removeAttr("disabled");
+            else {
+                jQuery("#" + arg).parent('td').siblings().children('input[id^=chkPub]').attr("disabled", "disabled");
+            }
+        }
+
+        function ChangeSpc(i, e, arg) {
+            var myString = arg;
+            var lastChar = myString[myString.length - 1];
+            var a = jQuery("#" + arg).parent('td').siblings().children('input[id^=chkPlan_]').is(':checked');
+            if (i == true && a == true)
+                jQuery("#" + arg).parent('td').siblings().children('input[id^=chkPub]').removeAttr("disabled");
+            else {
+                jQuery("#" + arg).parent('td').siblings().children('input[id^=chkPub]').attr("disabled", "disabled");
+            }
+
+        }
+        function AddBidding(i, e, arg) {
+            var model = {};
+            var checkBox = document.getElementById("chkCalendar");
+            var checked = checkBox.checked;
+            model.Uid = $('#hdnUid').val();
+            model.ConId = $('#hdnConId').val();
+            model.Id = $('#hdnId').val();
+            jQuery.ajax({
+                url: '/Member/AddBidding/',
+                data: { "ProjId": e, "model": mod },
+                type: "POST",
+                async: false,
+                success: function (response) {
+                    location.reload();
+                },
+                error: function (response) {
+                    console.log(response.responseText);
+                },
+                failure: function (response) {
+                    console.log(response.responseText);
+                }
+            });
+        }
+        function RemoveFromDashboard(id) {
+            if (confirm("Are you sure you want to remove from dashboard")) {
+                var model = {};
+                // var checkBox = document.getElementById("chkCalendar");
+                // var checked = checkBox.checked;
+                model.Uid = $('#hdnUid').val();
+                model.ConId = $('#hdnConId').val();
+                model.Id = $('#hdnId').val();
+                jQuery.ajax({
+                    url: '/Member/RemoveFromDashboard/',
+                    data: { "ProjId": id, "model": model },
+                    type: "POST",
+                    async: false,
+                    success: function (response) {
+                        if (response.success) {
+                            alert(response.statusMessage);
+                        }
+                        else
+                            alert(response.statusMessage);
+                    },
+                    error: function (response) {
+                        console.log(response.responseText);
+                    },
+                    failure: function (response) {
+                        console.log(response.responseText);
+                    }
+                });
+            }
+            return false;
+        }
+
+
+        function limitPagging() {
+            if ($('.pagination li').length > 7) {
+                if ($('.pagination li.active').attr('data-page') <= 3) {
+                    $('.pagination li:gt(5)').hide();
+                    $('.pagination li:lt(5)').show();
+                    $('.pagination [data-page="next"]').show();
+                } if ($('.pagination li.active').attr('data-page') > 3) {
+                    $('.pagination li:gt(0)').hide();
+                    $('.pagination [data-page="next"]').show();
+                    for (let i = (parseInt($('.pagination li.active').attr('data-page')) - 2); i <= (parseInt($('.pagination li.active').attr('data-page')) + 2); i++) {
+                        $('.pagination [data-page="' + i + '"]').show();
+
+                    }
+
+                }
+            }
+        }
+    </script>
+}
+@section PdfGenerationScripts{
+    <script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.1.22/pdfmake.min.js"></script>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/0.4.1/html2canvas.min.js"></script>
+    <script src="https://kit.fontawesome.com/bde2bd25f3.js" crossorigin="anonymous"></script>
+    <script type="text/javascript">
+        $("body").on("click", "#print", function () {
+            html2canvas($('#pdf')[0], {
+
+                quality: 4,
+                scale: 5,
+                onrendered: function (canvas) {
+                    var data = canvas.toDataURL();
+                    var docDefinition = {
+                        content: [{
+                            image: data,
+                            width: 500
+                        }]
+                    };
+                    pdfMake.createPdf(docDefinition).download("PHL.pdf");
+                }
+            });
+        });
+
+        $("body").on("click", "#printPHL", function () {
+            html2canvas($('#pdf1')[0], {
+                quality: 4,
+                scale: 5,
+                onrendered: function (canvas) {
+                    var data = canvas.toDataURL();
+                    var docDefinition = {
+                        content: [{
+                            image: data,
+                            width: 500
+                        }]
+                    };
+                    pdfMake.createPdf(docDefinition).download("List.pdf");
+                }
+            });
+        });
+
+    </script>
+    <script>
+
+        function ListPdfContent(ProjId) {
+            if (ProjId != '') {
+                $.ajax({
+                    url: '/Member/ListPdfContent/',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { 'ProjId': ProjId },
+                    success: function (response) {
+                        console.log(response);
+                        $("#tblCompanyName").html('');
+                        if (response != "" || response != null) {
+                            var model = new Array();
+                            model = response;
+                            var ComHtml = '';
+                            if (model.length == 0)
+                                $("#tblCompanyName").html('<p class="text-danger">No data available</p>');
+                            else {
+                                for (i = 0; i < model.length; i++) {
+                                    ComHtml += '<tr><td>' + model[i] + '</td></tr>'
+                                }
+                                $("#tblCompanyName").html(ComHtml);
+                            }
+                        }
+                        else {
+                            $("#tblCompanyName").html('<p class="text-danger">No data available</p>');
+                        }
+
+                    }
+                })
+            }
+        }
+
+        function ListPdfContent1(ProjId) {
+            if (ProjId != '') {
+                $.ajax({
+                    url: '/Member/ListPdfContent/',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { 'ProjId': ProjId },
+                    success: function (response) {
+                        console.log(response);
+                        $("#tblCompanyName1").html('');
+                        if (response != "" || response != null) {
+                            var model = new Array();
+                            model = response;
+                            var ComHtml = '';
+                            if (model.length == 0)
+                                $("#tblCompanyName1").html('<p class="text-danger">No data available</p>');
+                            else {
+                                for (i = 0; i < model.length; i++) {
+                                    ComHtml += '<tr><td>' + model[i] + '</td></tr>'
+                                }
+                                $("#tblCompanyName1").html(ComHtml);
+                            }
+                        }
+                        else {
+                            $("#tblCompanyName1").html('<p class="text-danger">No data available</p>');
+                        }
+
+                    }
+                })
+            }
+        }
+        function AddToCalendar(ProjId, BidDate) {
+            var model = {};
+            var checkBox = document.getElementById("chkCalendar");
+            var checked = checkBox.checked;
+            model.Uid = $('#hdnUid').val();
+            model.ConId = $('#hdnConId').val();
+            model.Id = $('#hdnId').val();
+            $.ajax({
+                url: '/Member/AddToCalendar/',
+                type: 'POST',
+                dataType: 'json',
+                data: { 'ProjId': ProjId, BidDate: BidDate, 'model': model, Ischecked: checked },
+                success: function (response) {
+                    console.log(response);
+                    if (response.success) {
+                        if (!response.data) {
+                            alert('Project added to calendar successfully');
+                            window.location.reload();
+                        }
+                        else {
+                            alert('Project removed from calendar successfully');
+                            window.location.reload();
+                        }
+                    }
+                }
+            })
+        }
+
+    </script>
+    <script type="text/javascript">
+        $("body").on("click", "#PrintAddenda", function () {
+            html2canvas($('#Addendapdf')[0], {
+                onrendered: function (canvas) {
+                    var data = canvas.toDataURL();
+                    var docDefinition = {
+                        content: [{
+                            image: data,
+                            width: 500
+                        }]
+                    };
+                    pdfMake.createPdf(docDefinition).download("AddendaPdfFile.pdf");
+                }
+            });
+        });
+
+        function ListPdfAddenda(ProjId) {
+            if (ProjId != '') {
+                $.ajax({
+                    url: '/Member/AddendaListPdfContent/',
+                    type: 'POST',
+                    dataType: 'json',
+                    data: { 'ProjId': ProjId },
+                    success: function (response) {
+                        console.log(response);
+                        $("#tblAddendaFile").html('');
+                        if (response != "" || response != null) {
+                            var model = new Array();
+                            model = response;
+                            var ComHtml = '';
+                            if (model.length == 0) {
+                                $("#tblAddendaFile").html('<p class="text-danger">No data available</p>');
+                            }
+                            else {
+                                for (i = 0; i < model.length; i++) {
+                                    ComHtml += '<tr><td>' + model[i] + '</td></tr>'
+                                }
+
+                                $("#tblAddendaFile").html(ComHtml);
+                            }
+                        }
+                        else {
+                            $("#tblAddendaFile").html('<p class="text-danger">No data available</p>');
+                        }
+                    }
+                })
+            }
+        }
+        function InitializeDashboardMap(address) {
+            // Open a new window with the map URL based on the provided address
+            var mapUrl = 'https://maps.google.com/maps?q=' + encodeURIComponent(address);
+            window.open(mapUrl, '_blank');
+        }
+    </script>
+}
+@section CustomCSS{
+    <style>
+        .bg-blue {
+            background: #5c8097;
+        }
+
+        .btn-new-proj {
+            color: #000;
+            background: #ff9900;
+            padding: 12px 30px;
+            border-radius: 4px;
+            font-size: 15px;
+            font-weight: 500;
+            text-transform: capitalize;
+            line-height: normal;
+            border: 0;
+        }
+
+        .MEMloader {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            /*display:none;*/
+        }
+
+            .MEMloader img {
+                display: block;
+                margin: 0 auto;
+                width: 100px;
+                margin-top: 20%;
+            }
+
+        .main-content {
+            padding: 12px 0;
+        }
+
+        .span-del .fa-trash {
+            color: #5c8097;
+        }
+
+        .icon-td.calander i {
+            font-size: 20px;
+        }
+
+            .icon-td.calander i:hover {
+                font-size: 20px;
+                color: #bf590c;
+            }
+
+        .box-space .same-tbl tbody tr td {
+            font-size: 15px;
+            vertical-align: middle;
+        }
+    </style>
+ }
+<div class="MEMloader" id="Membloader">
+    <img src="/assets/images/loading-gif.gif" style="max-width:5%;min-width:5%" alt="loading" />
+</div>
+<div class="container-fluid">
+    <div class="dashboard-box">
+        <div class="main-heading bg-blue">
+            <div class="row m-0">
+                <div class="col-md-12 d-flex justify-content-between">
+                    <h2>Your Project Dashboard</h2>
+                    <form class="form m-3" method="Post">
+                        <a style="text-decoration:none" class="btn-new-proj searchBtn" asp-action="PostProjectHere" asp-controller="Member">Post New Project</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        @* <div class="box-space">
+        </div> *@
+        <div class="row">
+            <div class="col-md-12">
+                <div class="row">
+                    @*----------*@
+                    <div class="col-md-12">
+                        <div class="accordion" id="accordionExample">
+                            <div class="card">
+                                <div class="card-header" id="activeProject">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left collapsed pending-btn" type="button" data-toggle="collapse" data-target="#collapseTwo" aria-expanded="true" aria-controls="collapseTwo">
+                                            Tracked Projects <i class="fa fa-chevron-right cus-chevron" aria-hidden="true" style="float: right;"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="collapseTwo" class="collapse show" aria-labelledby="activeProject" data-parent="#accordionExample">
+                                    <div class="card-body pl-0 pr-0">
+                                        <div class="table-responsive box-space">
+                                            <table class="table table-bordered table-striped same-tbl tTables">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-left">Type</th>
+                                                        <th class="text-left">Project Title</th>
+                                                        <th class="text-left">Address</th>
+                                                        <th class="text-left">Bid Date</th>
+                                                        <th class="text-center">Bidding?</th>
+                                                        <th class="text-center">Addenda</th>
+                                                        <th class="text-center text-nowrap">Plan Holder List</th>
+                                                        <th class="text-center">Action</th>
+                                                        @* <th>Add to Calendar</th>
+                                                        <th>Remove From Dashboard</th> *@
+                                                    </tr>
+                                                </thead>
+                                                <tbody id="trackedTblBody">
+                                                    @if (Model.TrackedProject != null && Model.TrackedProject.Count > 0)
+                                                    {
+                                                        @foreach (var item in Model.TrackedProject)
+                                                        {
+                                                            string Address = item.LocAddr1;
+                                                            string addr = string.IsNullOrEmpty(item.LocCity) ? "" : item.LocCity;
+                                                            addr = string.IsNullOrEmpty(item.LocState) ? addr : addr + ", " + item.LocState;
+                                                            addr = string.IsNullOrEmpty(item.LocZip) ? addr : addr + ", " + item.LocZip;
+
+                                                            @* string ConsBillAddress = "";
+                                                    ConsBillAddress = string.IsNullOrEmpty(@item.LocAddr1) ? "" : @item.LocAddr1;
+                                                    ConsBillAddress = string.IsNullOrEmpty(item.LocCity) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocCity : ConsBillAddress + ", " + item.LocCity);
+                                                    ConsBillAddress = string.IsNullOrEmpty(item.LocState) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocState : ConsBillAddress + ", " + item.LocState);
+                                                    ConsBillAddress = string.IsNullOrEmpty(item.LocAddr2) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocAddr2 : ConsBillAddress + ", " + item.LocAddr2);
+                                                    ConsBillAddress = string.IsNullOrEmpty(item.LocZip) ? ConsBillAddress : (string.IsNullOrEmpty(ConsBillAddress) ? item.LocZip : ConsBillAddress + ", " + item.LocZip); *@
+                                                            bool MemTrack = item.MemberTrack != null ? (bool)item.MemberTrack : false;
+                                                            var strbd = "";
+                                                            var BiDateValue = DateTime.Now.Date;
+                                                            DateTime dateTimeValue;
+                                                            if (!string.IsNullOrEmpty(item.strBidDt5))
+                                                            {
+                                                                if (item.strBidDt5 == "24:00")
+                                                                {
+                                                                    // Midnight at the end of the day, so increment the date by one day and set time to midnight
+                                                                    dateTimeValue = DateTime.ParseExact("00:00", "HH:mm", CultureInfo.InvariantCulture).AddDays(1);
+                                                                }
+                                                                else
+                                                                {
+                                                                    dateTimeValue = DateTime.ParseExact(item.strBidDt5, "HH:mm", CultureInfo.InvariantCulture);
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                dateTimeValue = DateTime.MinValue;
+                                                            }
+                                                            // DateTime dateTimeValue = !string.IsNullOrEmpty(item.strBidDt5) ? DateTime.ParseExact(item.strBidDt5, "HH:mm", CultureInfo.InvariantCulture) : DateTime.MinValue;
+                                                            string BidTime = dateTimeValue == DateTime.MinValue ? "" : dateTimeValue.ToString("hh:mm tt");
+                                                            if (item.strBidDt == "TBD" || item.BidDt == null)
+                                                            {
+                                                                strbd = "TBD";
+                                                            }
+                                                            else
+                                                            {
+                                                                string inputDate = Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy");
+                                                                if (inputDate != "")
+                                                                {
+                                                                    DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                                                    string formattedDate = date.ToString("MMM dd");
+                                                                    strbd = formattedDate;
+                                                                    strbd = BidTime == "" ? strbd : strbd + " - " + BidTime + " PT";
+                                                                }
+
+                                                            }
+
+                                                            if (MemTrack)
+
+                                                            {
+                                                                <tr>
+
+                                                                    <td>@item.ProjTypeIdString</td>
+                                                                    <td><a asp-route-id="@item.ProjId" asp-action="Preview" asp-controller="Member" name="titleId">@item.Title</a></td>
+                                                                    <td><a href="#" onclick="InitializeDashboardMap('@Address @addr');">@Address <br> @addr</a></td>
+                                                                    <td class="">@strbd</td>
+                                                                    <td class="text-center"><input id="chkPub" type="checkbox" value="@item.ProjId" checked="@item.BiddingStatus" onchange="AddBidding(this.checked, this.value, this.id)"></td>
+                                                                    <td class="newPro-btn text-center">
+                                                                        <a href="" class="table-btn" data-toggle="modal" data-target="#viewOrder-Modal" onclick="ListPdfAddenda(@item.ProjId)">
+                                                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                    <td class="newPro-btn text-center">
+                                                                        <a href="" class="table-btn" data-toggle="modal" data-target="#viewOrder-Modal2" onclick="ListPdfContent(@item.ProjId)">
+                                                                            <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                        </a>
+
+                                                                    </td>
+                                                                    <td class="icon-td calander align-items-center">
+                                                                        <div class="small-toggler table-toggs">
+                                                                            <label class="switch">
+                                                                                <input type="checkbox" id="chkCalendar" onclick="AddToCalendar(@item.ProjId,'@item.BidDt')" checked="@item.chkCalendar">
+                                                                                <span data-bs-toggle="tooltip" checked="@item.chkCalendar.GetValueOrDefault()" title="@(item.chkCalendar.GetValueOrDefault() ?"Remove from calendar" : "Add to calendar");" class="slider round tbl-round"></span>
+                                                                            </label>
+                                                                        </div>
+                                                                        <a href="" class="span-del" onclick="RemoveFromDashboard(@item.ProjId)">
+                                                                            <i class="fa fa-trash" aria-hidden="true" title="Remove from dashboard"></i>
+                                                                        </a>
+                                                                    </td>
+                                                                    @* <td class="text-center"><input id="chkCalendar" type="checkbox" onclick="AddToCalendar(@item.ProjId,'@item.BidDt')" checked="@item.chkCalendar"></td>
+                                                        <td class="text-center"><input id="chkPub" type="checkbox" value="@item.ProjId" onchange="RemoveFromDashboard(this.checked, this.value, this)"></td> *@
+                                                                </tr>
+                                                            }
+                                                        }
+                                                    }
+                                                </tbody>
+                                            </table>
+                                            <!--Phl Modal -->
+                                            <div class="modal fade" id="viewOrder-Modal2" role="dialog">
+                                                <div class="modal-dialog modal-lg">
+
+                                                    <!-- Modal content-->
+                                                    <div class="modal-content">
+                                                        <div class="modal-header cusModal-Header">
+                                                            <h4 class="modal-title card-label font-weight-bold">Plan Holder List</h4>
+                                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                                        </div>
+
+                                                        <div class="modal-body">
+                                                            <div class="row px-0 mx-0" id="pdf1">
+                                                                <div class="table-responsive">
+                                                                    <table class="table table-bordered table-striped cusTable" id="table-id">
+                                                                        <thead>
+                                                                            <tr>
+                                                                                <th><b>Plan Holder List</b></th>
+                                                                            </tr>
+                                                                        </thead>
+                                                                        <tbody id="tblCompanyName" class="text-left">
+                                                                        </tbody>
+                                                                    </table>
+                                                                </div>
+                                                            </div>
+
+                                                            <div class="modal-footer newPro-btn">
+                                                                <button type="button" id="printPHL" class="modl-btn newProbtn">Print</button>
+                                                            </div>
+                                                        </div>
+
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="card">
+                                <div class="card-header" id="headingOne">
+                                    <h2 class="mb-0">
+                                        <button class="btn btn-link btn-block text-left pending-btn" type="button" data-toggle="collapse" data-target="#pendingProjects" aria-expanded="false" aria-controls="collapseOne">
+                                            Your Posted Projects <i class="fa fa-chevron-right cus-chevron" aria-hidden="true" style="float: right;"></i>
+                                        </button>
+                                    </h2>
+                                </div>
+                                <div id="pendingProjects" class="collapse" aria-labelledby="headingOne" data-parent="#accordionExample">
+                                    <div class="card-body pl-0 pr-0">
+                                        <div class="table-responsive box-space">
+                                            <table class="table table-bordered table-striped same-tbl mTables" id="table-id">
+                                                <thead>
+                                                    <tr>
+                                                        <th class="text-left">Type</th>
+                                                        <th class="text-left">Project Title</th>
+                                                        <th class="text-left">Address</th>
+                                                        <th class="text-left">Bid Date</th>
+                                                        <th>Bidding</th>
+                                                        <th>Members Tracking</th>
+                                                        <th class="text-center">Date Posted</th>
+                                                        <th class="text-center">Addenda</th>
+                                                        <th class="text-center">Plan Holder List</th>
+                                                    </tr>
+                                                </thead>
+                                                <t  body id="pendingTblBody">
+                                                    @{
+                                                        int a = 1;
+                                                    }
+                                                    @if (Model.MemberProject != null && Model.MemberProject.Count > 0)
+                                                    {
+                                                        @foreach (var item in Model.MemberProject)
+                                                        {
+                                                            var strbd = "";
+                                                            string Address = item.LocAddr1;
+                                                            string addr = string.IsNullOrEmpty(item.LocCity) ? "" : item.LocCity;
+                                                            addr = string.IsNullOrEmpty(item.LocState) ? addr : addr + ", " + item.LocState;
+                                                            addr = string.IsNullOrEmpty(item.LocZip) ? addr : addr + ", " + item.LocZip;
+                                                            var BiDateValue = DateTime.Now.Date;
+                                                            DateTime dateTimeValue;
+                                                            if (!string.IsNullOrEmpty(item.strBidDt5))
+                                                            {
+                                                                if (item.strBidDt5 == "24:00")
+                                                                {
+                                                                    // Midnight at the end of the day, so increment the date by one day and set time to midnight
+                                                                    dateTimeValue = DateTime.ParseExact("00:00", "HH:mm", CultureInfo.InvariantCulture).AddDays(1);
+                                                                }
+                                                                else
+                                                                {
+                                                                    dateTimeValue = DateTime.ParseExact(item.strBidDt5, "HH:mm", CultureInfo.InvariantCulture);
+                                                                }
+                                                            }
+                                                            else
+                                                            {
+                                                                dateTimeValue = DateTime.MinValue;
+                                                            }
+                                                            //DateTime dateTimeValue = !string.IsNullOrEmpty(item.strBidDt5) ? DateTime.ParseExact(item.strBidDt5, "HH:mm", CultureInfo.InvariantCulture) : DateTime.MinValue;
+                                                            string BidTime = dateTimeValue == DateTime.MinValue ? "" : dateTimeValue.ToString("hh:mm tt");
+                                                            if (item.strBidDt == "TBD" || item.BidDt == null)
+                                                            {
+                                                                strbd = "TBD";
+                                                            }
+                                                            else
+                                                            {
+                                                                string inputDate = Convert.ToDateTime(item.BidDt).ToString("MM/dd/yyyy");
+                                                                if (inputDate != "")
+                                                                {
+                                                                    DateTime date = DateTime.ParseExact(inputDate, "MM/dd/yyyy", null);
+                                                                    string formattedDate = date.ToString("MMM dd");
+                                                                    strbd = formattedDate;
+                                                                    strbd = BidTime == "" ? strbd : strbd + " - " + BidTime + " PT";
+                                                                }
+
+                                                            }
+                                                            <tr>
+                                                                <td>@Html.DisplayFor(modelItem => item.ProjTypeIdString)</td>
+                                                                <td><a asp-route-id="@item.ProjId" asp-action="Preview" asp-controller="Member" name="titleId">@item.Title</a></td>
+                                                                <td><a href="#" onclick="InitializeDashboardMap('@Address @addr');">@Address <br> @addr</a></td>
+                                                                <td class="">@strbd</td>
+                                                                <td id="tdPlan"> @item.BidCount</td>
+                                                                <td id="tdSpc">@item.TrackCount</td>
+                                                                <td id="tdPub" class="text-center">
+                                                                    @(
+                                                                        item.ArrivalDt != null ? Convert.ToDateTime(item.ArrivalDt).ToString("MM/dd/yyyy") : ""
+                                                                        )
+                                                                </td>
+                                                                <td class="newPro-btn text-center">
+                                                                    <a href="" class="table-btn" data-toggle="modal" data-target="#viewOrder-Modal" onclick="ListPdfAddenda(@item.ProjId)">
+                                                                        <i class="fa fa-eye" aria-hidden="true"></i>
+                                                                    </a>
+                                                                </td>
+                                                                <td class="newPro-btn text-center">
+                                                                    <a href="" class="table-btn" data-toggle="modal" data-target="#viewOrder-Modal3" onclick="ListPdfContent1(@item.ProjId)">
+                                                                        <i class="fa-regular fa-eye" aria-hidden="true" style="font-size:14px;"></i>
+                                                                    </a>
+                                                                </td>
+                                                            </tr>
+                                                            a++;
+                                                        }
+                                                    }
+
+                                                    <!-- Modal -->
+                                                </t>
+                                            </table>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="modal fade" id="viewOrder-Modal3" role="dialog">
+                                <div class="modal-dialog modal-lg">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header cusModal-Header">
+                                            <h4 class="modal-title card-label font-weight-bold">Plan Holder List</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <div class="row px-0 mx-0" id="pdf">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped cusTable" id="table-id">
+                                                        <thead>
+                                                            <tr>
+                                                                <th><b>Plan Holder List</b></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tblCompanyName1" class="text-left">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer newPro-btn">
+                                                <button type="button" id="print" class="modl-btn newProbtn">Print</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                            <!--Addenda Modal -->
+                            <div class="modal fade" id="viewOrder-Modal" role="dialog">
+                                <div class="modal-dialog modal-lg">
+
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header cusModal-Header">
+                                            <h4 class="modal-title card-label font-weight-bold">Addenda Pdf File List</h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+
+                                        <div class="modal-body">
+                                            <div class="row px-0 mx-0" id="Addendapdf">
+                                                <div class="table-responsive">
+                                                    <table class="table table-bordered table-striped cusTable" id="table-id">
+                                                        <thead>
+                                                            <tr>
+                                                                <th><b>Addenda File Name List</b></th>
+                                                            </tr>
+                                                        </thead>
+                                                        <tbody id="tblAddendaFile" class="text-left">
+                                                        </tbody>
+                                                    </table>
+                                                </div>
+                                            </div>
+
+                                            <div class="modal-footer newPro-btn">
+                                                <button type="button" id="PrintAddenda" class="modl-btn newProbtn">Print</button>
+                                            </div>
+                                        </div>
+
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+

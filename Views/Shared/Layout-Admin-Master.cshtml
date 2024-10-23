@@ -1,0 +1,182 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1" name="viewport" />
+    <title>Super Admin</title>
+    <!-- Favicon-->
+    <link rel="icon" href="~/AdminAssets/images/favicon-plan-center.png" type="image/x-icon">
+    <!-- Plugins Core Css -->
+    <link href="~/AdminAssets/css/app.min.css" rel="stylesheet">
+    <!-- Custom Css -->
+    <link href="~/AdminAssets/css/style.css" rel="stylesheet" />
+    <link rel="stylesheet" href="~/AdminAssets/css/customStyle.css">
+    <link href="~/css/global-master.css" rel="stylesheet" />
+    <!-- Theme style. You can choose a theme from css/themes instead of get all themes -->
+    <link href="~/AdminAssets/css/styles/all-themes.css" rel="stylesheet" />
+    @await RenderSectionAsync("jQueryUICss", required: false)
+    @await RenderSectionAsync("CustomCSS", required: false)
+    <style>
+        .sidebar-global li a i {
+            font-size: 17px !important;
+        }
+    </style>
+
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-9Y350DCZ35"></script>
+<script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag() { dataLayer.push(arguments); }
+    gtag('js', new Date());
+
+    gtag('config', 'G-9Y350DCZ35');
+</script>
+<body class="light">
+    <div class="page-loader-wrapper">
+        <div class="loader">
+            <div class="m-t-30">
+                <img class="loading-img-spin" src="~/AdminAssets/images/Logo Master Vert Black.jpg" width="20" height="20" alt="admin">
+            </div>
+            <p>Almost There...</p>
+        </div>>
+    </div>
+    <nav class="navbar cus-navbar">
+        <div class="container-fluid">
+            <div class="navbar-header">
+                <a href="#" onClick="return false;" class="navbar-toggle collapsed" data-toggle="collapse"
+                   data-target="#navbar-collapse" aria-expanded="false"></a>
+                <a href="#" onClick="return false;" class="bars"></a>
+                <a class="navbar-brand" href="/Home/Index">
+                    <img src="assets/images/logo.png" alt="" />
+                    <span class="logo-name">PCNW</span>
+                </a>
+            </div>
+            <div class="collapse navbar-collapse" id="navbar-collapse">
+                <ul class="pull-left icon-nav">
+                    <li>
+                        <a href="#" onClick="return false;" class="sidemenu-collapse">
+                            <i class="material-icons">reorder</i>
+                        </a>
+                    </li>
+                </ul>
+                <ul class="nav navbar-nav navbar-right icon-nav">
+                    <!-- Full Screen Button -->
+                    <li class="fullscreen">
+                        <a href="javascript:;" class="fullscreen-btn">
+                            <i class="fas fa-expand"></i>
+                        </a>
+                    </li>
+                    <!-- #END# Full Screen Button -->
+                    <!-- #START# user-profile-->
+                    <li class="dropdown user_profile">
+                        <a href="#" onClick="return false;" class="dropdown-toggle" data-toggle="dropdown"
+                           role="button">
+                            <i class="material-icons">power_settings_new</i>
+                        </a>
+                        <ul class="dropdown-menu pullDown">
+                            <li class="body">
+                                <ul class="user_dw_menu cus-dropdown">
+                                    @*<li>
+                                        <a href="#" onClick="return false;">
+                                            <i class="material-icons">person</i>Profile
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <a href="#" onClick="return false;">
+                                            <i class="material-icons">help</i>Help
+                                        </a>
+                                    </li>*@
+                                    <li>
+                                        <a href="/Account/Logout">
+                                            <i class="material-icons">power_settings_new</i>Logout
+                                        </a>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <aside id="leftsidebar" class="sidebar">
+        <!-- Menu -->
+        <div class="menu">
+            <ul class="list sidebar-global">
+                <li class="sidebar-user-panel active">
+                    <div class="profile-usertitle">
+                        <div class="sidebar-userpic-name"> User Name </div>
+                        <div class="profile-usertitle-job ">Designation </div>
+                    </div>
+                </li>
+                <li class="">
+                    <a href="/Administration/Dashboard" class="">
+                        <i class="fas fa-home"></i>
+                        <span>Home</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="/globalmaster/Dashboard" class="">
+                        <i class="fas fa-user-cog"></i>
+                        <span>Admin</span>
+                    </a>
+                </li>
+                <li class="">
+                    <a href="/Report/Dashboard" class="">
+                        <i class="far fa-file-alt"></i>
+                        <span>Report</span>
+                    </a>
+                </li>
+                <li>
+                    <a href="#" onClick="return false;" class="menu-toggle">
+                        <i class="fas fa-cogs"></i>
+                        <span>Utility</span>
+                    </a>
+                    <ul class="ml-menu">
+                        <li>
+                            <a asp-controller="Administration" asp-action="CreateRole">
+                                <span>Create Role</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Administration" asp-action="RoleList">
+                                <span>Role List</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Administration" asp-action="UserList">
+                                <span>User List</span>
+                            </a>
+                        </li>
+                        <li>
+                            <a asp-controller="Administration" asp-action="ManageStaff">
+                                <span>Manage Staff</span>
+                            </a>
+                        </li>
+                        <!-- Multi level menu -->
+                    </ul>
+                </li>
+            </ul>
+        </div>
+        <!-- #Menu -->
+    </aside>
+    @RenderBody()
+    <!-- Plugins Js -->
+    <script src="~/AdminAssets/js/app.min.js"></script>
+    @await RenderSectionAsync("jQueryUI", required: false)
+    <script src="~/AdminAssets/js/table.min.js"></script>
+    <!-- Custom Js -->
+    <script src="~/AdminAssets/js/admin.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/dataTables.buttons.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/buttons.flash.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/jszip.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/pdfmake.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/vfs_fonts.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/buttons.html5.min.js"></script>
+    <script src="~/AdminAssets/js/bundles/export-tables/buttons.print.min.js"></script>
+    <script src="~/AdminAssets/js/pages/tables/jquery-datatable.js"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

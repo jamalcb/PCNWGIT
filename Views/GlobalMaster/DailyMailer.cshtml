@@ -1,0 +1,239 @@
+﻿@model IEnumerable<DailyMailerViewModel>;
+@{
+    ViewData["Title"] = "DailyMailer";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+    </style>
+}
+@section Scripts{
+    <script src="~/js/DailyMailer.js"></script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Daily Mailer</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Other</li>
+                        <li class="breadcrumb-item active">DailyMailer</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header text-right ">
+                        <a href="#" class="btn cus-pro-type" onclick="OpenPrintModel()">
+                            <i class=" fa fa-plus mx-1"></i>
+                            New
+                        </a>
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Save Daily Mailer
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm2" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3">
+                                                    <input type="hidden" id="Id" />
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Mailer Text<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid" type="text" placeholder="Mailer Text" id="mailerText" name="MailerText" autocomplete="on">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Image
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <img id="mailerImage" height="100" width="100" />
+                                                        <input type="hidden" id="mailerPath" />
+                                                        <span class="loginError"></span>
+                                                        <input type="button" class="btn-upload" style="float: right;" id="removeImage" onclick="RemoveImage()" value="Remove" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Change Image<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9 input-group mb-0">
+                                                        <form id="myForm" method="post" enctype="multipart/form-data">
+                                                            <input type="file" class="form-control mr-2" id="fileUpload1" name="pdfFile" multiple />
+                                                            <span class="loginError"></span>
+                                                            <input type="button" class="btn-upload" style="float: right;" id="btnfileUpload1" onclick="UploadFile(this.event)" value="Upload" />
+                                                            <input type="hidden" id="hdnFileName" />
+                                                            <label id="lblMessage" style="display:none;"></label>
+                                                        </form>
+                                                        <span class="loginError" id="uploadError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        &nbsp;
+                                                    </label>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActive" name="IsActive" /><label for="IsActive">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return SaveDailyMailer()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                       @* <div class="modal p-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Update Daily Mailer
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm2" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3">
+                                                    <input type="hidden" id="idMailer" />
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Mailer Text<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <input class="form-control form-control-solid" type="text" placeholder="Mailer Text" id="MailerText" name="EdSize" autocomplete="on">
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Image
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9">
+                                                        <img id="mailerImage" height="100" width="100" />
+                                                        <input type="hidden" id="mailerPath" />
+                                                        <span class="loginError"></span>
+                                                        <input type="button" class="btn-upload" style="float: right;" id="removeImage" onclick="RemoveImage()" value="Remove" />
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        Change Image<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-9 col-xl-9 input-group">
+                                                        <form id="myForm" method="post" enctype="multipart/form-data">
+                                                            <input type="file" class="form-control mr-2" id="fileUpload1" name="pdfFile" multiple />
+                                                            <span class="loginError"></span>
+                                                            <input type="button" class="btn-upload" style="float: right;" id="btnfileUpload1" onclick="UploadFile(this.event)" value="Upload" />
+                                                            <input type="hidden" id="hdnFileName" />
+                                                            <label id="lblMessage" style="display:none;"></label>
+                                                        </form>
+                                                        <span class="loginError" id="uploadError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                                        &nbsp;
+                                                    </label>
+                                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mt-3">
+                                                        <input style="opacity:1" type="checkbox" id="IsActive" name="IsActive" /><label for="IsActive">&nbsp;IsActive</label>
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group mb-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return UpdateDailyMailer()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>*@
+                    </div>
+
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Mailer Text</th>
+                                        <th class="w-10">Mailer Image</th>
+                                        <th class="w-10">Status</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblBody" class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        string strAct = @item.IsActive == true ? "Active" : "Inactive";
+                                        //string temp = item.ImageUrl.Replace("\\","/");
+                                        //temp = "~" + temp;
+                                        <tr>
+                                            <td>@item.MailerText</td>
+                                            <td><img src="@item.MailerPath" height="50" width="50" id="GetImage" /></td>
+                                            <td>
+                                                @strAct
+                                            </td>
+                                            <td><span title="Edit" class="btn btn-primary icon-edit" onclick="EditDailyMailer(@item.Id,'@item.MailerText','@item.MailerPath', '@item.IsActive')"><i class="fas fa-pencil-alt" aria-hidden="true"></i></span>&nbsp;</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

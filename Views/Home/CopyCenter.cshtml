@@ -1,0 +1,1299 @@
+﻿@{
+    ViewData["Title"] = "CopyCenter";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+}
+@section Scripts{
+    <script src="/js/home-copy-center.js"></script>
+    <script src="/js/custom-validation.js"></script>
+}
+@section CustomCSS{
+    <style>
+        i.fa.fa-trash {
+            font-size: 20px;
+        }
+        /*css for fixed box and minimized project from*/
+        .fix-box {
+            position: fixed;
+            top: 103px;
+            width: 98.5%;
+            height: 165px;
+            background-color: #dde3eb;
+            z-index: 1;
+            border: 1px solid #a9a9a9;
+            padding: 8px 10px;
+        }
+
+        .formCls .box-space .form-control {
+            height: 30px
+        }
+
+        .notice-info {
+            color: #666;
+            font-size: 14px;
+            margin: 0;
+            text-align: start;
+        }
+
+        .in-height .form-control {
+            height: 30px;
+            background: #f4f4f4;
+            border: 1px solid #706e6e;
+        }
+
+        .mt-note {
+            margin-top: 180px;
+        }
+
+        .tbl-adnda th,
+        .tbl-adnda tr td {
+            padding: 5px;
+        }
+
+        .edit-row label {
+            color: #666;
+        }
+
+        .fix-box .newPro-btn label {
+            color: #666;
+            font-weight: 600;
+        }
+
+        .formCls label {
+            font-size: 15px;
+            font-weight: 600;
+            color: #666;
+        }
+
+        .mt-project {
+            margin-top: 106px;
+        }
+
+        .form-control:focus {
+            border-color: #5c8097;
+            box-shadow: 0 0 2px #5c8097 inset, 0 0 2px #5c8097;
+            outline: #5c8097 solid 1px;
+        }
+
+        .cus-textarea:focus {
+            border-color: #5c8097;
+            box-shadow: 0 0 2px #5c8097 inset, 0 0 2px #5c8097;
+            outline: #5c8097 solid 1px;
+        }
+
+        .post-label.flex-wrap .form-check-inline {
+            /* flex: 0 0 18%; */
+            margin-bottom: 6px;
+        }
+        /* -------------- */
+        #time_wrapper {
+            width: fit-content;
+            margin: 0 auto;
+            position: relative;
+            top: 150px;
+            transform: scale(1.5);
+        }
+
+        #time_input {
+            border: 2px solid #706e6e;
+            width: fit-content;
+            display: flex;
+            align-items: center;
+            border-radius: 0px !important;
+        }
+
+            #time_input input {
+                width: 50px;
+                height: auto;
+                border: none;
+                box-sizing: border-box;
+                padding: 2px;
+                text-align: center;
+                color: #132c14;
+                background: #f4f4f4;
+            }
+
+            #time_input label {
+                display: flex;
+                flex-direction: column;
+                justify-content: center;
+                position: relative;
+                margin-bottom: 0px;
+            }
+
+        .label {
+            font-size: 0.55rem;
+            position: absolute;
+            top: 4.5px;
+        }
+
+            .label.lbl-hrs {
+                left: 20px;
+            }
+
+            .label.lbl-min {
+                left: 14px;
+            }
+
+            .label.lbl-sec {
+                left: 13px;
+            }
+
+        /* Chrome, Safari, Edge, Opera */
+        input::-webkit-outer-spin-button,
+        input::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+
+        /* Firefox */
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        #time_input,
+        input {
+            border-radius: 8px;
+            /*font-size: 1.5rem;*/
+        }
+
+            #time_input input:focus {
+                outline: 3px solid #5c8097;
+                border-radius: 0;
+            }
+
+            input:focus + .label {
+                color: var(--active);
+            }
+
+            input.invalid:focus {
+                outline: 3px solid red;
+            }
+
+                input.invalid:focus + .label {
+                    color: red;
+                }
+
+        #error {
+            width: 280px;
+            position: relative;
+            top: 170px;
+            margin: 0 auto;
+            color: red;
+            visibility: hidden;
+        }
+
+        .ui-autocomplete.show-all .ui-menu-item {
+            display: list-item !important;
+        }
+
+        .timer {
+            width: 45px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 15px;
+            line-height: 0;
+        }
+        .loginError.cst-loader{
+            line-height:4
+        }
+    </style>
+    <style>
+        #progress-container {
+            width: 90%;
+            height: 26px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            display: none;
+        }
+
+        #progress-bar {
+            height: 100%;
+            width: 0;
+            background-color: #3498db;
+            / Set your desired color / transition: width 0.3s ease;
+        }
+        .modal-backdrop {
+            position: unset;
+            z-index: 999;
+        }
+
+        .modal-content {
+            flex-direction: column;
+            display: flex;
+        }
+
+        @@include media-breakpoint-down($breakpoint) {
+            .modal-fullscreen# {
+                $postfix
+            }
+
+        {
+            width: 100vw;
+            max-width: none;
+            height: 100%;
+            margin: 0;
+            .modal-content
+
+        {
+            height: 100%;
+            border: 0;
+            @@include border-radius(0);
+        }
+
+        .modal-header {
+            @@include border-radius(0);
+        }
+
+        .modal-body {
+            overflow-y: auto;
+        }
+
+        }
+        }
+    </style>
+    <style>
+        .ui-menu {
+            z-index: 1100 !important;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+            line-height: 0;
+        }
+
+        .main-nav > li > a {
+            font-size: 15px;
+            font-weight: 400;
+            letter-spacing: 0.02em;
+            color: #fff;
+        }
+
+        .rate-ul li {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 3px 14px;
+            height: 32px;
+        }
+
+        .rate-head {
+            position: relative;
+        }
+
+            .rate-head legend {
+                width: auto;
+                position: absolute;
+                top: -25px;
+                background: #f2f2f2;
+                padding: 0 12px;
+                font-weight: 600;
+                color: #ff9900;
+                font-size: 20px;
+            }
+
+        .rate-ul li input {
+            width: 15% !important;
+            margin-bottom: 0px !important;
+            font-size: 14px !important;
+            border: none;
+            border-bottom: 1px solid #ccc;
+        }
+
+        .rate-ul {
+            border: 1px solid #f909;
+        }
+
+            .rate-ul li label {
+                margin-bottom: 0px;
+                font-size: 18px;
+            }
+
+            .rate-ul li span {
+                font-weight: bold;
+            }
+
+        .header h2 {
+            font-size: 20px;
+            color: #666666;
+        }
+
+        .bg-cus ul.navbar-nav li.nav-item a.nav-link {
+            font-size: 18px;
+            height: 80px;
+            padding: 10px 15px;
+        }
+
+        .lqd-custom-menu li {
+            margin-bottom: 10px;
+        }
+
+            .lqd-custom-menu li a:hover {
+                text-decoration: none;
+            }
+
+        .footerBottom {
+            background: rgb(55 87 107);
+        }
+
+        .bottom-footer a:hover {
+            text-decoration: none;
+        }
+
+        .iconbox-inline {
+            display: -webkit-box;
+            display: flex;
+            -webkit-box-orient: horizontal;
+            -webkit-box-direction: normal;
+            flex-direction: row;
+            flex-wrap: wrap;
+            -webkit-box-pack: start;
+            justify-content: flex-start;
+            text-align: left;
+            align-items: baseline;
+        }
+
+            .iconbox-inline .iconbox-icon-wrap {
+                flex-basis: auto;
+            }
+
+        .iconbox-xs .iconbox-icon-container {
+            font-size: 18px;
+            margin-right: 12px;
+            color: #ff9900;
+        }
+
+        .bg-cover {
+            background-size: cover !important;
+        }
+
+        .main-footer .widget-title {
+            margin-bottom: 1.35em;
+            font-weight: 600;
+        }
+
+        .cpy-cntr-form .form-group .form-control {
+            height: 32px;
+        }
+
+        .bg-blue {
+            background: #5c8097;
+        }
+
+        #loader-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .popup-loader {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            padding: 20px;
+            border-radius: 5px;
+            text-align: center;
+        }
+
+        #prc-price, #prc-total {
+            text-align: right;
+        }
+
+        .scroll-header nav {
+            position: fixed;
+            width: 100%;
+            height: 75px;
+        }
+
+        .scroll-header {
+            display: none;
+        }
+
+        .scroll-cst {
+            background: #37576b;
+            z-index: 9;
+            top: 0;
+        }
+
+            .scroll-cst .navbar-brand img {
+                max-width: 340px;
+                width: auto;
+            }
+
+        .cpy-center-index {
+            z-index: unset !important;
+        }
+
+        .modal-header {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-align: start;
+            align-items: flex-start;
+            -ms-flex-pack: justify;
+            justify-content: space-between;
+            padding: 1rem 1rem;
+            border-bottom: 1px solid #dee2e6;
+            border-top-left-radius: calc(0.3rem - 1px);
+            border-top-right-radius: calc(0.3rem - 1px);
+        }
+
+        .cusModal-Header .close {
+            background: transparent;
+            border: 0;
+            font-size: 25px;
+            font-weight: 600;
+            color: #fff;
+            flex: 0 0 3%;
+            margin: 0;
+            padding: 0;
+            line-height: 1;
+        }
+
+        .cusModal-Header .modal-title {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .row {
+            display: -ms-flexbox;
+            display: flex;
+            -ms-flex-wrap: wrap;
+            flex-wrap: wrap;
+            margin-right: -15px;
+            margin-left: -15px;
+        }
+
+        .border {
+            border: 1px solid #dee2e6 !important;
+        }
+
+        .col-form-label {
+            padding-top: calc(0.375rem + 1px);
+            padding-bottom: calc(0.375rem + 1px);
+            margin-bottom: 0;
+            font-size: inherit;
+            line-height: 1.5;
+        }
+
+        .modal-open {
+            overflow: hidden !important;
+            padding-right: 0 !important;
+        }
+
+        .cus-bn {
+            font-size: 60px;
+        }
+
+        .page-heading h3 {
+            color: #fff;
+            font-size: 40px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            z-index: 1;
+        }
+
+    .color-select {
+        display: none;
+    }
+    .local-pic{
+            font-weight: 600;
+            text-align: center;
+            font-size: 17px;
+            color: #999;
+    }
+    </style>
+}
+<section class="vc_row bg-cover pt-70 pb-20 d-flex flex-wrap align-items-center bg-none liquid-parallax-bg"
+         style="background-image: url('~/assets/images/header-hm-back.jpg');"
+         data-parallax="true"
+         data-parallax-options="{&quot;parallaxBG&quot;: true, &quot;overflowHidden&quot;: true}">
+    <div class="liquid-parallax-container">
+        @*<figure class="liquid-parallax-figure"
+        style="height: 140%; background-image: url('~/assets/images/header-hm-back.jpg');">
+        </figure>*@
+        <figure class="liquid-parallax-figure">
+            <img src="~/assets/images/header-hm-back.jpg" style="width: 100%;  height: 140%;" />
+        </figure>
+    </div>
+    <div class="overlay"></div>
+    <div class="container">
+        <div class="row d-flex flex-wrap align-items-center pt-5" id="AboutUs">
+
+            <div class="lqd-column col-md-12 col-xs-12">
+
+                <div class=" cus-head text-center page-heading">
+                    <h3 class="my-3" data-fittext="true"
+                        data-fittext-options="{&quot;compressor&quot;:0.6,&quot;maxFontSize&quot;:100,&quot;minFontSize&quot;:40}"
+                        style="">
+                        Copy Center
+                    </h3>
+                </div>
+
+
+            </div>
+
+
+
+        </div>
+
+
+    </div>
+
+    <div class="lqd-sticky-sentinel invisible pos-abs" style="top: auto; bottom: 111px;"></div>
+</section>
+
+<main id="content" class="main-content" style="min-height:100vh;background: #f4f4f4;">
+    <!--Content Area-->
+    <div class="container mt-4">
+        <div class="dashboard-box">
+            <div class="main-heading bg-blue">
+                <div class="d-flex flex-wrap justify-content-between resp">
+                    <h2 class="mt-0">Copy Center</h2>
+                    <div class="custom-file upload-member-project-files newPro-btn p-2" style="width:auto;cursor: pointer;">
+                        <button class="btn btn-sm newProbtn align-items-center" onclick="LoginMember()">
+                            LogIn
+                        </button>
+                        <button class="btn btn-sm newProbtn align-items-center" onclick="OpenPrintModel()">
+                            <i class=" fa fa-plus mx-1"></i>
+                            Print Order Form
+                        </button>
+                        <input type="hidden" id="selectCheck" />
+                        <input type="hidden" id="uploadCheck" />
+                        <input type="hidden" id="LoadChk" value="@ViewBag.LoadValChk" />
+                    </div>
+                </div>
+            </div>
+
+            <input type="hidden" id="hdnNoofPages" value='' />
+            <div class="box-space">
+                <div class="row">
+                    <div class="col-lg-12">
+                        <p class="local-pic">Local Pickup and Delivery options available for Portland, Seattle, and Salem metro areas. We can also ship drawings anywhere.</p>
+                    </div>
+                </div>
+                <div class="row clearfix">
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <div class="card">
+                            <div class="header text-center">
+                                <h2 class="m-0">
+                                    <strong>Rates For Members</strong>
+                                </h2>
+                            </div>
+
+                            <div class="body px-md-5 pt-4 px-sm-3 resp-rate">
+                                <ul class=" rate-ul p-0" id="MemberPrice">
+                                </ul>
+                            </div>
+                            <!-- Electronics block -->
+                            <div class="header pt-0">
+                            </div>
+                            <div class="body px-md-5 pt-4 px-sm-3 resp-rate">
+                                <ul class=" rate-ul p-0" id="ColorMemberPrice">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- non-member block -->
+                    <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                        <div class="card">
+                            <div class="header text-center">
+                                <h2 class="m-0">
+                                    <strong>Rates For Non-Members</strong>
+                                </h2>
+                            </div>
+
+                            <div class="body px-md-5 pt-4 px-sm-3 resp-rate">
+                                <ul class=" rate-ul p-0" id="NonMemberPrice">
+                                </ul>
+                            </div>
+                            <!-- Electronics block  -->
+                            <div class="header pt-0">
+                            </div>
+                            <div class="body px-md-5 pt-4 px-sm-3 resp-rate">
+                               <ul class=" rate-ul p-0" id="ColorNonMemberPrice">
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+
+</main><!-- /#content.content -->
+<!-- Modal -->
+<div class="modal m-modal fade" id="table-Modal" role="dialog">
+    <div class="modal-dialog modal-xl">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header cusModal-Header">
+                <div style="flex:1 auto;">
+                    <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                        Print Order Form
+                    </h4>
+                    <h4 class="modal-title card-label font-weight-bolder" id="ordersummary-head" style="display:none;">
+                        Print Order Summary
+                    </h4>
+                </div>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+            </div>
+            <div class="modal-body">
+                <!-- Create order Form -->
+                <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                    <div class="row px-0 mx-0">
+                        <div class="col-lg-6 pl-0">
+                            <h6 class="m-0">Customer Info</h6>
+                            <div class="formCls cpy-cntr-form">
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        Company<span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input tabindex="1" class="form-control form-control-solid " type="text"
+                                               value="" placeholder="Company" id="inpCompany" autocomplete="on" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+                                        <input type="hidden" id="hdninpCompany" />
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        Contact<span class="text-danger">*</span>
+                                    </label>
+                                    <div class="dropdown col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        <input type="hidden" id="Uid" />
+                                        <input class="form-control form-control-solid " type="text"
+                                               value="" placeholder="Name" tabindex="2" id="inpContact" autocomplete="on" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+
+                                    <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address<span class="text-danger">*</span></label>
+
+                                    <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                        <input class="form-control"
+                                               type="text" value=""
+                                               placeholder="Address" id="inpAddr" tabindex="3" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        <span class="text-danger"></span>
+                                    </label>
+                                    <div class="col-lg-5 col-xl-5 mb-lg-0 mb-2">
+
+                                        <input class="address_zipcode form-control form-control-solid"
+                                               name="address_zipcode" type="text" value=""
+                                               placeholder="City" tabindex="5" id="inpCity" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+
+                                    </div>
+
+                                    <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+                                        <div class="dropdown px-0">
+                                            <select class="form-control form-control-solid mb-2" tabindex="6" id="inpState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform(this.id)"></select>
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                    @*<div class="col-lg-1 col-xl-1 mb-lg-0 mb-1"></div>*@
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                        <input class="address_zipcode form-control form-control-solid number-only"
+                                               name="address_zipcode" type="text" value=""
+                                               placeholder="Zip Code" tabindex="4" id="inpZip" onchange="validateform(this.id)" maxlength="5">
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        Phone<span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input class="form-control" tabindex="7"
+                                               type="text" value=""
+                                               placeholder="Phone" id="inpPhone" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                @* <div class="form-group row mb-1">
+
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+
+                                    <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                        <input tabindex="8" type="checkbox" class="mx-1" value="" />Text Message Notifications
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div> *@
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        Email<span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input class="form-control  copy_email" tabindex="8"
+                                               name="copy_email" type="text" value=""
+                                               placeholder="Email" id="inpEmail" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-lg-9 col-xl-9 input-group">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-6 pr-0">
+                            <h6 class="m-0">Order Info</h6>
+                            <div class="formCls cpy-cntr-form">
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        Project Name
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input class="form-control "
+                                               name="project_number" type="text" value=""
+                                               placeholder="Project" id="inpProjNo" tabindex="10" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        P.O.
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <input class="form-control" tabindex="11"
+                                               name="order_po" type="text" value=""
+                                               placeholder="P.O." id="inpPO" onchange="validateform(this.id)">
+                                        <span class="loginError"></span>
+                                    </div>
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">Deadline<span class="text-danger">*</span></label>
+
+                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3 datecustompicker">
+
+                                        <input class="form-control datepicker-custom" placeholder="Select Date" tabindex="12" type="text" value="" autocomplete="off" onchange="DeadLineDateTime(this.id)" id="inpDline">
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3 mt-420">
+                                        <div id="time_input">
+                                            <label for="hours">
+                                                <input type="number" tabindex="16" value="00" id="tComp" autocomplete="off">
+                                            </label>
+                                            <span>:</span>
+                                            <label for="minutes">
+                                                <input type="number" value="00" tabindex="17" id="hComp" autocomplete="off">
+                                            </label>
+                                            <span>:</span>
+                                            <label for="seconds">
+                                                <input type="text" tabindex="18" value="AM" id="mValue"  class="ui-autocomplete-input" autocomplete="off">
+                                            </label>
+                                        </div>
+                                    </div>
+                                   @* <div class="col-lg-9 col-xl-9">
+                                        <div class="input-group copy_order_deadline_box"
+                                             id=""
+                                             data-target-input="nearest">
+                                            <input type="date" tabindex="12"
+                                                   class="form-control"
+                                                   data-target="" value="" id="inpDline" onchange="validateform(this.id)">
+                                            <span class="loginError d-flex align-items-center px-1 mt-2"></span>
+
+                                        </div>
+                                    </div>*@
+                                </div>
+                                <div class="form-group row mb-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        Delivery/Pickup<span class="text-danger">*</span>
+                                    </label>
+                                    <div class="col-lg-9 col-xl-9">
+                                        <div class="dropdown bootstrap-select ">
+                                            <div class="dropdown bootstrap-select">
+                                                <select tabindex="130" class="form-control" id="inpDelivery" onchange="validateform(this.id)">
+                                                    <option value="" hidden="">-Select-</option>
+                                                </select>
+                                                <span class="loginError"></span>
+                                                <input type="hidden" name="HowShip" id="HowShip" />
+                                                <input type="hidden" id="TextHowShip" />
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="HideDelivery" id="DetShip">
+                                    <div class="form-group row mb-1">
+
+                                        <label class="col-xl-3 col-lg-3 col-form-label"></label>
+
+                                        <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+                                            <input tabindex="140" type="checkbox" class="mx-1" value="" id="chkDel" onclick="DelFunction()" />Same as Billing Address
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-group row mb-1 align-items-center">
+
+                                        <label class="col-xl-3 col-lg-3 col-form-label py-0">Shipping Address<span class="text-danger">*</span></label>
+
+                                        <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                            <input class="form-control" tabindex="150"
+                                                   type="text" value=""
+                                                   placeholder="Address" id="inpDelAddr" onchange="validateform(this.id)">
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mb-1">
+                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                            <span class="text-danger"></span>
+                                        </label>
+                                        <div class="col-lg-5 col-xl-5 mb-lg-0 mb-2">
+
+                                            <input tabindex="170" class="address_zipcode form-control form-control-solid"
+                                                   name="address_zipcode" type="text" value=""
+                                                   placeholder="City" id="inpDelCity" onchange="validateform(this.id)">
+                                            <span class="loginError"></span>
+
+                                        </div>
+                                        <div class="col-lg-4 col-xl-4 mb-lg-0 mb-2">
+
+                                            <div class="dropdown px-0">
+                                                <select tabindex="180" class="form-control form-control-solid mb-2" id="inpDelState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" onchange="validateform(this.id)"></select>
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group row mb-1">
+                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                        </label>
+                                        <div class="col-lg-9 col-xl-9 mb-lg-0 mb-2">
+
+                                            <input tabindex="160" class="address_zipcode form-control form-control-solid number-only"
+                                                   name="address_zipcode" type="text" value=""
+                                                   placeholder="Zip Code" id="inpDelZip" onchange="validateform(this.id)" maxlength="5">
+                                            <span class="loginError"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-12 px-0" style="width:100%">
+                            <div class="form-group row mb-3">
+                                <label class="col-form-label col-md-2 font-weight-bold" style="max-width: 12.666667%;">
+                                    Additional Instructions
+                                </label>
+                                <div class="input-group col-md-10" style="flex:0 0 87.3%;max-width: 87.3%;">
+                                    <textarea name="instructions" tabindex="190"
+                                              class="instructions form-control" cols="30"
+                                              rows="5" id="inpInstruction" onchange="validateform(this.id)" onblur="validateform(this.id)"></textarea>
+                                    <span class="loginError" style="width:100%;padding:8px 0"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 px-0" style="width:100%">
+                            <div class="form-group row mb-1">
+                                <label class="col-form-label col-sm-2 col-md-2 col-lg-2 font-weight-bold" style="max-width: 12.6%;">Upload Files</label>
+                                <div class=" col-sm-10 col-md-10 col-lg-10 justify-content-end dragbgChange" style="flex: 0 0 87.3%;max-width: 87.3%;">
+                                    <form id="myForm" method="post" enctype="multipart/form-data">
+
+                                        <div class="drag-wrap m-0">
+                                            <div class="drag-append">
+                                                <div class="drag-file">
+                                                    <div class="file__input" id="file__input" style="height: 100px; border: 3px dotted;">
+                                                        <input class="file__input--file" id="fileUpload1" tabindex="9" name="pdfFile" type="file" multiple="multiple">
+                                                        <label class="file__input--label" for="fileUpload1" data-text-btn="Upload">Drag and Drop a file : </label>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="d-flex flex-wrap" id="file_input">
+                                            </div>
+                                            <input name="__RequestVerificationToken" type="hidden" value="CfDJ8No4CcOAvZtGhwWH9oIjvX_EJxC-IzDPY5Gnx62CA71RdYAlnhAbXfAsPJ31nkeVZkw-eDXWlSAZfjXI9UdBpPGnNYK04jYIvvJ2XzNkpmygwO3kH2_s-Ge3TfBfetr0dEnBbMOymT4vZQDOASH_k-cyUzFQHRpvt5IBvjVWFl34k5OQveAQwHPtlFUPsfhilQ">
+
+                                        </div>
+                                        @*<input type="button" class="btn-upload my-2" style="float: right;" id="btnfileUpload1" onclick="UploadFilePdf(this.event)" value="Upload" />*@
+                                        <input type="hidden" id="hdnFileName" />
+                                        <label id="lblMessage" style="display:none;"></label>
+                                    </form>
+                                    <div id="progress-container" style="display: none;">
+                                        <div id="progress-bar"> <div id="progress-text">0%</div></div>
+                                        <div id="filenameid"></div>
+                                    </div>
+                                    <div id="loader-overlay" class="CopyCenterloader">
+                                        <div id="loader" class="popup-loader">
+                                            <img src="/assets/images/loading-gif.gif" style="max-width: 10%;min-width:10%" />
+                                        </div>
+                                    </div>
+                                    <span class="loginError cst-loader d-flex align-items-center px-1 mt-2" id="uploadError"></span>
+                                </div>
+                                <div class="col-lg-12 col-xl-12  d-none divUpload">
+                                    <div class="modal-body p-0">
+                                        <table class="table table-bordred border select-file-table" id="tblUpload">
+                                            <thead class="">
+                                                <tr>
+                                                    <th>File Name</th>
+                                                    <th style="width: 10%;">Page Count</th>
+                                                    <th style="width: 10%;text-align:center;"># of Copies</th>
+                                                    <th style="width: 12%;text-align:right;">Print Type</th>
+                                                    <th style="width: 12%;text-align:right;"> Page Size</th>
+                                                    <th style="width: 0%;text-align:right;">Delete</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="ftbody" class="">
+                                            </tbody>
+                                        </table>
+                                        <div class="price-body">
+                                        </div>
+                                        <div class="nprice-body">
+                                        </div>
+                                        <div class="color-price-body">
+                                        </div>
+                                        <div class="color-nprice-body">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+                </form>
+                <div class="col-md-12 newPro-btn">
+                    <button id="next-btn" class="newProbtn modl-btn px-4" style="float: right;">Next <i class="fa fa-angle-double-right" aria-hidden="true"></i></button>
+                </div>
+                <!-- Review Order Form -->
+
+                <form action="" class="col-md-12 review-form" style="display: none;">
+                    <input type="hidden">
+                    <div class="row text-left formCls">
+                        <div class="col-lg-6">
+                            <h6>Customer Info</h6>
+                            <div class="form-group row mb-2 border">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Company</label>
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="Company" id="lblModCompany">
+
+                                </label>
+                            </div>
+                            <div class="form-group row mb-2 border">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Contact
+                                </label>
+                                <input type="hidden" id="ModUid" />
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="Name" id="lblModContact">
+                                    +1 635544000
+                                </label>
+                            </div>
+                            <div class="form-group row mb-2 border">
+
+                                <label class="col-xl-3 col-lg-3 col-form-label ">Billing Address</label>
+
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="Addr" id="lblModBillAddr">
+
+                                </label>
+                            </div>
+                            <div class="form-group row mb-2 border">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    <span class="text-danger"></span>
+                                </label>
+                                <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                    <label class="col-form-label" name="City" id="lblModCity">
+                                        Carolina
+                                    </label>
+
+                                </div>
+                                <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                    <label class="col-form-label" name="State" id="lblModState">
+                                        Nevada
+                                    </label>
+
+                                </div>
+
+                                <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+                                    <label class="col-form-label" name="Zip" id="lblModZip">
+                                        9966TA
+                                    </label>
+
+                                </div>
+                            </div>
+
+                            <div class="form-group row mb-2 border">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Phone
+
+                                </label>
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="Phone" id="lblModPhone">
+                                    +1 63577799
+                                </label>
+                            </div>
+                            <div class="form-group row mb-2 border">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Email
+
+                                </label>
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="Email" id="lblModEmail">
+                                    testing@hotmail.com
+                                </label>
+                            </div>
+                            <div class="form-group row mb-2 border">
+                                <label class="col-xl-3 col-lg-3 col-form-label"> Payment Info</label>
+                                <div class="col-lg-9 col-xl-9 col-form-label">
+                                    <select class="form-control" id="modPayment">
+                                        <option>CC</option>
+                                    </select>
+                                </div>
+                            </div>
+                            @*<div class="form-group row mb-2 border">
+                            <label class="col-lg-9 col-xl-9 col-form-label" name="FileName" id="lblModPlan">
+
+                            </label>
+                            </div>
+                            <div class="form-group row mb-2 border">
+                            <label class="col-lg-9 col-xl-9 col-form-label" name="ShipAmt" id="lblModPrice">
+
+                            </label>
+                            </div>*@
+                        </div>
+                        <div class="col-lg-6">
+                            <h6>Order Info</h6>
+
+                            <div class="form-group row mb-2 border ml-1">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Project Name
+                                </label>
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="ProjId" id="lblModProjNo">
+                                    Project No#-504111
+                                </label>
+                            </div>
+                            <div class="form-group row mb-2 border ml-1">
+                                <label class="col-xl-3 col-lg-3 col-form-label" id="">
+                                    P.O.
+                                </label>
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="PO" id="lblModPO">
+                                    400321
+                                </label>
+                            </div>
+                            @*<div class="form-group row mb-3">
+                            <label class="col-xl-3 col-lg-3 col-form-label">
+                            No. of Pages
+                            </label>
+                            <label class="col-lg-9 col-xl-9 col-form-label" name="pages" id="lblModPages">
+                            34
+                            </label>
+                            </div>
+                            <div class="form-group row mb-3">
+                            <label class="col-xl-3 col-lg-3 col-form-label ">
+                            No. of
+                            Copies
+                            </label>
+                            <label class="col-lg-9 col-xl-9 col-form-label" name="Prints" id="lblModCopy">
+                            7
+                            </label>
+                            </div>*@
+                            <div class="form-group row mb-2 border ml-1">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Deadline</label>
+
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="DeliveryDt" id="lblModDLine">
+                                    26/9/2023
+                                </label>
+                                <label hidden="hidden"  name="DeadlineTime" id="lblDeadlineTime">
+                                    
+                                </label>
+                            </div>
+                            <div class="form-group row mb-2 border ml-1">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Delivery
+
+                                </label>
+                                <label class="col-lg-9 col-xl-9 col-form-label" name="HowShip" id="lblModDelivery">
+                                    Pickup
+                                </label>
+                            </div>
+                            <div class="modHideShip">
+                                <div class="form-group row mb-2 border ml-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label ">Shipping Address</label>
+                                    <label class="col-lg-9 col-xl-9 col-form-label" name="NotifyAddress" id="lblModDelAddr">
+                                        88 Scaremento North Carolina
+                                    </label>
+                                </div>
+                                <div class="form-group row mb-2 border ml-1">
+                                    <label class="col-xl-3 col-lg-3 col-form-label">
+                                        <span class="text-danger"></span>
+                                    </label>
+                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                        <label class="col-form-label" id="lblModDelCity">
+                                            Carolina
+                                        </label>
+
+                                    </div>
+                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                        <label class="col-form-label" id="lblModDelState">
+                                            Nevada
+                                        </label>
+
+                                    </div>
+
+                                    <div class="col-lg-3 col-xl-3 mb-lg-0 mb-2">
+
+                                        <label class="col-form-label" id="lblModDelZip">
+                                            9966TA
+                                        </label>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 border my-2">
+                            <div class="form-group row mb-2 mx-0">
+                                <label class="col-xl-3 col-lg-3 col-form-label">
+                                    Additional
+                                    Instructions
+                                </label>
+                                <div class="col-lg-9 col-xl-9" style="text-align: justify;">
+                                    <label id="lblModDelInstruction" name="Instructions">Lorem ipsum dolor sit amet consectetur adipisicing elit. Quibusdam omnis accusamus ratione atque incidunt, ipsa eum eveniet maxime deserunt doloribus possimus aperiam temporibus praesentium quo, inventore vitae. Tempora, maxime. Nam.</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-12 px-0" style="width:100%">
+                            <table class="table table-bordered">
+                                <thead>
+                                    <tr>
+                                        <th>S No.</th>
+                                        <th>File Name</th>
+                                        <th>No. of pages</th>
+                                        <th>No. of copies</th>
+                                        <th>Size</th>
+                                        <th>Print Size</th>
+                                        <th class="text-right">Price</th>
+                                        <th class="text-right">Total Amount</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="prcTbody">
+                                </tbody>
+                                <tfoot id="prcFooter">
+                                    <tr>
+                                        <td class="font-weight-bold text-right" colspan="6">Delivery Charges</td>
+                                        <td class="font-weight-bold text-right" id="delivCharges">$0</td>
+                                    </tr>
+                                    <tr>
+                                        <td class="font-weight-bold text-right" colspan="6">Total</td>
+                                        <td class="font-weight-bold text-right" id="priceTotal">$3024</td>
+                                    </tr>
+                                </tfoot>
+
+                            </table>
+                            <input type="hidden" id="hdnTotalPrice" />
+                        </div>
+                        @* <div class="form-group col-12 pr-0 font-weight-bold">
+                        <span style="float:right;"> Text Message Notifications. <input type="checkbox" class="mx-1"></span>
+                        </div>*@
+                        <div class="form-group col-12 pr-0 newPro-btn" style="width:100%">
+                            <span style="float: right; cursor:pointer;" class="modl-btn newProbtn" onclick="submitData(this.event)"><i class="fa fa-cloud-download" aria-hidden="true"></i> Pay</span>
+                            <button id="prev-btn" style="float: left;" class="modl-btn newProbtn">
+                                <i class="fa fa-angle-double-left" aria-hidden="true"></i> Previous
+                            </button>
+
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal modalthanks" id="thankyou-Modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div class="modal-header p-2">
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+
+            <div class="modal-body">
+                <h1 class="text-success">Thank you</h1>
+                <h4>For using our Copy Center. You will receive a message when your order is complete and ready for pickup or delivery.</h4>
+            </div>
+
+            <div class="modal-footer">
+                <button type="button" class="modl-btn" data-dismiss="modal">Close</button>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<!-- Modal Payment-->
+<div class="modal modalPay" id="thankyou-Modal" role="dialog">
+    <div class="modal-dialog modal-lg">
+        <!-- Modal content-->
+        <div class="modal-content">
+            <div id="loader-overlay" class="PayCopyCenterloader">
+                <div id="loader" class="popup-loader">
+                    <img src="/assets/images/loading-gif.gif" style="max-width: 10%;min-width:10%" />
+                </div>
+            </div>
+            <div class="modal-header cusModal-Header">
+                <h4 class="modal-title card-label font-weight-bolder d-block" id="orderform-head">
+                    Payment Information
+                </h4>
+                <button type="button" class="close" data-dismiss="modal">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-12">
+                        <div class="form-group">
+                            <label for="CardHolderName">CARDHOLDER NAME:</label> <label class="loginError">*</label>
+                            <input type="text" class="form-control" id="CardHolderName" onkeypress="return /[a-z, ,A-Z,]/i.test(event.key)">
+                            <span class="loginError"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="CardNumber">CARD INFORMATION:</label> <label class="loginError">*</label>
+                            <input type="text" class="form-control" placeholder="Card Number" id="CardNumber" onblur="validateInput(this)" maxlength="19" onkeypress="return /[ 0-9]/i.test(event.key)">
+                            <span class="loginError"></span>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="ExpiryDate"></label>
+                        <input type="text" class="form-control mt-2" placeholder="MM/YY" id="ExpiryDate" oninput="formatExpiryDate(this)" onkeypress="return /[0-9,/]/i.test(event.key)" maxlength="5" onblur="ValidateExpiryDate(this)">
+                        <span class="loginError"></span>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label for="CVC"></label>
+                            <input type="text" class="form-control number-only mt-2" placeholder="CVC" id="CVC" maxlength="3">
+                            <span class="loginError"></span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <span style="cursor:pointer" onclick="PayData()" type="button" class="modl-btn">Pay</span>
+            </div>
+        </div>
+    </div>
+</div>
+

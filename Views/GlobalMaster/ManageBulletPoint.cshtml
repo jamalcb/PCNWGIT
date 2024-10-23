@@ -1,0 +1,154 @@
+﻿@model IEnumerable<CountyDescriptionViewModel>
+@{
+    ViewData["Title"] = "ManageBulletPoint";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus {
+            font-size: 14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+
+        .cus-edit-icon {
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+    </style>
+}
+@section Scripts{
+    <script src="~/js/ManageBulletPoints.js"></script>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Manage Bullet Points</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-1">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Membership Package </li>
+                        <li class="breadcrumb-item active">Bullet Points</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Manage Bullet Points</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Package</th>
+                                        <th>User Description</th>
+                                        <th>Region Heading</th>
+                                        <th>Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@item.PackageName</td>
+                                            <td>@item.UserText</td>
+                                            <td>@item.RegionHead</td>
+                                            <td><span title="Edit" class="btn btn-primary icon-edit" onclick="ManageBulletPoints(this, @item.Id)"><i class="fas fa-pencil-alt" aria-hidden="true"></i></span></td>
+                                            @*<td></td>*@
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                            <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                                <div class="modal-dialog">
+                                    <!-- Modal content-->
+                                    <div class="modal-content">
+                                        <div class="modal-header cusModal-Header">
+                                            <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                                Save / Update Details
+                                            </h4>
+                                            <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                        </div>
+                                        <div class="modal-body">
+                                            <form id="frmPrintForm2" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                                <div class="formCls">
+                                                    <span id="message" class="loginError"></span>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Package Name
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input type="hidden" id="idBullet" />
+                                                            <label class="form-control form-control-solid SubPlanName" id="idSubPlanName" autocomplete="on"></label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            User Description
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input class="form-control form-control-solid " type="text"
+                                                                   value="" id="UserText" autocomplete="on" />
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    <div class="form-group row mb-3">
+                                                        <label class="col-xl-3 col-lg-3 col-form-label">
+                                                            Region Head
+                                                        </label>
+                                                        <div class="col-lg-9 col-xl-9">
+                                                            <input class="form-control form-control-solid " type="text"
+                                                                   value="" id="RegionHead" autocomplete="on" />
+                                                            <span class="loginError"></span>
+                                                        </div>
+                                                    </div>
+                                                    
+                                                    <div class="form-group mb-3 text-right">
+                                                        <button id="next-btn" class="newProbtn modl-btn save" onclick="return SaveBulletPoints()">Save</button>
+                                                    </div>
+                                                </div>
+                                            </form>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

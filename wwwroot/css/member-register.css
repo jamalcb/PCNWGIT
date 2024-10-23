@@ -1,0 +1,55 @@
+﻿/* The message box is shown when the user clicks on the password field */
+#error_message {
+	display: none;
+	background: #f1f1f1;
+	color: #000;
+	position: relative;
+	padding: 20px;
+	margin-top: 10px;
+}
+
+ul#error_message li {
+	padding: 2px 5px;
+	font-size: 10px;
+	list-style: none;
+}
+
+/* Add a green text color and a checkmark when the requirements are right */
+.valid {
+	color: green;
+}
+
+.valid:before {
+	position: relative;
+	left: -10px;
+	content: "✔";
+}
+
+/* Add a red text color and an "x" when the requirements are wrong */
+.invalid {
+	color: red;
+}
+
+.invalid:before {
+	position: relative;
+	left: -10px;
+	content: "✖";
+}
+.frm-title .pkg-name h2{
+	font-size:15px !important;
+}
+.frm-title .review-cost {
+	margin: 14px 0;
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+}
+.frm-title .review-cost h4{
+	margin: 14px 0;
+	font-size: 16px;
+	font-weight: 600;
+	letter-spacing: 0.5px;
+}
+.loginError {
+	color:red;
+}

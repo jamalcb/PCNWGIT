@@ -1,0 +1,322 @@
+﻿@model MemberProjectInfo
+@{
+    ViewData["Title"] = "Send Project Files";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+}
+@section Scripts{
+    <link href="/css/aspnetcorefileuploading.css" rel="stylesheet" />
+    <script src="~/js/send-project-file.js"></script>
+    <script src="~/js/aspnetcorefileuploading.js"></script>
+}
+<style>
+    #progress-container {
+        width: 100%;
+        height: 26px;
+        margin: 10px 0 20px 0;
+        border: 1px solid #ccc;
+        display: none;
+    }
+
+    #progress-bar {
+        height: 100%;
+        width: 0;
+        background-color: #3498db;
+        transition: width 0.3s ease;
+    }
+
+    .drag-head {
+        font-size: 20px;
+        margin-bottom: 20px;
+        color: #fff;
+    }
+
+    .drag-wrap {
+        width: 100%;
+        margin-right: auto;
+        border-radius: 2px;
+        background-color: #2e4261;
+        box-shadow: 0 1px 2px 0 #c9ced1;
+        padding: 1.25rem;
+        margin-bottom: 1.25rem;
+    }
+
+    .drag-file {
+        position: relative;
+        max-width: 100%;
+        font-size: 1.0625rem;
+        font-weight: 600;
+    }
+
+    .file__input, .file__value {
+        background-color: rgba(255, 255, 255, 0.1);
+        border-radius: 3px;
+        margin-bottom: 0.875rem;
+        color: rgba(255, 255, 255, 0.3);
+        padding: 0.9375rem 1.0625rem;
+    }
+
+    .file__input--file {
+        position: absolute;
+        opacity: 0;
+        height: 80px;
+        width: 74%;
+    }
+
+    .file__input--label {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 0;
+        cursor: pointer;
+    }
+
+        .file__input--label:after {
+            content: "Choose Files";
+            border-radius: 3px;
+            /* background-color: #536480; */
+            box-shadow: 0 2px 2px 0 rgba(0, 0, 0, 0.18);
+            /* padding: 0.9375rem 1.0625rem; */
+            /* color: white; */
+            cursor: pointer;
+            margin: 8px 0px;
+        }
+
+    .file__value {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        /* color: rgba(255, 255, 255, 0.6); */
+        color: #fff;
+        border: 2px solid #8f8f97;
+        padding: 5px;
+        margin: 5px;
+        font-size: 14px;
+    }
+
+        .file__value:hover:after {
+            color: white;
+        }
+
+        .file__value:after {
+            content: "X";
+            cursor: pointer;
+        }
+
+            .file__value:after:hover {
+                color: white;
+            }
+
+    .file__remove {
+        display: block;
+        width: 20px;
+        height: 20px;
+        border: 1px solid #000;
+    }
+
+    button.drag-upload {
+        float: right;
+        border: none;
+        border-radius: 5px;
+        padding: 7px 18px;
+        color: #fff;
+        background: #536480;
+        font-weight: bold;
+        margin: 4px 0px;
+    }
+
+    .main-heading h2 {
+        font-size: 20px;
+        color: #fff;
+        background: #5c8097;
+        padding: 15px;
+        margin-bottom: 0;
+    }
+
+    .dashboard-box {
+        border: 1px solid #cfcfcf;
+        border-radius: 0 0 10px 10px;
+        padding: 20px 0;
+        margin: 0 0 25px 0;
+        background: #fff;
+    }
+
+    .newPro-btn .newProbtn {
+        color: #000;
+        background: #ff9900;
+        padding: 12px 18px;
+        border-radius: 4px;
+        font-size: 12px;
+    }
+
+    #loader-overlay {
+        display: none;
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1000;
+    }
+
+    .popup-loader {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        /*background-color: black;*/
+        padding: 20px;
+        border-radius: 5px;
+        text-align: center;
+    }
+
+    .disabled {
+        /* Define the styles for disabled span */
+        color: gray;
+        pointer-events: none; /* Disable pointer events to prevent interaction */
+    }
+
+    .newPro-btn .newProbtn {
+        font-size: 14px;
+        font-weight: 600;
+    }
+    .registerlink{
+        cursor:pointer;
+    }
+</style>
+<section>
+    <div class="title-section" style="position: relative;">
+        <div class="overlay"></div>
+        <h3>Send Project Files</h3>
+    </div>
+</section>
+<section style="background: #f4f4f4;">
+    <div id="loader-overlay" style="display:none;">
+        <div id="loader" class="popup-loader">
+            <img src="/assets/images/UploadGIF.gif" style="max-width: 20%;min-width:20%" />
+        </div>
+    </div>
+    <div class="container pb-4">
+        <div class="col-sm-12 text-center text-danger" id="processText"></div>
+        <form name="form" method="post">
+
+
+            <div class="main-heading">
+                <h2>Contact Information</h2>
+            </div>
+            <div class="row dashboard-box">
+                <div class="col-lg-6 defaultform">
+                    <div class="row">
+                        <div class="col-md-12">
+                            <div class="row form-group mb-2">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Contact Name<span class="text-danger">*</span></label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input type="hidden" id="ProjId" name="ProjId" />
+                                    <input type="hidden" asp-for="ProjNumber" />
+                                    <input type="hidden" id="hdnPath" />
+                                    <input type="hidden" id="SucStatus" />
+                                    <input tabindex="1" class="form-control" type="text" asp-for="ContactName" placeholder="Contact Name">
+                                </div>
+                            </div>
+                            <div class="row form-group mb-2">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Project Name<span class="text-danger">*</span></label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input tabindex="2" class="form-control" type="text" placeholder="Project Name" asp-for="Title">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row form-group mb-2">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Contact Email<span class="text-danger">*</span></label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input tabindex="3" id="ConEmail" class="form-control" type="text" asp-for="ContactEmail" placeholder="Contact Email">
+                                    <span class="loginError" style="color:red;" id="InvalidEmail"></span>
+                                </div>
+                            </div>
+                            <div class="row form-group mb-2">
+                                <label class="col-xl-3 col-lg-3 col-form-label">Contact Phone<span class="text-danger">*</span></label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input tabindex="4" class="form-control" type="text" asp-for="ContactPhone" placeholder="(555) 555-5555">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-12">
+                            <div class="row form-group">
+                                <div class="col-xl-12 col-lg-12">
+                                    <label class="signUp-text">
+                                        Sign up for a Free Posting Only account to track status of your project and receive updates
+                                    </label>
+                                    <a id="joinfreebtn" class="registerlink" style="color:#ff9900;">Join for Free</a>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 dragbgChange">
+                    <div class="dragbgChange">
+                        <form id="myForm" method="post" enctype="multipart/form-data">
+
+                            <div class="drag-wrap m-0">
+                                <div class="drag-append">
+                                    <div class="drag-file">
+                                        <div class="file__input" id="file__input">
+                                            <input class="file__input--file" id="fileUpload1" tabindex="9" name="pdfFile" type="file" multiple="multiple">
+                                            <label class="file__input--label" for="fileUpload1" data-text-btn="Upload">Drag and Drop a file : </label>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="d-flex flex-wrap" id="file_input">
+                                </div>
+                                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8No4CcOAvZtGhwWH9oIjvX_EJxC-IzDPY5Gnx62CA71RdYAlnhAbXfAsPJ31nkeVZkw-eDXWlSAZfjXI9UdBpPGnNYK04jYIvvJ2XzNkpmygwO3kH2_s-Ge3TfBfetr0dEnBbMOymT4vZQDOASH_k-cyUzFQHRpvt5IBvjVWFl34k5OQveAQwHPtlFUPsfhilQ">
+
+                            </div>
+                            @*<input type="button" class="btn-upload my-2" style="float: right;" id="btnfileUpload1" onclick="UploadPdfFile()" value="Upload" />*@
+                            <input type="hidden" id="hdnFileName" />
+                            <label id="lblMessage" style="display:none;"></label>
+                        </form>
+                        <div id="progress-container" style="display: none;">
+                            <div id="progress-bar"> <div id="progress-text">0%</div></div>
+                            <div id="filenameid"></div>
+                        </div>
+                        <div id="loader-overlay" class="CopyCenterloader">
+                            <div id="loader" class="popup-loader">
+                                <img src="/assets/images/loading-gif.gif" style="max-width: 10%;min-width:10%" />
+                            </div>
+                        </div>
+                        <span class="loginError d-flex align-items-center px-1 mt-2" id="uploadError"></span>
+                    </div>
+                </div>
+                
+                <div class="col-md-12">
+                    <div id="progress-container" style="display: none;">
+                        <div id="progress-bar"> <div id="progress-text">0%</div></div>
+                        <div id="filenameid"></div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                        <div class="newPro-btn">
+                            @* <button type="button" class="drag-upload newProbtn" id="BtnUpload" onclick="uploadFiles()">Upload</button> *@
+                            <button type="button" class="drag-upload newProbtn" onclick="UploadFile()" id="Uploadfiles" style="display:none">Submit</button>
+                        </div>
+                    
+                </div>
+            </div>
+        </form>
+
+    </div>
+
+</section>
+
+@*<h1>Let’s Upload Something!</h1>
+<form id="form" name="form" action="/Home/DemoFileUploada" enctype="multipart/form-data" method="post">
+    <div class="buttons">
+        <div class="upload-button">
+            <div class="label">Click me!</div>
+            <input id="files" name="files" type="file" size="1" multiple onchange="uploadFiles('files');" />
+        </div>
+    </div>
+</form>*@
+@*<div class="col-sm-12 text-center" id="processText"></div>
+<div id="progress" class="progress"><div id="bar" class="bar"></div><div id="label" class="label">0%</div></div>
+<br /><br />*@

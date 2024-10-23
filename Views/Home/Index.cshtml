@@ -1,0 +1,697 @@
+﻿@{
+    ViewData["Title"] = "Home Page";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+}
+@if (!string.IsNullOrEmpty(ViewBag.SuccessMessage))
+{
+    <script>
+        // JavaScript to display a success alert using the message from ViewBag
+        window.onload = function () {
+            var successMessage = "@ViewBag.SuccessMessage";
+            if (successMessage) {
+                alert(successMessage);
+            }
+        };
+    </script>
+}
+@section MembershipScripts{
+    <script src="~/js/index.js"></script>
+        }
+    @section google{
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&amp;display=swap">
+}
+@* 
+    @section IndexJs{
+    <script type="text/javascript" charset="UTF-8" src="https://maps.googleapis.com/maps-api-v3/api/js/50/5/common.js"></script>
+    <script type="text/javascript" charset="UTF-8" src="https://maps.googleapis.com/maps-api-v3/api/js/50/5/util.js"></script>
+} *@
+
+    @section IndexBottomjs{
+    <script src="//maps.googleapis.com/maps/api/js?key={YOUR_API_KEY}"></script>
+}
+
+
+    <section class="bannersec">
+    <div class="overlay"></div>
+    
+        <div class="container">
+            <div class="row">
+            <div class="col-md-12" id="AboutUs">
+                    <div class="d-flex align-items-center justify-content-start flex-column bannertxt">
+                        <h1>BID - <span>BUILD</span> - REPEAT</h1>
+                        <span>The Pacific Northwest's most  valuable resource for construction industry professionals.</span>
+
+                    <p class=""><span id="spanProjCount"></span> Commercial and Government Construction Projects bidding right now in the Pacific Northwest</p>
+                     <marquee width="50%" direction="left" id="SpeMsgMain" style="color:#ff9900;letter-spacing:0.4px;font-size: 18px;margin: 6px 0;"> </marquee> 
+                        <div class="bannerbtns">
+                        @if (User != null)
+                        {
+                            if (User.Identity.Name != null)
+                            {
+                                @if (User.IsInRole("Member"))
+                                {
+                                    <a href="/Member/FindProjectHere">Find your next project here <span>Membership Required</span></a>
+                                }
+                                if (User.IsInRole("Staff"))
+                                {
+                                    <a href="/StaffAccount/Dashboard">Find your next project here <span>Membership Required</span></a>
+                                }
+
+                            }
+                            else
+                            {
+                                <a href="/Member/FindProjectHere">Find your next project here <span>Membership Required</span></a>
+                            }
+                        }
+                        else
+                        {
+                            <a href="/Member/FindProjectHere">Find your next project here <span>Membership Required</span></a>
+                        }
+                       
+                        @if (User != null)
+                        {
+                            if (User.Identity.Name != null)
+                            {
+                                @if (User.IsInRole("Member"))
+                                {
+                                    <a href="/Member/PostProjectHere">Need bids? Post your project here <span>It's Free</span></a>
+                                }
+                                if (User.IsInRole("Staff"))
+                                {
+                                    <a href="/Project/EditProjectInfo">Need bids? Post your project here <span>It's Free</span></a>
+                                }
+
+                            }
+                            else
+                            {
+                                <a href="/Home/SendProjectFiles">Need bids? Post your project here <span>It's Free</span></a>
+                            }
+                        }
+                        else
+                        {
+                            <a href="/Home/SendProjectFiles">Need bids? Post your project here <span>It's Free</span></a>
+                        }
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <ul class="bannerlist">
+                        <li>Contractors</li>
+                        <li>Subcontractors</li>
+                        <li>Suppliers</li>
+                        <li>Estimators</li>
+                        <li>Manufacturers</li>
+                        <li>Architects</li>
+                        <li>Engineers</li>
+                        <li>Governments</li>
+                    </ul>
+                </div>
+                <div class="position-realative">
+                <div class="new-contact-head top-section">
+                        <div class="container">
+                        <div class="row">
+                            <div class="col-md-7">
+                                <div class="d-flex align-items-center justify-content-start rightsec">
+                                    
+                                    <!--Start of Tawk.to Script-->
+                                    <script type="text/javascript">
+                                        var Tawk_API = Tawk_API || {};
+                                        Tawk_LoadStart = new Date();
+
+                                        (function () {
+                                            var s1 = document.createElement("script"), s0 = document.getElementsByTagName("script")[0];
+                                            s1.async = true;
+                                            s1.src = 'https://embed.tawk.to/64368f154247f20fefeb30f6/1gtqhtruq';
+                                            s1.charset = 'UTF-8';
+                                            s1.setAttribute('crossorigin', '*');
+                                            s0.parentNode.insertBefore(s1, s0);
+                                        })();
+                                    </script>
+
+                                    <!--End of Tawk.to Script-->
+                                    <a href="#">
+                                        <span>
+                                            <i class="fa-solid fa-phone-volume"></i>
+                                        </span>
+                                        <span>Have A Question? Call (503) 650-0148</span>
+                                    </a>
+                                    <a href="mailto:info@plancenternw.com">
+                                        <span>
+                                            <i class="fa-solid fa-envelope"></i>
+                                        </span>
+                                        <span>Email: info@plancenternw.com</span>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-md-5 small-device">
+                                <div class="d-flex align-items-center justify-content-end leftsec">
+                                    <a class="livchat" onclick="LiveChat()" id="liveChatButton" style="cursor:pointer">
+                                        <img src="/assets/images/live-chat1.png" height="25" width="25" />
+                                        <i class="fa fa-phone"></i>
+                                        Live Chat Support : Mon-Fri / 7 AM - 4 PM PT
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="partnersec d-none">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="txtsec pl-0 text-center">
+                        <h2>Trusted Partners</h2>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="slideshow-container main-img-box">
+                        <div class="mySlides">
+                            <img src="/assets/images/BESThq.png" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/CSIWebAd2.jpg" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/CTCivilTakeoffsBanner.jpg" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/PamplinMediaGroup.png" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/PileKingBanner.jpg" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/RJBANNER.jpg" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/Statewide_Banner.jpg" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/Sterling-Pacific_CPC_banner_ad.jpg" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/CESSCO.png" />
+                        </div>
+                        <div class="mySlides">
+                            <img src="/assets/images/QuickEye.png" />
+                        </div>
+                    </div>
+
+                    <div class="small-box ">
+                        <div class="small-box-one dot">
+                            <img src="/assets/images/ThumbBESThq.jpg"/>
+                        </div>
+                        <div class="small-box-two dot">
+                            <img src="/assets/images/CSIWebAdTHUMB-01.jpg" />
+                        </div>
+                        <div class="small-box-three dot">
+                            <img src="/assets/images/CTlogo.png" />
+                        </div>
+                        <div class="small-box-four dot">
+                            <img src="/assets/images/PamplinMediaGroupThumb.jpg" />
+                        </div>
+                        <div class="small-box-five dot">
+                            <img src="/assets/images/PileKingThumb.jpg" />
+                        </div>
+                        <div class="small-box-six dot">
+                            <img src="/assets/images/RJLOGO.jpg" />
+                        </div>
+                        <div class="small-box-seven dot">
+                            <img src="/assets/images/Statewide_Thumb.jpg" />
+                        </div>
+                        <div class="small-box-eight dot">
+                            <img src="/assets/images/Sterling-Pacific_CPC_thumbnail_ad.jpg" />
+                        </div>
+                        <div class="small-box-nine dot">
+                            <img src="/assets/images/ThumbCESSCO.jpg" />
+                        </div>
+                        <div class="small-box-ten dot">
+                            <img src="/assets/images/ThumbQuickEye.jpg" />
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+    </section>
+
+    <section class="featuresec">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="secheading">
+                        <span>SERVICES WE PROVIDE</span>
+                    <h2 id="membershipInfo">Membership Features</h2>
+                    </div>
+                </div>
+                <div class="col-md-12">
+                    <div class="listitem">
+                        <div class="item">
+                            <img src="~/assets/images/update.png" />
+                            <h3>Targeted Daily Updates</h3>
+                            <p>Get notified of new projects bidding in your market every weekday.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/bidding.png" />
+                            <h3>Bidding Information</h3>
+                            <p>Access all the project information you need to successfully bid projects.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/project.png" />
+                            <h3>Projects Documents</h3>
+                            <p>Viewable and downloadable plans, specs and addenda.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/scanning.png" />
+                            <h3>Project Tracking</h3>
+                            <p>Follow updates to bidding information with your customizable dashboard.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/data-analytics.png" />
+                            <h3>Bid Results</h3>
+                            <p>Follow progress of successful bids and stay competitive.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/document-holder.png" />
+                            <h3>Plan Holder Lists</h3>
+                            <p>Know who's bidding and find opportunities.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/data-source.png" />
+                            <h3>Searchable Projects Data</h3>
+                            <p>Customize and filter the data for your specific target market.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/directory.png" />
+                            <h3>Member Directory</h3>
+                            <p>Collaborate and connect with other Plan Center members.</p>
+                        </div>
+                        <div class="item">
+                            <img src="~/assets/images/unlimited-storage.png" />
+                            <h3>Unlimited Downloads</h3>
+                            <p>No limit on the project downloads within your regional subscriptions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="ctasec">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 pr-0 cusLeft-padd">
+                <img class="img-fluid" src="~/assets/images/Home_hardhats.jpg" />
+                </div>
+            <div class="col-md-8 pl-0 cusright-padd">
+                    <div class="ctatxt">
+                        <i class="fa fa-phone"></i>
+                        <h3>Need Help? Call Us Today (503) 650-0148</h3>
+                        <span>Call Us Today! We are here to answer your questions.</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+
+    <section class="abtsec">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="abtimg">
+                        <img src="/assets/images/job-site-crop.jpg" />
+                        <img src="/assets/images/women-work.jpg" class="fltimg" />
+                    </div>
+                </div>
+                <div class="col-md-6" id="About_Us">
+                    <div class="txtsec">
+                        <span>PLAN CENTER NORTHWEST</span>
+                        <h2>Supporting the Construction Industry in the Pacific Northwest</h2>
+                        <p>
+                            Plan Center Northwest is the TRUSTED source in the Pacific Northwest for reliable,
+                            comprehensive and up-to-date construction information for both commercial and government projects.
+                            Our service connects contractors, subcontractors, architects, engineers, manufacturers, and suppliers
+                        with timely bidding information helping your company save time and maintain your competitive edge.
+                            <span>We also offer fast turn-around for both small and large format, black and white printing. </span>
+                            <span>
+                                Contact us today to find out how Plan Center Northwest can help your business find the construction
+                                information it needs to thrive and grow.
+                            </span>
+
+                        </p>
+                        <a href="#" class="cmnbtn"><i class="fa-solid fa-phone"></i> Contact Us</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    @*<section class="vc_row bg-cover pt-70 pb-20 d-flex flex-wrap align-items-center bg-none liquid-parallax-bg"
+         style="background-image: url('~/assets/images/header-hm-back.jpg');"
+         data-parallax="true"
+         data-parallax-options="{&quot;parallaxBG&quot;: true, &quot;overflowHidden&quot;: true}">
+        <div class="liquid-parallax-container">
+
+            <figure class="liquid-parallax-figure">
+                <img src="~/assets/images/header-hm-back.jpg" style="width: 100%;  height: 140%;"/>
+            </figure>
+        </div>
+
+
+        <div class="container cus-cont">
+
+            <div class="row d-flex flex-wrap align-items-center mt-md-8 mb-md-9" id="AboutUs">
+
+
+                <div class="lqd-column col-md-9 col-xs-12 mb-5 mb-md-0">
+
+                    <hr class="border-color-primary border-width-2 w-5 ml-0">
+
+                    <div class="ld-fancy-heading cus-head">
+                        <p class="text-white font-size-24 lh-16">
+                                    <span class="ld-fh-txt">
+                                        Your #1 Source for Commercial and Goverment Constructions                                                  Projects Bidding Right now in the Pacific North West
+                                    </span>
+                                </p>
+                        <p></p>
+                        <h1 class="font-weight-bold text-white lh-1 mb-4 ltr-sp--015" data-fittext="true"
+                        data-fittext-options="{&quot;compressor&quot;:0.6,&quot;maxFontSize&quot;:100,&quot;minFontSize&quot;:40}"
+                        style="font-size: 61.6667px;">
+                            <span class="ld-fh-txt cus-bn">BID - BUILD - REPEAT </span>
+                        </h1>
+                    </div>
+
+                    <div class="row">
+                        <div class="lqd-column col-md-12">
+
+                            <div class="ld-fancy-heading cus-head">
+                                <p class="text-white font-size-24 lh-16 mb-5">
+                                    <span class="ld-fh-txt">
+                                        We build a community for our clients, our partners,
+                                        our team, and our subcontractors.
+                                    </span>
+                                </p>
+                            </div>
+                            <div class="d-flex justify-content-between cus-header-btn">
+                            <a href="#"
+                           class="cover-btn head-btn-1 btn btn-solid text-uppercase btn-bordered border-none font-size-14 font-weight-bold text-dark"
+                           data-localscroll="true"
+                           data-localscroll-options="{&quot;scrollBelowSection&quot;:true}">
+                                <span style="padding: 12px 15px;">
+                                    <span class="btn-txt">Find your next project here</span>
+                                </span>
+                            </a>
+
+                            <a asp-action="Register" asp-controller="Member" asp-route-isFromFree="true"
+                           class="cover-btn head-btn-2 btn btn-solid text-uppercase btn-bordered border-none font-size-14 font-weight-bold text-dark"
+                           >
+                                <span style="padding: 12px 15px;">
+                                    <span class="btn-txt">Need bids? Post your project here ! (it's free)</span>
+                                </span>
+                            </a>
+                            </div>
+                        </div><!-- /.lqd-column col-md-7 -->
+                    </div><!-- /.row -->
+
+                </div><!-- /.lqd-column col-md-9 col-xs-12 -->
+                <div class="cus-sideList font-size-20 text-white lh-16">
+                    <ul>
+                        <li>A service for</li>
+                        <li>* Contractors</li>
+                        <li>* Subcontractors</li>
+                        <li>* Suppliers</li>
+                        <li>* Estimators</li>
+                        <li>* Manufacturers</li>
+                        <li>* Architects</li>
+                        <li>* Engineers</li>
+                        <li>* Governments</li>
+                    </ul>
+                </div>
+
+
+
+            </div><!-- /.row -->
+
+
+        </div><!-- /.container -->
+
+        <div class="lqd-sticky-sentinel invisible pos-abs" style="top: auto; bottom: 111px;"></div>
+    </section>
+*@
+    @*<section class="vc_row pt-95 pb-95">
+
+        <div class="container">
+
+            <div class="row">
+                <div class="lqd-column col-md-6">
+                    <!-- /.ld-fancy-heading -->
+
+
+
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="lqd-column col-lg-6 col-md-6 mb-200 mb-md-0">
+                    <div class="lqd-column">
+                        <div class="ld-fancy-heading text-uppercase">
+                            <h6 class="font-size-13 text-fade-dark-06 ltr-sp-2">
+                                <span class="ld-fh-txt">Plan Center Northwest</span>
+                            </h6>
+                        </div>
+                    </div>
+                    <hr class="border-color-primary border-width-2 w-10 ml-0 mt-2" style="margin-bottom: 0px;">
+                    <p class="text-dark" style="color: blue !important;">
+                        Supporting the Construction Industry in the PNW since 1993
+                    </p>
+
+                    <div class="ld-fancy-heading">
+                        <p>
+                            Plan Center Northwest is the TRUSTED source in the Pacific Northwest for reliable, comprehensive and upto-date construction information for both commercial and government projects. Out service connects contractors, sub contractors, architects, engineers, manufacturers, and suppliers with timely bidding information helping your comapny to save time and maintain your competitive edge.
+                        </p>
+                        <p>
+                            We also offer fast turn-around for both samll and large format, black and white print service.
+                        </p>
+                        <p>
+                            Contact us today to find out how Plan Center Northwest can help your business find the construction information it needs thrive and grow.
+                        </p>
+                    </div><!-- /.ld-fancy-heading -->
+
+                </div><!-- /.lqd-column col-lg-5 col-md-6 -->
+
+                <div class="lqd-column col-lg-6 col-md-6">
+
+                    <img src="~/assets/images/hm-img2.jpg" style="width: 100%;">
+
+                </div><!-- /.lqd-column col-lg-5 col-md-6 col-lg-offset-2 -->
+
+            </div><!-- /.row -->
+
+
+
+        </div><!-- /.container -->
+
+    </section>*@
+
+    @* <section class="vc_row pt-55 pb-50 hmpg-section3" id="membershipInfo">
+        <div class="container">
+
+
+            <h2 class="font-weight-light mb-4 mb-md-0">MEMBERSHIP FEATURES</h2>
+
+
+            <div class="row ca-initvalues-applied lqd-animations-done" data-custom-animations="true"
+             data-ca-options="{&quot;triggerHandler&quot;:&quot;inview&quot;,&quot;animationTarget&quot;:&quot;.lqd-column&quot;,&quot;duration&quot;:&quot;1200&quot;,&quot;delay&quot;:&quot;160&quot;,&quot;easing&quot;:&quot;easeOutQuint&quot;,&quot;direction&quot;:&quot;forward&quot;,&quot;initValues&quot;:{&quot;translateX&quot;:-37,&quot;opacity&quot;:0},&quot;animations&quot;:{&quot;translateX&quot;:0,&quot;opacity&quot;:1}}">
+
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Targeted Daily Updates</h3>
+                            <p>Get notified of new projects bidding in your market every weekday.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Bidding Information</h3>
+                            <p>Access all the project information you need to successfully bid projects.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Projects Documents</h3>
+                            <p>Viewable and downloadable plans,specs,and aggenda.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+
+            </div><!-- /.row -->
+
+            <div class="row ca-initvalues-applied lqd-animations-done" data-custom-animations="true"
+             data-ca-options="{&quot;triggerHandler&quot;:&quot;inview&quot;,&quot;animationTarget&quot;:&quot;.lqd-column&quot;,&quot;duration&quot;:&quot;1200&quot;,&quot;delay&quot;:&quot;160&quot;,&quot;easing&quot;:&quot;easeOutQuint&quot;,&quot;direction&quot;:&quot;forward&quot;,&quot;initValues&quot;:{&quot;translateX&quot;:-37,&quot;opacity&quot;:0},&quot;animations&quot;:{&quot;translateX&quot;:0,&quot;opacity&quot;:1}}">
+
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Project Tracking</h3>
+                            <p>Follow updates to bidding information with your customizable dashboard.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Bid Results </h3>
+                            <p>Follow progress of successful bids and stay competitive.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Plan Holder Lists</h3>
+                            <p>Know who's bidding  and find opportunities.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Searchable Projects Data </h3>
+                            <p>Costomize and filter  the data for your specific target market.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Member Directory</h3>
+                            <p>Collborate and connect with other Plan Center members.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+                <div class="lqd-column col-md-4 lqd-unit-animation-done"
+                 style="transform: translateX(0px); opacity: 1;">
+
+                    <div class="iconbox iconbox-side iconbox-circle iconbox-sm iconbox-heading-sm"
+                     data-plugin-options="{&quot;color&quot;: &quot;#fff&quot;}">
+                        <div class="iconbox-icon-wrap">
+                            <span class="iconbox-icon-container bg-secondary">
+                                <span class="iconbox-icon-hover-bg bg-primary"></span>
+                                <i class="icon-ion-ios-checkbox-outline"></i>
+                            </span>
+                        </div><!-- /.iconbox-icon-wrap -->
+                        <div class="contents">
+                            <h3>Unlimited Downloads</h3>
+                            <p>No limit on the project downloads within your regional subscriptions.</p>
+                        </div><!-- /.contents -->
+                    </div><!-- /.iconbox -->
+
+                </div><!-- /.col-md-4 -->
+
+            </div>
+        </div><!-- /.container -->
+    </section>*@
+
+

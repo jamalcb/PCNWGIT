@@ -1,0 +1,174 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Reports/Data</h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Widgets -->
+        <div class="row">
+            
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#company-db"
+                                                   aria-expanded="true" aria-controls="collapseThree_17">
+                                                    <i class="fas fa-database mr-1"></i> Company Database
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="company-db" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/Report/AllMembers"><i class="fas fa-angle-double-right pr-2"></i> All Members</a></li>
+                                                    <li><a href="/Report/Contractor"><i class="fas fa-angle-double-right pr-2"></i> Contractors </a></li>
+                                                    <li><a href="/Report/ArchEngineer"><i class="fas fa-angle-double-right pr-2"></i> Architects/Engineers </a></li>
+                                                   @* <li><a href="#"><i class="fas fa-angle-double-right pr-2"></i> Agencies </a></li>*@
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#data-usage"
+                                                   aria-expanded="true" aria-controls="collapseThree_17">
+                                                    <!-- <i class="fas fa-file-download mr-1"></i> -->
+                                                    <i class="material-icons">assessment</i> Data Usage Report
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="data-usage" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href=""><i class="fas fa-angle-double-right pr-2"></i>Data Usage Report</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#project-report"
+                                                   aria-expanded="false" aria-controls="collapseThree_17">
+                                                    <!-- <i class="fas fa-file-archive mr-1"></i> -->
+                                                    <i class="material-icons">insert_drive_file</i> Project Reports
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="project-report" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/Report/ProjectStats"><i class="fas fa-angle-double-right pr-2"></i>Project Statistics </a></li>
+                                                    @*<li><a href="#"><i class="fas fa-angle-double-right pr-2"></i>PHL Reports</a></li>*@
+                                                    <li><a href="/Report/UnpublishedProjectRpt"><i class="fas fa-angle-double-right pr-2"></i>Unpublished Project Report</a></li>
+                                                    <li><a href="/Report/ActiveProjectRpt"><i class="fas fa-angle-double-right pr-2"></i>Active Project Report </a></li>
+                                                    <li><a href="/Report/PastProjectRpt"><i class="fas fa-angle-double-right pr-2"></i>Past Project Report</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-6 col-md-6 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#market-report"
+                                                   aria-expanded="false" aria-controls="collapseThree_17">
+                                                    <i class="fas fa-file-signature mr-1"></i> Marketing Reports
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="market-report" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/Report/ActiveMembers"><i class="fas fa-angle-double-right pr-2"></i>Active Member Report</a></li>
+                                                    <li><a href="/Report/InactiveMembers"><i class="fas fa-angle-double-right pr-2"></i>Expired/Inactive Member Report</a></li>
+                                                    <li><a href="/Report/NewMembers"><i class="fas fa-angle-double-right pr-2"></i>New Member Report </a></li>
+                                                    <li><a href="/Report/InCompleteMembers"><i class="fas fa-angle-double-right pr-2"></i>Incomplete Signups</a></li>
+                                                    <li><a href="/Report/TrialMembers"><i class="fas fa-angle-double-right pr-2"></i>Free Trial Members</a></li>
+                                                    <li><a href="/Report/MemberUsage"><i class="fas fa-angle-double-right pr-2"></i>Member Usage </a></li>
+                                                    <li><a href="/Report/DailySubscriptions"><i class="fas fa-angle-double-right pr-2"></i>Daily Subscriptions</a></li>
+                                                    <li><a href="/Report/SearchReport"><i class="fas fa-angle-double-right pr-2"></i>Search Report</a></li>
+                                                    <li><a href="/Report/Communication"><i class="fas fa-angle-double-right pr-2"></i>Communication</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

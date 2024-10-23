@@ -1,0 +1,284 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Admin Dashboard</h4>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- Widgets -->
+        <div class="row">
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#company-db"
+                                                   aria-expanded="true" aria-controls="collapseThree_17">
+                                                    <i class="fas fa-database mr-1"></i> Admin Reports
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="company-db" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/globalmaster/RenewalProjection"><i class="fas fa-angle-double-right pr-2"></i>Income Projection</a></li>
+                                                    <li><a href="/GlobalMaster/LoginReport"><i class="fas fa-angle-double-right pr-2"></i> Login Reports </a></li>
+                                                    <li><a href="/GlobalMaster/LogOff"><i class="fas fa-angle-double-right pr-2"></i> Auto Logoff </a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#data-usage"
+                                                   aria-expanded="true" aria-controls="collapseThree_17">
+                                                    <!-- <i class="fas fa-file-download mr-1"></i> -->
+                                                    <i class="material-icons">assessment</i> Notification
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="data-usage" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/GlobalMaster/ProjectNotification"><i class="fas fa-angle-double-right pr-2"></i> Project Update </a></li>
+                                                    <li><a href="/GlobalMaster/MemberSignUp"><i class="fas fa-angle-double-right pr-2"></i> Sign Up </a></li>
+                                                    <li><a href="/GlobalMaster/MembershipExpire"><i class="fas fa-angle-double-right pr-2"></i> Membership Expire </a></li>
+                                                    <li><a href="/GlobalMaster/PrintOrder"><i class="fas fa-angle-double-right pr-2"></i> Print Order</a></li>
+                                                    <li><a href="/GlobalMaster/PHLUpdate"><i class="fas fa-angle-double-right pr-2"></i> PHL Update</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#project-report"
+                                                   aria-expanded="false" aria-controls="collapseThree_17">
+                                                    <!-- <i class="fas fa-file-archive mr-1"></i> -->
+                                                    <i class="material-icons">insert_drive_file</i> File Storage Control
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="project-report" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/GlobalMaster/PastProject"><i class="fas fa-angle-double-right pr-2"></i> Past Project </a></li>
+                                                    <li><a href="/GlobalMaster/CopyCenter"><i class="fas fa-angle-double-right pr-2"></i> Copy Center</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#market-report"
+                                                   aria-expanded="false" aria-controls="collapseThree_17">
+                                                    <i class="fas fa-file-signature mr-1"></i> Project Information
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="market-report" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/GlobalMaster/ProjectType"><i class="fas fa-angle-double-right pr-2"></i> Project Type</a></li>
+                                                    <li><a href="/GlobalMaster/ProjectSubType"><i class="fas fa-angle-double-right pr-2"></i> Project Sub-Type</a></li>
+                                                    <li><a href="/GlobalMaster/EntityType"><i class="fas fa-angle-double-right pr-2"></i> Entity Type</a></li>
+                                                    <li><a href="/GlobalMaster/PHLType"><i class="fas fa-angle-double-right pr-2"></i> PHL/Bidder Type</a></li>
+
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#membership-pack"
+                                                   aria-expanded="false" aria-controls="collapseThree_17">
+                                                    <i class="fas fa-file-signature mr-1"></i> Membership Package
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="membership-pack" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/GlobalMaster/ManagePricing"><i class="fas fa-angle-double-right pr-2"></i> Manage Pricing</a></li>
+                                                    <li><a href="/GlobalMaster/ManageCounties"><i class="fas fa-angle-double-right pr-2"></i> Manage Counties</a></li>
+                                                    <li><a href="/GlobalMaster/ManageCountyContent"><i class="fas fa-angle-double-right pr-2"></i> Manage County Content</a></li>
+                                                    <li><a href="/GlobalMaster/ManagePricing"><i class="fas fa-angle-double-right pr-2"></i> Manage Pricing</a></li>
+                                                    <li><a href="/GlobalMaster/AdditionalPricing"><i class="fas fa-angle-double-right pr-2"></i> Additional Pricing</a></li>
+                                                    <li><a href="/GlobalMaster/ManageDiscount"><i class="fas fa-angle-double-right pr-2"></i> Manage Discount</a></li>
+                                                    <li><a href="/GlobalMaster/ManageBulletPoint"><i class="fas fa-angle-double-right pr-2"></i> Bullet Points</a></li>
+                                                    <li><a href="/GlobalMaster/ManageFreeTrialTab"><i class="fas fa-angle-double-right pr-2"></i> Show/Hide Free Trial</a></li>
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#copy-center"
+                                                   aria-expanded="false" aria-controls="collapseThree_17">
+                                                    <i class="fas fa-file-signature mr-1"></i> Copy Center Data
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="copy-center" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/GlobalMaster/ManageCopyCenterPricing"><i class="fas fa-angle-double-right pr-2"></i> Copy Center Price</a></li>
+                                                    <li><a href="/GlobalMaster/ManageCopyCenterSize"><i class="fas fa-angle-double-right pr-2"></i> Copy Center Size</a></li>
+                                                    <li><a href="/GlobalMaster/DeliveryType"><i class="fas fa-angle-double-right pr-2"></i> Delivery Type</a></li>
+                                                    <li><a href="/GlobalMaster/DeliverySubType"><i class="fas fa-angle-double-right pr-2"></i> Delivery SubType</a></li>
+                                                
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-4 col-md-4 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="body cus-report-body">
+                        <div class="row clearfix">
+                            <div class="col-xs-12 ol-sm-12 col-md-12 col-lg-12 cus-report-card mb-0">
+                                <div class="panel-group" id="accordion_17" role="tablist"
+                                     aria-multiselectable="true">
+                                    <div class="panel panel-col-teal">
+                                        <div class="panel-heading" role="tab" id="headingThree_17">
+                                            <h4 class="panel-title">
+                                                <a class="collapsed" role="button" data-toggle="collapse"
+                                                   data-parent="#accordion_17" href="#others"
+                                                   aria-expanded="false" aria-controls="collapseThree_17">
+                                                    <i class="fas fa-file-signature mr-1"></i> Others
+                                                </a>
+                                            </h4>
+                                        </div>
+                                        <div id="others" class="panel-collapse collapse show" role="tabpanel"
+                                             aria-labelledby="headingThree_17">
+                                            <div class="panel-body">
+                                                <ul class="reports-list">
+                                                    <li><a href="/GlobalMaster/SpecialMsg"><i class="fas fa-angle-double-right pr-2"></i> Special Message </a></li>
+                                                    <li><a href="/GlobalMaster/DailyMailer"><i class="fas fa-angle-double-right pr-2"></i> Daily Mailer </a></li>
+                                                    <li><a href="/GlobalMaster/Faq"><i class="fas fa-angle-double-right pr-2"></i> FAQ </a></li>
+                                                    <li><a href="/GlobalMaster/CareerPosting"><i class="fas fa-angle-double-right pr-2"></i> Carrier Posting </a></li>
+                                                    <li><a href="/GlobalMaster/HolidaySetting"><i class="fas fa-angle-double-right pr-2"></i> Holiday Setting</a></li>
+                                                    
+                                                </ul>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

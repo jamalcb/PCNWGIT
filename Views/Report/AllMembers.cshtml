@@ -1,0 +1,88 @@
+﻿@model IEnumerable<AllMembers>
+@{
+    ViewData["Title"] = "AllMembers";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+<script>
+    $(document).ready(function () {
+        $('#tableExport tbody tr').each(function () {
+            var status = $(this).find(".statuss").html();
+            if (status == "Active") {
+                $(this).find(".statuss").addClass("text-success font-weight-bold")
+            }else{
+                $(this).find(".statuss").addClass("text-danger  font-weight-bold")
+            }
+        });
+    });
+</script>
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">All Members</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Company DataBase</li>
+                        <li class="breadcrumb-item active">All Member</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Company</th>
+                                        <th>User ID</th>
+                                        <th>Contact</th>
+                                        <th>Phone</th>
+                                        <th>Status</th>
+                                        <th>Option</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        string status = "";
+                                        bool inactive = item.Inactive != null ? (bool)item.Inactive : false;
+                                        if (item.Inactive == true)
+                                        {
+                                            status = "Inactive";
+                                        }
+                                        else
+                                        {
+                                            status = "Active";
+                                        }
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.Company)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.ConId)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.Contact)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.CompanyPhone)</td>
+                                            <td class="statuss">@Html.DisplayFor(modelItem => status)</td>
+                                            <td>Option @Html.DisplayFor(modelItem => item.MemberType)</td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

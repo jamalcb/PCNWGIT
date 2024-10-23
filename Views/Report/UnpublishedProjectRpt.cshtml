@@ -1,0 +1,73 @@
+﻿@model List<UnpublishedProject>
+@{
+    ViewData["Title"] = "UnpublishedProjectRpt";
+    Layout = "~/Views/Shared/_Layout-Reports.cshtml";
+}
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Unpublished Project</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Report/Dashboard">Reports</a>
+                        </li>
+                        <li class="breadcrumb-item active">Projects Reports</li>
+                        <li class="breadcrumb-item active">Unpublished Project</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header">
+                        <h2>
+                            <strong>Unpublished Project Report</strong>
+                        </h2>
+                    </div>
+                    <div class="body">
+                        <div class="table-responsive">
+                            <table id="tableExport" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100">
+                                <thead>
+                                    <tr>
+                                        <th>Project Name</th>
+                                        <th>Bid Date</th>
+                                        <th>Arrival Date</th>
+                                        <th>Publish</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="active-table-body">
+                                    @foreach (var item in Model)
+                                    {
+                                        <tr>
+                                            <td>@Html.DisplayFor(modelItem => item.ProjectName)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.BidDate)</td>
+                                            <td>@Html.DisplayFor(modelItem => item.ArrivalDate)</td>
+                                            <td for="thing">
+                                                <label class="form-check-label">
+                                                    <input class="form-check-input" type="checkbox" value="" onchange="ChangePublish(@item.ProjectId)">
+                                                    <span class="form-check-sign">
+                                                        <span class="check"></span>
+                                                    </span>
+                                                </label>
+                                            </td>
+                                        </tr>
+                                    }
+
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+

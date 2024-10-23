@@ -1,0 +1,16 @@
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace PCNW.Models
+{
+    public partial class AspnetProfile
+    {
+        [Key]
+        public Guid UserId { get; set; }
+        public string PropertyNames { get; set; } = null!;
+        public string PropertyValuesString { get; set; } = null!;
+        public byte[] PropertyValuesBinary { get; set; } = null!;
+        public DateTime LastUpdatedDate { get; set; }
+
+        public virtual AspnetUser User { get; set; } = null!;
+    }
+}

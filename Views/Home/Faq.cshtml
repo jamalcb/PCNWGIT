@@ -1,0 +1,61 @@
+﻿@using Microsoft.AspNetCore.Html;
+@model IEnumerable<TblFAQ>;
+@{
+    ViewData["Title"] = "FAQ1";
+    Layout = "~/Views/Shared/_Layout-Home.cshtml";
+}
+
+@section CustomCSS{
+    <style>
+        p.faq-text > a{
+            color: var(--color-primary);
+        }
+    </style>
+}
+
+<link href="~/faqcss\faqstylecss.css" rel="stylesheet" />
+</div>
+<section style="position:relative;">
+    <div class="overlay"></div>
+    <div class="top-heading">
+
+</section>
+<div class="mainBox pt-2">
+    <div class="container">
+        @*<h3 class="list-title pb-2">Frequently Asked Questions</h3>*@
+        <div class="mt-0">
+            <div class="row">
+                <div class="col-md-12">
+                    <div class="main-heading">
+                        <h2>Frequently Asked Questions</h2>
+                    </div>
+                </div>
+
+
+                <div class="col-md-12">
+                    @{
+                        int index = 11;
+                    }
+                    @foreach (var item in Model)
+                    {
+                        <div class='faq '>
+                            <input id='faq-@index' type='checkbox' />
+                            <label for='faq-@index'>
+                                <p class="faq-heading">@item.Question</p>
+                                <div class='faq-arrow'></div>
+                                
+                                <p class="faq-text">
+                                    @item.AnswerRaw
+                                </p>
+                            </label>
+                        </div>
+                        index++;
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+
+</div>
+
+

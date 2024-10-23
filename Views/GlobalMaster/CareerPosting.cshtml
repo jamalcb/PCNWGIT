@@ -1,0 +1,188 @@
+﻿@{
+    ViewData["Title"] = "Career Posting";
+    Layout = "~/Views/Shared/_Layout-SuperAdmin.cshtml";
+}
+@section Scripts{
+    <script src="~/js/career-posting.js"></script>
+    <script src="~/js/custom-validation.js"></script>
+}
+@section CustomCSS{
+    <style>
+        .text-right .cus-pro-type .fa-plus{
+            font-size:14px !important;
+        }
+
+        a.btn.cus-pro-type {
+            padding: 10px;
+            background: #ff9900;
+            font-weight: bold;
+        }
+        .cus-edit-icon{
+            padding: 5px 8px;
+            background: #ff9a27;
+            border-radius: 5px;
+        }
+
+        .loginError {
+            color: red;
+            font-size: 13px;
+        }
+
+        .modl-btn.save {
+            border: none;
+            background: #ff9a27;
+            padding: 8px 20px;
+            border-radius: 5px;
+        }
+    </style>
+}
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">Career Posting</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/GlobalMaster/Dashboard">Admin</a>
+                        </li>
+                        <li class="breadcrumb-item active">Other</li>
+                        <li class="breadcrumb-item active">CareerPosting</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+                    <div class="header text-right ">
+                        <a href="#" class="btn cus-pro-type" onclick="OpenPrintModel()">
+                            <i class=" fa fa-plus mx-1"></i>
+                            Add Career Posting
+                        </a>
+                        <div class="modal m-modal fade" id="table-Modal" role="dialog">
+                            <div class="modal-dialog">
+                                <!-- Modal content-->
+                                <div class="modal-content">
+                                    <div class="modal-header cusModal-Header">
+                                        <h4 class="modal-title card-label font-weight-bolder" id="orderform-head">
+                                            Save / Update Details
+                                        </h4>
+                                        <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form id="frmPrintForm" action="" class="col-md-12 order-form text-left" autocomplete="on">
+                                            <div class="formCls">
+                                                <span id="message" class="loginError"></span>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-4 col-lg-4 col-form-label">
+                                                        Position Name<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-8 col-xl-8">
+                                                        <input type="hidden" id="Id" name="Id" value="0" />
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Position Name" id="PositionName" name="PositionName" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                 <div class="form-group row mb-3">
+                                                    <label class="col-xl-4 col-lg-4 col-form-label">
+                                                        Opening Number<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-8 col-xl-8">
+                                                        <input class="form-control form-control-solid number-only" type="text"
+                                                               value="" placeholder="Opening No" id="OpeningNo" name="OpaningNo" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-4 col-lg-4 col-form-label">
+                                                        Experience<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-8 col-xl-8">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Experience" id="Experience" name="Experience" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-4 col-lg-4 col-form-label">
+                                                        Qualification<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-8 col-xl-8">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Qualification" id="Qualification" name="Qualification" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-4 col-lg-4 col-form-label">
+                                                        Contact Person<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-8 col-xl-8">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Contact Person" id="ContactPerson" maxlength="12" name="ContactPerson" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-4 col-lg-4 col-form-label">
+                                                        Contact Number<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-8 col-xl-8">
+                                                        <input class="form-control form-control-solid number-only" type="text"
+                                                               value="" placeholder="Contact Number" id="ContactNumber" name="ContactNumber" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                                <div class="form-group row mb-3">
+                                                    <label class="col-xl-4 col-lg-4 col-form-label">
+                                                        Description<span class="text-danger">*</span>
+                                                    </label>
+                                                    <div class="col-lg-8 col-xl-8">
+                                                        <input class="form-control form-control-solid " type="text"
+                                                               value="" placeholder="Job Description" id="JobDescription" name="JobDescription" autocomplete="on">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                </div>
+                                               
+                                                <div class="form-group my-3 text-right">
+                                                    <button id="next-btn" class="newProbtn modl-btn save" onclick="return SaveCareerPosting()">Save</button>
+                                                </div>
+                                            </div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="body">
+                        <div class="table-responsive cus-">
+                            <table id="" class="table-bordered display table table-hover table-checkable order-column m-t-20 width-per-100 pTables">
+                                <thead>
+                                    <tr>
+                                        <th class="text-left">Position Name</th>
+                                        <th class="w-10">OpeningNo</th>
+                                        <th class="w-10">Experience</th>
+                                        <th class="w-10">Qualification</th>
+                                        <th class="w-10">Contact Person</th>
+                                        <th class="w-10">Contact Number</th>
+                                        <th class="w-10">JobDescription</th>
+                                        <th class="w-10">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="tblCareerPosting" class="active-table-body">
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,992 @@
+﻿@model MemberProjectInfo
+@{
+    ViewData["Title"] = "PostProjectHere";
+    Layout = "~/Views/Shared/_Layout-Member.cshtml";
+}
+@section PostProjScripts
+{
+    <script src="/js/custom-validation.js"></script>
+    <script src="/js/post-project-here.js"></script>
+}
+<style>
+    #progress-container {
+        width: 100%;
+        height: 26px;
+        margin: 10px 0 20px 0;
+        border: 1px solid #ccc;
+        display: none;
+    }
+
+    #progress-bar {
+        height: 100%;
+        width: 0;
+        background-color: #3498db;
+        / Set your desired color / transition: width 0.3s ease;
+    }
+    i.fa.fa-trash {
+        font-size: 20px;
+    }
+    /*css for fixed box and minimized project from*/
+    .fix-box {
+        position: sticky;
+        top: 103px;
+        width: 100%;
+        height: auto;
+        background-color: #dde3eb;
+        z-index: 1;
+        border: 1px solid #a9a9a9;
+        padding: 8px 10px;
+    }
+
+    .formCls .box-space .form-control {
+        height: 30px
+    }
+
+    .notice-info {
+        color: #666;
+        font-size: 14px;
+        margin: 0;
+        text-align: start;
+    }
+
+    .in-height .form-control {
+        height: 30px;
+        background: #f4f4f4;
+        border: 1px solid #706e6e;
+    }
+
+    .mt-note {
+        margin-top: 180px;
+    }
+
+    .tbl-adnda th,
+    .tbl-adnda tr td {
+        padding: 5px;
+    }
+
+    .edit-row label {
+        color: #666;
+    }
+
+    .fix-box .newPro-btn label {
+        color: #666;
+        font-weight: 600;
+    }
+
+    .formCls label {
+        font-size: 15px;
+        font-weight: 600;
+        color: #666;
+    }
+
+    .mt-project {
+        margin-top: 115px;
+    }
+
+    .form-control:focus {
+        border-color: #5c8097;
+        box-shadow: 0 0 2px #5c8097 inset, 0 0 2px #5c8097;
+        outline: #5c8097 solid 1px;
+    }
+
+    .cus-textarea:focus {
+        border-color: #5c8097;
+        box-shadow: 0 0 2px #5c8097 inset, 0 0 2px #5c8097;
+        outline: #5c8097 solid 1px;
+    }
+
+    .post-label.flex-wrap .form-check-inline {
+        /* flex: 0 0 18%; */
+        margin-bottom: 6px;
+    }
+    /* -------------- */
+    #time_wrapper {
+        width: fit-content;
+        margin: 0 auto;
+        position: relative;
+        top: 150px;
+        transform: scale(1.5);
+    }
+
+    #time_input {
+        border: 2px solid #706e6e;
+        width: fit-content;
+        display: flex;
+        align-items: center;
+        border-radius: 0px !important;
+    }
+
+        #time_input input {
+            width: 50px;
+            height: auto;
+            border: none;
+            box-sizing: border-box;
+            padding: 2px;
+            text-align: center;
+            color: #132c14;
+            background: #f4f4f4;
+        }
+
+        #time_input label {
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            position: relative;
+            margin-bottom: 0px;
+        }
+
+    .label {
+        font-size: 0.55rem;
+        position: absolute;
+        top: 4.5px;
+    }
+
+        .label.lbl-hrs {
+            left: 20px;
+        }
+
+        .label.lbl-min {
+            left: 14px;
+        }
+
+        .label.lbl-sec {
+            left: 13px;
+        }
+
+    /* Chrome, Safari, Edge, Opera */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+
+    /* Firefox */
+    input[type="number"] {
+        -moz-appearance: textfield;
+    }
+
+    #time_input,
+    input {
+        border-radius: 8px;
+        /*font-size: 1.5rem;*/
+    }
+
+        #time_input input:focus {
+            outline: 3px solid #5c8097;
+            border-radius: 0;
+        }
+
+        input:focus + .label {
+            color: var(--active);
+        }
+
+        input.invalid:focus {
+            outline: 3px solid red;
+        }
+
+            input.invalid:focus + .label {
+                color: red;
+            }
+
+    #error {
+        width: 280px;
+        position: relative;
+        top: 170px;
+        margin: 0 auto;
+        color: red;
+        visibility: hidden;
+    }
+
+    .ui-autocomplete.show-all .ui-menu-item {
+        display: list-item !important;
+    }
+
+    .timer {
+        width: 45px;
+    }
+
+    .loginError {
+        color: red;
+        font-size: 15px;
+        line-height: 1;
+        margin-bottom: 4px;
+    }
+
+    .optional-box.fix-box {
+        /*  height: 72px;
+                    width: 98.2%; */
+    }
+
+    .optional-mt.mt-project {
+        margin-top: 23px;
+    }
+
+    .main-content {
+        padding: 5px 0;
+    }
+</style>
+
+<div class="container-fluid">
+
+
+    <form method="post" name="myForm">
+        <div class="box-space fix-box optional-box">
+            <div class="row in-height">
+                <div class="col-md-6">
+                    <div class="row edit-row mb-2">
+                        <div class="col-md-2">
+                            <label>Project Title <span class="text-danger">*</span></label>
+                        </div>
+                        <div class="col-md-10 col-lg-10">
+                            <div class="input-group">
+                                <textarea asp-for="Title" class="cus-textarea mb-2" rows="2" autocomplete="off" placeholder="Project Title" tabindex="1" required autofocus></textarea>
+                                <span class="loginError"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="row form-group">
+                        <label class="col-lg-2">Address  <span class="text-danger">*</span></label>
+                        <div class="col-lg-10 col-xl-10">
+                            <div class="row">
+                                <div class="col-lg-8 col-xl-8 mb-lg-2">
+                                    <input type="text" asp-for="LocAddr1" class="form-control" placeholder="Address" tabindex="10" />
+                                    <span class="loginError"></span>
+                                    <input type="hidden" asp-for="Longitude">
+                                    <input type="hidden" asp-for="Latitude">
+                                </div>
+                                <div class="col-12  col-md-12 col-lg-4 cus-mt">
+                                    <input type="text" asp-for="LocZip" class="form-control number-only" placeholder="zip code" tabindex="20" maxlength="5" />
+
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-md-4 col-xl-4 col-lg-4 cus-mt">
+                                    <input type="text" asp-for="LocCity" class="form-control" placeholder="city" tabindex="30" />
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-12 col-md-4 col-lg-4 cus-mt">
+                                    <input type="text" asp-for="LocState" class="form-control" tabindex="35" placeholder="state">
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-12 col-md-4 col-lg-4 cus-mt">
+                                    <input type="text" class="form-control" asp-for="LocAddr2" placeholder="county" tabindex="40" />
+                                    <span class="loginError"></span>
+                                    <input type="hidden" class="form-control" asp-for="CountyId" />
+                                    <a href="" data-toggle="modal" class="popClassDel" data-target="#multi-county" tabindex="50"> + Add Multiple Counties</a>
+
+                                </div>                                 
+                            </div>
+                        </div>
+                        <div class="col-12 col-sm-2 col-md-2 col-lg-2" id="divCounty" style="display:none"><label>Counties</label></div>
+                        <div class="col-12 col-sm-10 col-md-10 col-lg-10" id="divsCounty" style="display:none"></div>
+                    </div>
+                    <div class="row mb-2">
+                                <div class="col-sm-12 col-md-12 col-lg-12 " id="divBids">
+                                    <div class="row align-items-center pt-2" id="bid_Date">
+                                        <div class="col-lg-2">
+                                            <label>Bid Date/Time<span class="text-danger">*</span></label>
+                                        </div>
+
+                                        <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                            <div class="row mx-0">
+                                                <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+                                                    <input class="form-control datepicker-custom" placeholder="Select Date" tabindex="60" type="text" value="" autocomplete="off" onchange="ChangeBidDt(this.id)" asp-for="BidDt">
+                                                    <span class="loginError"></span>
+                                                </div>
+                                                <div class="col-8  col-sm-3 col-md-3 col-lg-3 mt-420">
+                                                    <div id="time_input">
+                                                        <label for="hours">
+                                                            <input type="number" tabindex="70" value="00" asp-for="tComp" autocomplete="off">
+                                                        </label>
+                                                        <span>:</span>
+                                                        <label for="minutes">
+                                                            <input type="number" value="00" tabindex="80" asp-for="hComp" autocomplete="off">
+                                                        </label>
+                                                        <span>:</span>
+                                                        <label for="seconds">
+                                                            <input type="Text" tabindex="90" value="AM" id="mValue" name="mValue" class="ui-autocomplete-input" autocomplete="off">
+                                                        </label>
+                                                    </div>
+                                                </div>
+                                                <div class="col-8 col-sm-2 col-md-2 col-lg-2 mt-420">
+                                                    <input type="text" asp-for="strBidDt3" class="form-control BidCount" value="PT" readonly />
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div id="bidDate-input" class=""></div>
+                                
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 defaultLbl">
+                    <div class="d-flex flex-wrap">
+                        <div class="col-12 col-md-12 col-lg-12"><label>Project Description<span class="text-danger">*</span></label></div>
+                        <div class="col-12 col-md-12 col-lg-12">
+                            <textarea asp-for="Story" id="projdesc" class="cus-textarea" rows="6" autocomplete="off" tabindex="5"></textarea>
+                            <span class="loginError"></span>
+                        </div>
+                    </div>
+                    @* <div class="col-12 col-md-2 col-lg-2"><label>Project Notice</label></div>
+                    <div class=" col-12 col-md-10 col-lg-7">
+                    <textarea class="cus-textarea" rows="2" asp-for="ProjNote" autocomplete="off"></textarea>
+                    <p class="notice-info">Information entered here will trigger a notification to members. Use with care.</p>
+                    </div>*@
+
+                   @*  <div class="col-12  col-md-12 col-lg-3">
+                        <button onclick="return validate()" class="mt btn btn-sm newProbtn px-15" tabindex="30" asp-controller="Project" asp-action="SaveProjectInfoNew">Save & New</button>
+                         <button tabindex="22" style="padding: 10px 15px;" accesskey="S" asp-controller="Member" asp-action="SaveMemberProject" class="newProbtn" type="submit" aria-expanded="false" onclick="return checkUpload()">
+                        Save & New
+                        </button>*
+                        <div class="dropdown-menu">
+                        <button tabindex="24" accesskey="S" asp-controller="Member" asp-action="SaveProjectInfoEdit" class="dropdown-item" onclick="RemoveSubmit()">Save</button>
+                        <button tabindex="26" accesskey="X" asp-controller="Member" asp-action="SaveProjectInfoClose" class="dropdown-item">Save  & Close</button>
+                        <button tabindex="28" accesskey="N" asp-controller="Member" asp-action="SaveProjectInfoNew" class="dropdown-item">Save & New</button>
+                        <button tabindex="30" accesskey="Y" asp-controller="Member" asp-action="SaveProjectInfoCopy" class="dropdown-item">Save & Copy</button>
+                        </div>                        
+                    </div> *@
+                </div>
+            </div>
+        </div>
+        <div style="position: relative;">
+            <div class="modal m-modal " id="multi-county" tabindex="-1" aria-labelledby="countyModalLabel" aria-hidden="true">
+                <div class="modal-dialog modal-xl">
+                    <div class="modal-content">
+                        <div class="modal-header blu-header">
+                            <h5 class="modal-title" id="countyModalLabel">Add Multiple Counties</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="AssignMultipleCounties()">
+                                <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <div class="modal-body">
+                            <!-- Checkboxes row start from here -->
+                            <div class="d-flex justify-content-center">
+                                <div class="form-check px-4">
+                                    <input class="form-check-input classOcounties" type="checkbox" value="-1" id="AllOr" onchange="BlockCounties(this.id)">
+                                    <label class="form-check-label" for="allor">
+                                        <b>All OR Counties</b>
+                                    </label>
+                                </div>
+                                <div class="form-check">
+                                    <input class="form-check-input classWcounties" type="checkbox" value="-2" id="AllWa" onchange="BlockCounties(this.id, this)">
+                                    <label class="form-check-label" for="allwa">
+                                        <strong>All WA Counties</strong>
+                                    </label>
+                                </div>
+                            </div>
+                            <div class="row pt-3 classCounty mx-0">
+                                <div class="WAClass">
+                                    <p><b>WA</b></p>
+                                </div>
+                                <div class="ORClass">
+                                    <p><b>WA</b></p>
+                                </div>
+                            </div>
+                            <div class="float-right newPro-btn">
+                                <span class="newProbtn" style="cursor:pointer" data-dismiss="modal" onclick="AssignMultipleCounties()">OK</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <input type="hidden" asp-for="Counties" />
+        </div>
+        <div class="dashboard-box">
+            <div class="project-info  formCls">
+
+                <div class="row">
+                    <div class="col-12">
+                        <div class="main-heading">
+                            <h2 style="padding: 5px 10px;">Contact Information</h2>
+                        </div>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="row">
+                                    <div class="col-md-12 box-space">
+                                        <div class="d-flex form-group mb-2">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">Contact Name<span class="text-danger">*</span></label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input type="hidden" id="ProjId" name="ProjId" />
+                                                <input type="hidden" asp-for="ProjNumber" />
+                                                <input type="hidden" id="hdnPath" />
+                                                <input type="hidden" id="SucStatus" />
+                                                <input tabindex="100" class="form-control" type="text" asp-for="ContactName" placeholder="Contact Name">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex form-group mb-2">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">Company Name<span class="text-danger">*</span></label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="105" class="form-control" type="text" asp-for="ContactMember" placeholder="Company Name">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex form-group mb-2">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">Contact Email<span class="text-danger">*</span></label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="110" id="ConEmail" class="form-control" type="text" asp-for="ContactEmail" placeholder="Contact Email">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                        <div class="d-flex form-group mb-2">
+                                            <label class="col-xl-3 col-lg-3 col-form-label">Contact Phone<span class="text-danger">*</span></label>
+                                            <div class="col-lg-9 col-xl-9">
+                                                <input tabindex="115" class="form-control" type="text" asp-for="ContactPhone" placeholder="Contact Phone">
+                                                <span class="loginError"></span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="contact-info-card">
+                                    @*<div><label>Contact Name</label><label asp-for="ContactName">@Model.ContactName</label></div>
+                                    <div><label>Company Name</label><label >@Model.ContactMember</label></div>
+                                    <div><label>E-mail</label><label asp-for="ContactEmail">@Model.ContactEmail</label></div>
+                                    <div><label>Phone</label><label asp-for="ContactPhone">@Model.ContactPhone</label></div>*@
+                                    <input type="hidden" asp-for="ProjNumber" />
+                                    <input type="hidden" asp-for="ContactEmail" />
+                                    <input type="hidden" asp-for="ContactPhone" />
+                                    <input type="hidden" asp-for="ContactMember" />
+                                    <input type="hidden" asp-for="ContactName" />
+                                    <input type="hidden" asp-for="memberId" />
+                                    <input type="hidden" asp-for="@Model.ProjScope" />
+                                    <input type="hidden" id="ErrMsg" value="@Model.ErrorMsg" />
+                                    <input type="hidden" asp-for="@Model.IssuingOffice" />
+                                    <input type="hidden" id="chkUploaded" name="chkUploaded" value="N" />
+                                </div>
+
+                            </div>
+                            <div class="col-lg-6 dragbgChange">
+                                <div class="drag-box">
+                                    <div class="dragbgChange">
+                                        <form id="myForm" method="post" enctype="multipart/form-data">
+                                            <div class="drag-wrap m-0">
+                                                <div class="drag-append">
+                                                    <div class="drag-file">
+                                                        <div class="file__input" id="file__input" style="height: 100px; border: 3px dotted;">
+                                                            <input class="file__input--file" id="fileUpload1" tabindex="9" name="pdfFile" type="file" multiple="multiple">
+                                                            <label class="file__input--label" for="fileUpload1" data-text-btn="Upload">Drag and Drop a file : </label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="d-flex flex-wrap" id="file_input">
+                                                </div>
+                                                <input name="__RequestVerificationToken" type="hidden" value="CfDJ8No4CcOAvZtGhwWH9oIjvX_EJxC-IzDPY5Gnx62CA71RdYAlnhAbXfAsPJ31nkeVZkw-eDXWlSAZfjXI9UdBpPGnNYK04jYIvvJ2XzNkpmygwO3kH2_s-Ge3TfBfetr0dEnBbMOymT4vZQDOASH_k-cyUzFQHRpvt5IBvjVWFl34k5OQveAQwHPtlFUPsfhilQ">
+                                            </div>
+                                            @*<input type="button" class="btn-upload my-2" style="float: right;" id="btnfileUpload1" onclick="UploadPdfFile()" value="Upload" />*@
+                                            <input type="hidden" id="hdnFileName" />
+                                            <label id="lblMessage" style="display:none;"></label>
+                                        </form>
+                                        <div id="progress-container" style="display: none;">
+                                            <div id="progress-bar"> <div id="progress-text">0%</div></div>
+                                            <div id="filenameid"></div>
+                                        </div>
+                                        <div id="loader-overlay" class="CopyCenterloader">
+                                            <div id="loader" class="popup-loader">
+                                                <img src="/assets/images/loading-gif.gif" style="max-width: 10%;min-width:10%" />
+                                            </div>
+                                        </div>
+                                        <span class="loginError d-flex align-items-center px-1 mt-2" id="uploadError"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-12 col-md-6 pl-lg-0 pl-sm-3">
+                    </div>
+                    <div class="col-md-12">
+                        <div class="main-heading">
+                            <h2 class="toggle-option" style="padding: 5px 10px;cursor:pointer;">
+                                <i class="fa fa-chevron-right mx-1" aria-hidden="true"></i>
+                                Additional Project Info
+                            </h2>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="cst-optional">
+
+                    <div class="box-space ">
+                        <p>
+                            If you wish to provide additional Project Information, you can do so below, but we are happy
+                            to do so for you. Just leave it blank and a Project Specialist will email you to confirm
+                            final details before we post your project.
+                        </p>
+                        <div class="row">
+                            <div class="col-lg-7 col-12 border-right">
+                                @* <div class="row form-group">
+                                    <label class="col-lg-2 cstCol-lbl">Address  <span class="text-danger">*</span></label>
+                                    <div class="col-lg-10 col-xl-10">
+                                        <div class="row">
+                                            <div class="col-lg-8 col-xl-8 mb-lg-2">
+                                                <input type="text" asp-for="LocAddr1" class="form-control" placeholder="Address" tabindex="40" />
+                                                <span class="loginError"></span>
+                                                <input type="hidden" asp-for="Longitude">
+                                                <input type="hidden" asp-for="Latitude">
+                                            </div>
+                                            <div class="col-12  col-md-12 col-lg-4 cus-mt">
+                                                <input type="text" asp-for="LocZip" class="form-control number-only" placeholder="zip code" tabindex="50" maxlength="5" />
+
+                                                <span class="loginError"></span>
+                                            </div>
+                                            <div class="col-md-4 col-xl-4 col-lg-4 cus-mt">
+                                                <input type="text" asp-for="LocCity" class="form-control" placeholder="city" tabindex="60" />
+                                                <span class="loginError"></span>
+                                            </div>
+                                            <div class="col-12 col-md-4 col-lg-4 cus-mt">
+                                                <input type="text" asp-for="LocState" class="form-control" tabindex="75" placeholder="state">
+                                                <span class="loginError"></span>
+                                            </div>
+                                            <div class="col-12 col-md-4 col-lg-4 cus-mt">
+                                                <input type="text" class="form-control" asp-for="LocAddr2" placeholder="county" tabindex="70" />
+                                                <span class="loginError"></span>
+                                                <input type="hidden" class="form-control" asp-for="CountyId" />
+                                                <a href="" data-toggle="modal" class="popClassDel" data-target="#multi-county" tabindex="75"> + Add Multiple Counties</a>
+                                            </div>
+                                            <div class="modal m-modal fade" id="multi-county" tabindex="-1" aria-labelledby="countyModalLabel" aria-hidden="true">
+                                                <div class="modal-dialog modal-xl">
+                                                    <div class="modal-content">
+                                                        <div class="modal-header blu-header">
+                                                            <h5 class="modal-title" id="countyModalLabel">Add Multiple Counties</h5>
+                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close" onclick="AssignMultipleCounties()">
+                                                                <span aria-hidden="true">&times;</span>
+                                                            </button>
+                                                        </div>
+                                                        <div class="modal-body">
+                                                            <!-- Checkboxes row start from here -->
+                                                            <div class="d-flex justify-content-center">
+                                                                <div class="form-check px-4">
+                                                                    <input class="form-check-input classOcounties" type="checkbox" value="-1" id="AllOr" onchange="BlockCounties(this.id)">
+                                                                    <label class="form-check-label" for="allor">
+                                                                        <b>All OR Counties</b>
+                                                                    </label>
+                                                                </div>
+                                                                <div class="form-check">
+                                                                    <input class="form-check-input classWcounties" type="checkbox" value="-2" id="AllWa" onchange="BlockCounties(this.id, this)">
+                                                                    <label class="form-check-label" for="allwa">
+                                                                        <strong>All WA Counties</strong>
+                                                                    </label>
+                                                                </div>
+                                                            </div>
+                                                            <div class="row pt-3 classCounty mx-0">
+                                                                <div class="WAClass">
+                                                                    <p><b>WA</b></p>
+                                                                </div>
+                                                                <div class="ORClass">
+                                                                    <p><b>WA</b></p>
+                                                                </div>
+                                                            </div>
+                                                            <div class="float-right newPro-btn">
+                                                                <span class="newProbtn" style="cursor:pointer" data-dismiss="modal" onclick="AssignMultipleCounties()">OK</span>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <input type="hidden" asp-for="Counties" />
+                                        </div>
+                                    </div>
+                                    <div class="col-12 col-sm-2 col-md-2 col-lg-2" id="divCounty" style="display:none"><label>Counties</label></div>
+                                    <div class="col-12 col-sm-10 col-md-10 col-lg-10" id="divsCounty" style="display:none"></div>
+                                </div> *@
+                                @* <div class="row form-group">
+                                    <label class="col-lg-2 cstCol-lbl">Project Type</label>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input type="text" asp-for="ProjTypeIdString" class="form-control" placeholder="" tabindex="80" />
+                                        <input type="hidden" asp-for="ProjTypeId" />
+                                    </div>
+                                    <label class="col-lg-2 cstCol-lbl">Project Subtype</label>
+                                    <div class="col-lg-2 col-xl-2">
+                                        <input type="text" class="form-control" asp-for="ProjSubTypeIdString" tabindex="90" onkeydown="" onkeyup="" />
+                                        <input type="hidden" asp-for="ProjSubTypeId" />
+                                    </div> 
+                                    <div class="col-6 col-md-3 col-lg-3">
+                                        <input type="checkbox" asp-for="PrevailingWage" class="mx-1 align-middle" tabindex="310" />
+                                        <label> Prevailing Wage</label>
+                                    </div>
+                                </div> *@
+                                <div class="col-6 col-md-3 col-lg-3">
+                                    <input type="checkbox" asp-for="PrevailingWage" class="mx-1 align-middle" tabindex="130" />
+                                    <label> Prevailing Wage</label>
+                                </div>
+                                @* <div class="row form-group">
+                                    <label class="col-lg-2 cstCol-lbl">Project Scope</label>
+                                    <div class="col-md-10 col-lg-10 col-12">
+                                        <div class="d-flex align-items-center post-label flex-wrap ">
+                                            @for (int i = 0; i < @Model.ProjScopeList.Count; i++)
+                                            {
+                                                <div class="form-check-inline">
+                                                    <input class="mx-1" name="ProjectScopeList" type="checkbox" id="chk_@i" value="@Model.ProjScopeList[i]" onclick="changeScope(this.id)" tabindex="120">
+                                                    <label class="mb-0">@Model.ProjScopeList[i]</label>
+                                                </div>
+                                            }
+                                            <div class="form-check-inline">
+                                                <input id="futr-ckh" type="checkbox" asp-for="FutureWork" class="mx-1" placeholder="" tabindex="100" />
+                                                <label class="mb-0" for="futr-ckh-test">Future Work</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                    <div class="col-md-9 col-lg-9 col-sm-9 col-12">
+                                        <div class="d-flex align-items-center">
+                                        </div>
+                                    </div>
+                                </div> *@
+                                @* <div class="row  align-items-center" style="">
+                                    <div class="col-sm-12 col-md-12 col-lg-12 " id="divBids">
+                                        <div class="row align-items-center pt-2" id="bid_Date">
+                                            <div class="col-lg-2 cstCol-lbl">
+                                                <label>Bid Date/Time <span class="text-danger">*</span></label>
+                                            </div>
+
+                                            <div class="col-10 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0">
+                                                <div class="row mx-0">
+
+                                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3">
+
+                                                        <input class="form-control datepicker-custom" placeholder="Select Date" tabindex="120" type="text" value="" autocomplete="off" onchange="ChangeBidDt(this.id)" asp-for="BidDt">
+                                                        <span class="loginError"></span>
+                                                    </div>
+                                                    <div class="col-8  col-sm-3 col-md-3 col-lg-3 mt-420">
+                                                        <div id="time_input">
+                                                            <label for="hours">
+                                                                <input type="number" tabindex="125" value="00" asp-for="tComp" autocomplete="off">
+                                                            </label>
+                                                            <span>:</span>
+                                                            <label for="minutes">
+                                                                <input type="number" value="00" tabindex="126" asp-for="hComp" autocomplete="off">
+                                                            </label>
+                                                            <span>:</span>
+                                                            <label for="seconds">
+                                                                <input type="Text" tabindex="130" value="AM" id="mValue" name="mValue" class="ui-autocomplete-input" autocomplete="off">
+                                                            </label>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-8 col-sm-2 col-md-2 col-lg-2 mt-420">
+                                                        <input type="text" asp-for="strBidDt3" class="form-control BidCount" value="PT" readonly />
+                                                    </div>
+                                                    <div class="col-8 col-sm-2 col-md-2 col-lg-2">
+                                                        <div class="form-check form-check-inline">
+                                                            <input type="checkbox" class="mr-1" id="biddateundecided" onchange="Undecided1(this)" tabindex="135">
+                                                            <input type="hidden" asp-for="Undecided" />
+                                                            <label class="form-check-label font-weight-bold" for="chkBoxTBDBid">T B D</label>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div id="bidDate-input" class=""></div>
+                                    </div>
+                                </div> *@
+                                <div class="row align-items-center mt-2">
+                                    <div class=" col-12 col-sm-12 col-md-12 col-lg-12">
+                                        <div class="cus-border date-index">
+                                            <div class="row">
+                                                <div class="col-6 col-sm-2 col-md-2 col-lg-2"><label>Prebid Info</label></div>
+                                                @*<div class="col-6 col-sm-10 col-md-10 col-lg-10 pl-0">
+                                                <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="inlineCheckbox1" value="option1" tabindex="150" onchange="UndecidedPre(this)">
+                                                <label class="form-check-label font-weight-bold" for="inlineCheckbox1">T B D</label>
+                                                </div>
+                                                </div>*@
+                                            </div>
+                                            <div id="divPreBids">
+                                                @* <div class="row">
+                                                    <div class="col-12 col-sm-2 col-md-2 mb-lg-0 mb-2">
+                                                        <label>PreBid Note</label>
+                                                    </div>
+                                                    <div class="col-12 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0 pl-420">
+                                                        <input tabindex="140" class="form-control mb-2" type="text" placeholder="Enter PreBid Note" asp-for="PrebidNote" />
+                                                    </div>
+                                                </div> *@
+
+                                                @{
+                                                    int tabbing = 400;
+                                                    //150 index reserved for preBid
+                                                }
+                                                <div class="row border-bottom pb-2 prebidconveniancecount" id="prebid-info-row">
+                                                    @{
+                                                        Model.preBidInfos = null;
+                                                    }
+                                                    <div class="col-12 col-sm-2 col-md-2 mb-lg-0 mb-2 Pre-Text">
+                                                        <label>Meeting 1</label>
+                                                    </div>
+                                                    <div class="col-12 col-sm-10 col-md-10 mb-lg-0 mb-2 pl-0 pl-420">
+                                                        <div class="row">
+
+                                                            <div class="col-12 col-lg-3 col-md-3">
+                                                                @{
+                                                                    tabbing = tabbing++;
+                                                                }
+                                                                <input type="text" asp-for="preBidInfos[0].PreBidDate" class="form-control chkBidDup datepicker-custom" autocomplete="off" placeholder="Select Date" tabindex="@tabbing" onchange="getPreDateIndex((this).id,event)" />
+                                                                <input type="hidden" asp-for="preBidInfos[0].IsDeleted" class="Pre-Del">
+                                                            </div>
+                                                            @{
+                                                                tabbing = tabbing++;
+                                                            }
+                                                            <div class="col-8 col-lg-3 col-md-3 mt-420">
+                                                                <div id="time_input">
+                                                                    <label for="hours">
+                                                                        <input type="number" tabindex="@tabbing" asp-for="preBidInfos[0].tComp" value="00">
+                                                                    </label>
+                                                                    <span>:</span>
+                                                                    @{
+                                                                        tabbing = tabbing++;
+                                                                    }
+
+                                                                    <label for="minutes">
+                                                                        <input type="number" tabindex="@tabbing" asp-for="preBidInfos[0].hComp" value="00">
+                                                                    </label>
+                                                                    <span>:</span>
+                                                                    @{
+                                                                        tabbing = tabbing++;
+                                                                    }
+                                                                    <label for="seconds">
+                                                                        <input type="Text" tabindex="@tabbing" asp-for="preBidInfos[0].mValue" value="AM">
+                                                                    </label>
+                                                                </div>
+                                                                <input asp-for="preBidInfos[0].PreBidTime" class="form-control time-input" type="time" style="display:none;" placeholder="Time">
+                                                            </div>
+                                                            <div class="col-4 col-lg-2 col-md-2 col-sm-2 mt-420">
+                                                                <input class="form-control" type="text" asp-for="preBidInfos[0].PST" value="PT" readonly>
+                                                            </div>
+                                                            @{
+                                                                int locTab = tabbing++;
+                                                                tabbing = locTab;
+                                                                tabbing++;
+                                                            }
+                                                            @*<div class="col-5 col-lg-1 col-md-1 col-sm-1 mt-420">
+                                                            <div class="form-check form-check-inline">
+                                                            <input class="form-check-input" type="checkbox" tabindex="@tabbing" onchange="ChangeAnd(this)">
+                                                            <label class="form-check-label" for="and">and</label>
+                                                            <input type="hidden" asp-for="preBidInfos[0].PreBidAnd">
+                                                            </div>
+                                                            </div>*@
+                                                            @{
+                                                                tabbing++;
+                                                            }
+                                                            <div class="col-5 col-lg-2 col-md-2 col-sm-1 mt-420">
+                                                                <div class="form-check form-check-inline">
+                                                                    <input class="form-check-input" type="checkbox" id="" value="option1" tabindex="@tabbing" onchange="ChangeMandatory(this)">
+                                                                    <label class="form-check-label" for="and">Mandatory</label>
+                                                                    <input type="hidden" asp-for="preBidInfos[0].Mandatory">
+                                                                </div>
+                                                            </div>
+                                                            @{
+                                                                tabbing++;
+                                                            }
+                                                            <div class="col-2 col-lg-1 col-md-1 col-sm-1 mt-420">
+                                                                <div class="remove_prebid_row"><span style="cursor:pointer" id="delPrebid-row" class="popClassDel"><i class="fa fa-trash"></i></span></div>
+                                                            </div>
+                                                            <div class="col-12 col-lg-8 col-md-8 col-sm-9 mt-2">
+                                                                <input tabindex="@tabbing" class="form-control" type="text" asp-for="preBidInfos[0].Location" placeholder="Location">
+                                                            </div>
+                                                            @{
+                                                                tabbing++;
+                                                            }
+                                                            <div class="col-lg-2">
+                                                                <div class="form-check form-check-inline">
+                                                                    <input type="hidden" asp-for="preBidInfos[0].UndecidedPreBid" value="false" />
+                                                                    <input class="form-check-input" type="checkbox" id="inlineCheckbox1" tabindex="@tabbing" onchange="UndecidedPre(this)">
+                                                                    <label class="form-check-label font-weight-bold" for="inlineCheckbox1">T B D</label>
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                @{
+                                                    tabbing++;
+                                                }
+                                                <div id="bidInfo-input"></div>
+                                                <div class="col-md-12 mt-2 add-new-btn pl-0" readonly>
+                                                    <span class="action-add" id="bidInfo-row-add" tabindex="@tabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                @{
+                                    int EntTabbing = 510;
+                                    //Reserve 200 For Entity section
+                                }
+                                <div class="row d-none">
+                                    <div class="col-12 col-md-12 col-lg-12">
+                                        <div class="cus-border mt-0">
+                                            <div class="col-12 col-md-12 col-lg-12 px-0">
+                                                <label>Project Team</label>
+                                                <label class="float-right px-3">Issuing Office</label>
+                                            </div>
+                                            <div class="row align-items-center" id="project-team-row">
+                                                @{
+                                                    Model.Entities = null;
+                                                }
+                                                @{
+                                                    EntTabbing++;
+                                                }
+                                                <div class="col-12  col-md-5 col-lg-5">
+                                                    <input type="hidden" asp-for="Entities[0].EntityID">
+                                                    <input type="hidden" asp-for="Entities[0].IsActive" class="Del-Ent">
+                                                    <input tabindex="@EntTabbing" placeholder="Entity Type" autocomplete="off" type="text" class="form-control mb-3" type="text" asp-for="Entities[0].EntityTypeString" placeholder="Entity Type">
+                                                    <input type="hidden" asp-for="Entities[0].EntityType">
+                                                </div>
+                                                @{
+                                                    EntTabbing++;
+                                                }
+                                                <div class="col-12  col-md-5 col-lg-5">
+                                                    <input tabindex="@EntTabbing" type="text" class="form-control pr-0 EntityNameClass mb-3" placeholder="Entity Name" asp-for="Entities[0].EntityName" value="">
+                                                    <input type="hidden" asp-for="Entities[0].NameId" value="">
+                                                </div>
+                                                @{
+                                                    EntTabbing++;
+                                                }
+                                                <div class="col-1 col-md-2 col-lg-2 col-xl-1">
+                                                    <input type="hidden" asp-for="Entities[0].chkIssue" class="chk-Issue" value="">
+                                                    <input type="checkbox" class="mx-1 align-middle" id="chkBoxIssue" onchange="AssignIssue(this)" tabindex="@EntTabbing">
+                                                </div>
+                                                @{
+                                                    EntTabbing++;
+                                                }
+                                                <div class="col-1 col-md-2 col-lg-2 col-xl-1">
+                                                    <div class="remove_prebid_row"><span id="DeleteRow" class="p-0 popClassDel" tabindex="@EntTabbing"><i class="fa fa-trash"></i></span></div>
+                                                </div>
+                                                @{
+                                                    EntTabbing++;
+                                                }
+                                            </div>
+                                            <div id="newinput" class=""></div>
+                                            <div class="col-md-12 mt-3 add-new-btn ">
+                                                <span class="action-add" id="project-row-adder" tabindex="@EntTabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
+                            <!-- Right section of project info -->
+                            <!-- Correct place-->
+                            <!-- Right section of project info -->
+                            <div class="col-md-12 col-lg-5">
+                                <div class="row align-items-center right-sec">
+                                    @* <div class="col-12 col-md-12 col-lg-12"><label>Project Description</label></div>
+                                    <div class="col-12 col-md-12 col-lg-12 py-2">
+                                        <textarea asp-for="Story" id="projdesc" class="cus-textarea" rows="5" autocomplete="off" tabindex="501"></textarea>
+                                        <span class="loginError"></span>
+                                    </div> *@
+                                    <div class="row  align-items-center mx-0 mb-1" style="width:100%">
+                                        <div class="col-6 col-md-4 col-lg-4">
+                                            <label>Bid Bond</label>
+                                            <input type="text" asp-for="BidBond" class="form-control" placeholder="Bid Bond" tabindex="301" />
+                                        </div>
+                                        <div class="col-6 col-md-4 col-lg-4">
+                                            <label>Sub. Approval</label>
+                                            <input type="text" asp-for="SubApprov" tabindex="320" class="form-control" placeholder="Substitution Approval" />
+                                        </div>
+                                    </div>
+                                    <div class="row align-items-center mx-0 mb-1" style="width:100%">
+                                        <div class="col-12">
+                                            <label>Est. Completion</label>
+                                            <input type="text" asp-for="CompleteDt" class="form-control" placeholder="Estimated Completion" tabindex="330" />
+                                        </div>
+                                    </div>
+                                    @{
+                                        //165 tab index reserve for Est. Cost section
+                                        int costTabbing = 335;
+                                    }
+                                    <div class="row align-items-center mx-0 mb-1 costconveniancecount" style="width:100%" id="remove-cost">
+                                        <div class="col-12 col-sm-12 col-md-12 col-lg-12 Cost-Text"><label>Estimated Cost 1</label></div>
+                                        @{
+                                            Model.EstCostDetails = null;
+                                            costTabbing++;
+                                        }
+                                        <div class="col-md-2 col-lg-2 pr-0" style="flex:0 0 9%;width:fit-content;">
+                                            <select class="form-control range-sign p-0" asp-for="EstCostDetails[0].RangeSign" data-index="0" tabindex="@costTabbing">
+                                                <option value="0"> </option>
+                                                <option value="1">&lt;</option>
+                                                <option value="2">&gt;</option>
+                                            </select>
+                                        </div>
+                                        @{
+                                            costTabbing++;
+                                        }
+                                        <div class="col-md-5 col-lg-3 text-nowrap ">
+                                            <input type="hidden" asp-for="EstCostDetails[0].Removed" class="Del-CostClass">
+                                            <input type="text" asp-for="EstCostDetails[0].EstFrom" class="form-control pr-0 inpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                            <input type="hidden" asp-for="EstCostDetails[0].Id" class="Del-CostIdClass">
+                                        </div>
+                                        <div class=""><label class="">TO</label></div>
+                                        @{
+                                            costTabbing++;
+                                        }
+                                        <div class="col-md-5 col-lg-3">
+                                            <input type="text" asp-for="EstCostDetails[0].EstTo" class="form-control inpRem" placeholder="Cost" tabindex="@costTabbing" onkeyup="formatNumberInput(this)" />
+                                        </div>
+                                        @{
+                                            costTabbing++;
+                                        }
+                                        <div class="col-md-5 col-lg-3">
+                                            <input type="text" asp-for="EstCostDetails[0].Description" class="form-control" tabindex="@costTabbing" placeholder="Description" />
+                                        </div>
+                                        @{
+                                            costTabbing++;
+                                        }
+                                        <div class="col-2 col-md-2 col-lg-1 added-icon">
+                                            <span class="action-del popClassDel" id="del-costRow" tabindex="@costTabbing"><i class="fa fa-trash" aria-hidden="true"></i></span>
+                                        </div>
+                                        @{
+                                            costTabbing++;
+                                        }
+                                    </div>
+                                    <div id="costInput" class="mt-2 col-12">
+                                    </div>
+                                    <div class="col-md-12 add-new-btn">
+                                        <span class="action-add" id="cost-row-add" tabindex="@costTabbing"><i class="fa fa-plus" aria-hidden="true"></i> Add New</span>
+                                    </div>
+
+
+                                </div>
+
+                            </div>
+
+                        </div>
+                    </div>
+
+
+                </div>
+
+            </div>
+            <div class="col-md-12 newPro-btn my-2">
+                <button class="newProbtn" asp-action="SaveMemberProject" asp-controller="Member" onclick="return checkUpload()">Submit</button>
+            </div>
+    </form>
+    <div class="modal f-modal fade" id="thankyou-Modal" role="dialog">
+        <div class="modal-dialog modal-lg">
+
+            <!-- Modal content-->
+            <div class="modal-content">
+                <div class="modal-header p-2">
+                    <h1 class="text-success">Uploaded Doc(s)</h1><button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <div class="modal-body">
+                    <table class="table table-bordred select-file-table" id="tblUpload">
+                        <thead>
+                            <tr>
+                                <th>Sr.No</th>
+                                <th>File Name</th>
+                            </tr>
+                        </thead>
+                        <tbody id="ftbody">
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="modal-footer">
+                    <button type="button" class="modl-btn" id="fileClose" data-dismiss="modal">Ok</button>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+</div>

@@ -1,0 +1,119 @@
+﻿@using Microsoft.AspNetCore.Authorization
+@model IEnumerable<IdentityUser>;
+
+@inject IAuthorizationService authorizationService
+@{
+    ViewData["Title"] = "User List";
+    Layout = "~/Views/Shared/Layout-Admin-Master.cshtml";
+}
+
+
+
+<section class="content">
+    <div class="container-fluid">
+        <div class="block-header">
+            <div class="row">
+                <div class="col-xs-12 col-sm-12 col-md-12 col-lg-12">
+                    <ul class="breadcrumb breadcrumb-style ">
+                        <li class="breadcrumb-item">
+                            <h4 class="page-title">User List</h4>
+                        </li>
+                        <li class="breadcrumb-item bcrumb-2">
+                            <a href="/Administration/UtilityDashboard">Administration</a>
+                        </li>
+                        <li class="breadcrumb-item active">Utilities</li>
+                        <li class="breadcrumb-item active">User List</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <!-- search cards  -->
+        <!-- #END# search cards  -->
+        <div class="row clearfix">
+            <div class="col-lg-12 col-md-12 col-sm-12 col-xs-12">
+                <div class="card">
+
+                    <div class="header">
+                        @if (Model.Any())
+                        {
+                            if ((await authorizationService.AuthorizeAsync(User, "CreateRolePolicy")).Succeeded)
+                            {
+                                <div class="row">
+                                    <div class="col-md-12 mb-1">
+                                        <a class="btn btn-primary" style="width:auto;"
+                                   asp-controller="account" asp-action="register">
+                                            Add New User
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+                            <div class="row">
+                                @foreach (var user in Model)
+                                {
+                                    <div class="col-md-4">
+                                        <div class="card role-list-section">
+                                            <div class="card-header">
+                                                User ID : @user.Id
+                                            </div>
+                                            <div class="card-body">
+                                                <h5 class="card-title-user">
+                                                    UserName :  @user.UserName (@user.Email)
+                                                </h5>
+                                            </div>
+                                            <div class="card-footer">
+                                                <form asp-action="DeleteUser" asp-controller="administration" asp-route-id="@user.Id" method="post">
+                                                    @if ((await authorizationService.AuthorizeAsync(User, "EditRolePolicy")).Succeeded)
+                                                    {
+                                                        <a class="btn btn-primary"
+                                               asp-controller="administration" asp-action="edituser" asp-route-id="@user.Id">
+                                                            Edit
+                                                        </a>
+                                                    }
+                                                   @* @if ((await authorizationService.AuthorizeAsync(User, "DeleteRolePolicy")).Succeeded)
+                                                    {*@
+                                                        @*<button type="submit" class="btn btn-danger" onclick="return confirm('Are you sure want to delete this user : @user.UserName');">
+                                            Delete
+                                            </button>*@
+                                                      @*  <span id="confirmDeleteSpan_@user.Id" style="display:none;">
+                                                            <span>Are you sude want to delete?</span>
+                                                            <button type="submit" class="btn btn-primary">Yes</button>
+                                                            <a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', false)">No</a>
+                                                        </span>
+                                                        <span id="deleteSpan_@user.Id">
+                                                            <a href="#" class="btn btn-danger" onclick="confirmDelete('@user.Id', true)">Delete</a>
+                                                        </span>
+                                                    }*@
+                                                </form>
+                                            </div>
+                                        </div>
+                                    </div>
+                                }
+                            </div>
+                        }
+                        else
+                        {
+                            <div class="card">
+                                <div class="card-header">
+                                    NO users created yet
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title">
+                                        Use the button below to create user
+                                    </h5>
+                                    <a class="btn btn-primary" style="width:auto;"
+                                   asp-controller="account" asp-action="register">
+                                        Add User
+                                    </a>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<div class="container">
+    
+</div>

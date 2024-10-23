@@ -1,0 +1,326 @@
+﻿@model MemberShipRegistration;
+@{
+    ViewData["Title"] = "NewRegMember";
+    Layout = "~/Views/Shared/_Layout-admin.cshtml";
+}
+@section CustomCSS{
+    <link href="~/assets/css/mainstyles.css" rel="stylesheet">
+}
+@section Scripts{
+    <link rel="stylesheet" href="~/css/UpdatePackage.css">
+    <script src="~/js/new-reg-member.js"></script>
+}
+<style>
+    .form-inner-section {
+        padding: 10px 30px;
+    }
+
+    .contact-info-box {
+        border: 1px solid #cfcfcf;
+        border-radius: 0 0 10px 10px;
+        padding: 0;
+        margin: 0;
+        background: #fff;
+    }
+
+    .formCls .form-control {
+        margin-bottom: 5px;
+        border-radius: 2px;
+        height: calc(2em + 0.75rem + 2px);
+        background: #f4f4f4;
+        border: 1px solid #cfcfcf;
+    }
+
+    .form-control {
+        display: block;
+        width: 100%;
+        height: 34px;
+        padding: 6px 12px;
+        font-size: 14px;
+        line-height: 1.42857143;
+        color: #555555;
+        background-color: #ffffff;
+        background-image: none;
+        border: 1px solid #cccccc;
+        border-radius: 4px;
+        -webkit-box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+        box-shadow: inset 0 1px 1px rgba(0,0,0,0.075);
+        -webkit-transition: border-color ease-in-out .15s, -webkit-box-shadow ease-in-out .15s;
+        -o-transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+        transition: border-color ease-in-out .15s, box-shadow ease-in-out .15s;
+    }
+
+    .main-footer {
+        background-image: none;
+        padding-top: 8px !important
+    }
+
+    .container .navbar-brand {
+        padding-top: 0.3125rem;
+        padding-bottom: 0.3125rem;
+    }
+
+    #error_message {
+        display: none;
+        background: #f1f1f1;
+        color: #000;
+        position: relative;
+        padding: 20px;
+        margin-top: 10px;
+    }
+
+    .form-group #error_message {
+        display: block;
+        position: absolute;
+        right: 230px;
+        top: -182px;
+    }
+
+    ul#error_message li {
+        padding: 2px 5px;
+        font-size: 10px;
+        list-style: none;
+    }
+
+    .field-icon {
+        float: right;
+        margin-top: -35px;
+        position: relative;
+        margin-right: 3px;
+        z-index: 2;
+    }
+
+    .invalid {
+        color: red;
+    }
+
+    .valid {
+        color: green;
+    }
+
+        .valid:before {
+            position: relative;
+            left: -10px;
+            content: "✔";
+        }
+
+    / Add a red text color and an "x" when the requirements are wrong /
+    .invalid {
+        color: red;
+    }
+
+    .invalid:before {
+        position: relative;
+        left: -10px;
+        content: "✖";
+    }
+
+    .modl-paswrd-msg {
+        background: #f1f1f1;
+        color: #000;
+        height: fit-content;
+        margin-top: 80px;
+        padding: 6px 22px;
+    }
+
+    .loginError {
+        color: red;
+    }
+</style>
+<div class="mainBox">
+    <div class="container">
+        <div id="" class="">
+            <div class="contact-info-box formCls">
+                <div id="onchangevalue">
+                    <div class="frm-title">
+                    </div>
+                    <div class="form-inner-section">
+                        <!--begin::Group-->
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label">Term<span class="text-danger">*</span></label>
+                            <div class="col-lg-3 col-xl-3">
+                                <select tabindex="" class="form-control" id="SelectTerm">
+                                    <option value="0">-Select-</option>
+                                    <option value="1">Yearly</option>
+                                    <option value="2">Quarterly</option>
+                                    <option value="3">Monthly</option>
+                                </select>
+                                <span class="loginError"></span>
+                            </div>
+                            <label class="col-xl-2 col-lg-2 col-form-label">Select Package<span class="text-danger">*</span></label>
+                            <div class="col-lg-4 col-xl-4">
+                                <input type="hidden" id="hdID" name="ID" value="0">
+                                <input type="hidden" id="hdnPKGId" />
+                                <input type="hidden" id="hdnPKG" />
+                                <input type="hidden" id="hdnTerm" />
+                                <input type="hidden" id="hdnState" />
+                                <input type="hidden" id="MemberType" />
+                                <input type="hidden" id="PKGCost" />
+                                <input type="hidden" asp-for="ArchitectName" />
+                                <input type="hidden" asp-for="ContractorName" />
+                                <input type="hidden" asp-for="ID" />
+                                <select tabindex="" class="form-control" id="SelectPKG">
+                                    <option value="0">-Select-</option>
+                                </select>
+                                <span class="loginError"></span>
+                            </div>
+                        </div>
+                        <!--end::Group-->
+                        <!--begin::Group-->
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label" for="Company">Company<span class="text-danger">*</span></label>
+                            <div class="col-lg-9 col-xl-9">
+                                <input tabindex="10" type="text" id="Company" asp-for="Company" class="form-control form-control-solid form-control-lg" placeholder="Company" required="" name="Company">
+                                <span class="" style="color:red" id="ComExist"></span>
+                            </div>
+                        </div>
+                        <!--end::Group-->
+                        <!--begin::Group-->
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label" for="Dba">DBA</label>
+                            <div class="col-lg-9 col-xl-9">
+                                <input tabindex="20" type="text" asp-for="Dba" id="Dba" class="form-control form-control-solid form-control-lg" placeholder="DBA" name="Dba" >
+                            </div>
+                        </div>
+                        <!--end::Group-->
+                        <!--begin::Group-->
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label" for="MailAddress">Company Address <span class="text-danger">*</span></label>
+                            <div class="col-lg-9 col-xl-9">
+                                <input tabindex="30" type="text" asp-for="MailAddress" id="MailAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" required="" name="MailAddress" />
+                                <span class="loginError"></span>
+                            </div>
+                        </div>
+                        <!--end::Group-->
+                        <!--begin::Group-->
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                            <div class="col-lg-3 col-xl-3">
+                                <input tabindex="50" type="text" asp-for="MailCity" id="MailCity" class="form-control form-control-solid form-control-lg" placeholder="City" required="" name="MailCity" />
+                                <span class="loginError"></span>
+                            </div>
+                            <div class="col-lg-2 col-xl-2">
+                                <select tabindex="60" class="form-control" id="MailState" asp-for="MailState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" required=""></select>
+                                <span class="loginError"></span>
+                            </div>
+                            <div class="col-lg-2 col-xl-2">
+                                <input tabindex="70" type="text" class="form-control form-control-solid form-control-lg" placeholder="USA" required="" value="USA">
+                            </div>
+                            <div class="col-lg-2 col-xl-2">
+                                <input tabindex="40" type="text" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" required="" asp-for="MailZip" id="MailZip" name="MailZip" />
+                                <span class="loginError"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label">Company Phone<span class="text-danger">*</span></label>
+                            <div class="col-lg-9 col-xl-9">
+                                <input tabindex="80" type="text" class="form-control form-control-solid form-control-lg" onchange="validateInputLength(this.id)" placeholder="(555) 555-5555" asp-for="CompanyPhone" id="CompanyPhone" name="CompanyPhone" />
+                                <span class="loginError"></span>
+
+                            </div>
+                        </div>
+                        <!--begin::Group-->
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label">Contact<span class="text-danger">*</span></label>
+                            <div class="col-lg-4 col-xl-4">
+                                <input tabindex="90" type="text" asp-for="FirstName" id="FirstName" class="form-control form-control-solid form-control-lg" placeholder="FirstName" required="" name="FirstName" />
+                                <span class="loginError"></span>
+                            </div>
+                            <div class="col-lg-5 col-xl-5">
+                                <input tabindex="100" type="text" id="LastName" class="form-control form-control-solid form-control-lg" placeholder="LastName" required="" name="LastName" asp-for="LastName" />
+                                <span class="loginError"></span>
+                            </div>
+                        </div>
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label">Contact Phone<br> (If different from above)</label>
+
+                            <div class="col-lg-4 col-xl-4">
+                                <input onchange="validateInputLength(this.id)" tabindex="110" type="text" class="form-control form-control-solid form-control-lg" placeholder="(555) 555-5555" id="ContactPhone" name="ContactPhone" asp-for="ContactPhone" value="">
+                                <span class="loginError"></span>
+                            </div>
+                            <div class="col-lg-1 col-xl-1">
+                                <input tabindex="120" type="text" class="form-control form-control-solid form-control-lg" placeholder="Ext" maxlength="4" id="Extension" name="Extension" value="">
+                            </div>
+                        </div>
+                        <!--end::Group-->
+                        <!--begin::Group-->
+                        <div class="form-group row">
+                            <label class="col-xl-3 col-lg-3 col-form-label">Contact Email (Username)<span class="text-danger">*</span></label>
+                            <div class="col-lg-9 col-xl-9 px-0">
+                                <div style="display:grid;">
+                                    <div class="col-lg-5 col-xl-5">
+
+                                        <input asp-for="ContactEmail" tabindex="130" type="email" id="ContactEmail" class="form-control form-control-solid form-control-lg" placeholder="Email" required="" name="ContactEmail">
+                                        <span class="loginError" id="EmailError" style="color:red;"></span>
+                                    </div>
+                                    <div class="col-lg-5 col-xl-5 my-2">
+                                        <input tabindex="140" id="ContactPassword" class="form-control form-control-solid form-control-lg" type="password" placeholder="Password" autocomplete="off" name="ContactPassword"><span toggle="#ContactPassword" class="fa fa-fw fa-eye field-icon toggle-password"></span>
+                                        <span class="loginError"></span>
+                                    </div>
+                                    <div class="col-lg-5 col-xl-5">
+                                        <input onkeyup="ValidateConfirmPass()" tabindex="150" type="password" class="form-control form-control-solid form-control-lg" placeholder="Confirm Password" id="ContactPasswordCofirmation" name="ContactPasswordCofirmation">
+                                        <span id="PassError" style="color:red;"></span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group row" style="position:relative;">
+                            <ul id="error_message" class="col-xl-3 col-lg-3">
+                                <li><b>Password must contain the following:</b></li>
+                                <li id="letter" class="invalid">A <b>lowercase</b> letter</li>
+                                <li id="capital" class="invalid">A <b>capital (uppercase)</b> letter</li>
+                                <li id="number" class="invalid">A <b>number</b></li>
+                                <li id="length" class="invalid">Minimum <b>8 characters</b></li>
+                            </ul>
+                        </div>
+                        <div class="BillInfoClass">
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label" disabled="disabled">Billing Information<br> (If different from above)</label>
+                                @* <label class="col-xl-3 col-lg-3 col-form-label"></label> *@
+                                <div class="col-lg-9 col-xl-9">
+                                    <input tabindex="170" type="text" id="BillAddress" class="form-control form-control-solid form-control-lg" placeholder="Address" name="BillAddress" value="">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+
+                            <!--end::Group-->
+                            <!--begin::Group-->
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                <div class="col-lg-3 col-xl-3">
+                                    <input tabindex="190" type="text" id="BillCity" class="form-control form-control-solid form-control-lg" placeholder="City" name="BillCity" value="">
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-lg-2 col-xl-2">
+                                    <select tabindex="60" class="form-control" id="BillState" asp-for="BillState" asp-items="@(new SelectList(ViewBag.States, "Value", "Text", "Selected"))" required=""></select>
+                                    <span class="loginError"></span>
+                                </div>
+                                <div class="col-lg-2 col-xl-2">
+                                    <input tabindex="210" type="text" class="form-control " placeholder="USA" value="USA">
+                                </div>
+                                <div class="col-lg-2 col-xl-2">
+                                    <input tabindex="180" type="text" id="BillZip" class="form-control form-control-solid form-control-lg number-only" placeholder="Zip Code" maxlength="5" name="BillZip" value="">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                            <div class="form-group row">
+                                <label class="col-xl-3 col-lg-3 col-form-label"></label>
+                                <div class="col-lg-9 col-xl-9">
+                                    <input tabindex="230" type="email" id="BillEmail" class="form-control form-control-solid form-control-lg" placeholder="Billing Email" data-val="true" data-val-email="The BillEmail field is not a valid e-mail address." name="BillEmail" value="">
+                                    <span class="loginError"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <!--end::Group-->
+                    </div>
+                </div>
+            </div>
+            <div class="mt-15">
+                <div class=" text-right newPro-btn  mt-3">
+                    <span id="scrollToTopButton" tabindex="240" style="cursor:pointer" class="newProbtn" value="Next" onclick="return SaveMember()">Submit</span>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
